@@ -1,3 +1,4 @@
+#overmind
 /overmind/nbproject/
 /overmind/app/config/config.hackcraft_sk.local.neon
 /overmind/app/config/config.local.neon
@@ -5,3 +6,19 @@
 /overmind/www/files/
 /overmind/temp/
 /overmind/log/
+
+# eclipse files
+.classpath
+.project
+bin
+lib
+
+# bwtv
+bwtv/bwtv.cfg
+bwtv/banners
+
+# cerebrate
+cerebrate/master.cfg
+
+# overlord
+overlord/slave.cfg
