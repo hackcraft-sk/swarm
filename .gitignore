@@ -1,0 +1,15 @@
+# eclipse files
+.classpath
+.project
+bin
+lib
+
+# bwtv
+bwtv/bwtv.cfg
+bwtv/banners
+
+# cerebrate
+cerebrate/master.cfg
+
+# overlord
+overlord/slave.cfg
