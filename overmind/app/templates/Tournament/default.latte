@@ -1,0 +1,41 @@
+{block head}
+
+<script type="text/javascript">
+function refreshLiveMatches() {
+	$.get({link refreshLiveMatches!}, function(payload){
+		NetteHandleSnippet(payload);
+	});
+}
+	
+$(document).ready(function() {
+	setInterval("refreshLiveMatches();", 10000);
+});
+</script>
+{/block}
+
+{block content}
+{if !$isLive}
+	<div id="eta"><span>Hell, It's about time: {date("j. M H:i", $liveTime)}</span></div>
+{/if}
+<div class="column">
+{snippet liveMatches}
+	{if !!$playing}<h1 style="font-size: 20px;">{$playing['hostName']} vs {$playing['guestName']}</h1>{else}<h1>Matches</h1>{/if}
+
+	{includeblock '../components/matches.latte', matches => $matches, matchesCount => 6, futureMatches => 3, displayStartTime => true, displayPoints => true}
+{/snippet}
+</div>
+
+<div class="left">
+	<div class="stream">
+	{if $isLive}
+	{!$tournament->getHostStreamCode()}
+	{else}
+	<span>Live SC stream</span>
+	{/if}
+	</div>
+</div>
+	
+
+<div style="clear: both;"></div>
+{/block}
+

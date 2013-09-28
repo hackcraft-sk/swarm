@@ -1,0 +1,61 @@
+{block head}
+
+{/block}
+
+{block content}
+<h1>{_}ladder_of_bots{/_}</h1>
+
+<p>{_}ladder_info{/_}</p>
+
+<h3>{_}competitive{/_}</h3>
+
+<table class="list">
+	<tr>
+		<th>{_}position{/_}</th>
+		<th>{_}bot{/_}</th>
+		<th>{_}wins{/_}</th>
+		<th>{_}draws{/_}</th>
+		<th>{_}matches{/_}</th>
+		<th>{_}points{/_}</th>
+	</tr>
+{var $position = 1}
+{foreach $ladder['competitive'] as $bot}
+	<tr>
+		<td>{$position}.</td>
+		<td>{$bot['username']}</td>
+		<td>{$bot['matchesWon']}</td>
+		<td>{$bot['matchesDraw']}</td>
+		<td>{$bot['matchesTotal']}</td>
+		<td><strong>{$bot['points']}</strong></td>
+	</tr>
+	{var $position = $position + 1;}
+{/foreach}
+</table>
+
+
+<h3>{_}non_competitive{/_}</h3>
+
+<table class="list">
+	<tr>
+		<th>{_}position{/_}</th>
+		<th>{_}bot{/_}</th>
+		<th>{_}wins{/_}</th>
+		<th>{_}draws{/_}</th>
+		<th>{_}matches{/_}</th>
+		<th>{_}points{/_}</th>
+	</tr>
+{var $position = 1}
+{foreach $ladder['non_competitive'] as $bot}
+	<tr>
+		<td>{$position}.</td>
+		<td>{$bot['username']}</td>
+		<td>{$bot['matchesWon']}</td>
+		<td>{$bot['matchesDraw']}</td>
+		<td>{$bot['matchesTotal']}</td>
+		<td><strong>{$bot['points']}</strong></td>
+	</tr>
+	{var $position = $position + 1;}
+{/foreach}
+</table>
+
+{/block}

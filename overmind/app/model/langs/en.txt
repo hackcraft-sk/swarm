@@ -1,0 +1,80 @@
+hackcraft_at_uniza = "HackCraft @ UNIZA - Faculty of Management Sciences and Informatics"
+
+live_sc = "Live SC"
+live_afk = "Live AFK"
+rules = "Rules"
+ladder = "Ladder"
+matches = "Matches"
+my_bot = "My bot"
+chat = "Chat"
+administration = "Administration"
+sign_out = "Sign out"
+sign_in = "Sign in"
+sign_on = "Sign on"
+you_are_in = "You are in"
+go_to = "Go to"
+details = "Details"
+name = "Name"
+
+username = "Username"
+password = "Password"
+password_repeat = "Password again"
+stay_signed_in = "Stay signed in"
+sign_in_form = "Sign in"
+dont_have_account_yet = "Don't have an account yet? Create it!"
+account_creation = "New account creation"
+
+you_have_to_enter_username = "You have to enter the username"
+you_have_to_enter_password = "You have to enter the password"
+passwords_are_not_equal = "Passwords are not equal"
+
+player = "Player"
+stream_is_viewed_as_host = "Stream is shown from 1st player view"
+
+ladder_of_bots = "Bots ladder"
+ladder_info = "Bots are automatically ordered by wins over total number of matches. Inactive bots are not shown in the ladder."
+
+position = "Position"
+bot = "Bot"
+wins = "Wins"
+draws = "Draws"
+
+host_player = "1st player"
+guest_player = "2nd player"
+
+planned_and_played_matches = "Planned & played matches"
+planned_and_played_matches_info = "Win is displayed green, loss red. In case of draw, both players are displayed blue. Uncolored matches are not finished yet, or waiting to be played."
+
+upload_time = "Upload time"
+is_active = "Is active?"
+active = "Active"
+activate = "Activate"
+inactive = "Inactive"
+deactivate = "Deactivate"
+my_bot_versions = "My bot versions in"
+you_dont_have_uploaded_bots = "You do not have any uploaded bot"
+upload_new_bot_version = "Upload new bot version"
+new_bot_upload_instructions = "Upload only file in dll (c++ module), jar (java client) or exe (c++ client) format. System automatically recognizes the file by it's extension. File name is ignored."
+
+startcraft_broodwar_are_registered_trademarks_of_blizzard = "StarCraft, StarCraft: Broodwar are registered trademarks of Blizzard Entertainment."
+
+send = "Send"
+choose_bot_file = "Choose bot file"
+you_have_to_choose_bot_file = "You have to choose bot file"
+
+start_time = "Start time"
+duration = "Duration"
+
+links = "Links"
+info = "Information"
+
+points = "Points"
+
+win_points_description = "In case of win the winner obtains <b>%d</b> points, looser <b>%d</b> points."
+partial_win_points_description = "In case of partial win the winner obtains <b>%d</b> points, looser <b>%d</b> points."
+draw_points_description = "In case of draw, both players will obtain <b>%d</b> points."
+
+competitive = "Competitive"
+non_competitive = "Non-competitive"
+
+matches_asterisk_details = "<ul><li><strong>NC</strong> - Non competitive match (at least one player is non-competitive)</li></ul>"

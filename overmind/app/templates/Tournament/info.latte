@@ -1,0 +1,30 @@
+{block content}
+<h1>{$tournament->getName()}</h1>
+
+<h2>{_}links{/_}</h2>
+
+<ul>
+	<li n:foreach="$links as $link"><strong><a href="{$link['url']}">{$link['names'][$lang]}</a></strong><br/>
+	{$link['descriptions'][$lang]}
+	</li>
+</ul>
+
+<h2>{_}rules{/_}</h2>
+
+{var $info = $tournament->getInfo()}
+	{ifset $info[$lang]}
+		{!$info[$lang]}
+	{/ifset}
+
+<h2>{_}points{/_}</h2>
+
+{var $winPoints = $tournament->getSystem()->getWinPoints()}
+{var $partialWinPoints = $tournament->getSystem()->getPartialWinPoints()}
+{var $drawPoints = $tournament->getSystem()->getDrawPoints()}
+
+<ul>
+	<li>{!_'win_points_description'|printf: $winPoints[0], $winPoints[1]}</li>
+	<li>{!_'partial_win_points_description'|printf: $partialWinPoints[0], $partialWinPoints[1]}</li>
+	<li>{!_'draw_points_description'|printf: $drawPoints}</li>
+</ul>
+{/block}

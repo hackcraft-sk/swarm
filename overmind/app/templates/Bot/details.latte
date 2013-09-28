@@ -1,0 +1,24 @@
+{block content}
+
+<h1>Bot: {$bot['name']}</h1>
+
+<table>
+	<tr>
+		<th>Bot was uploaded:</th>
+		<td>{date("Y/m/d H:i:s")}</td>
+	</tr>
+	<tr>
+		<th>Direct download link:</th>
+		<td><a href="{$bot['url']}">{$bot['url']}</a></td>
+	</tr>
+	<tr>
+		<th>Activation</th>
+		<td>{if $bot['isActive']}Bot is <b>active</b>.{else}Bot is <b>not active</b>.{/if}</td>
+	</tr>
+</table>
+
+<h1>Edit details</h1>
+
+{control botDetailsForm}
+
+{/block}

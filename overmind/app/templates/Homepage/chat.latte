@@ -1,0 +1,41 @@
+{block head}
+<style type="text/css">
+	#irc {
+		box-shadow: 0px 0px 10px white;
+		background-color: white;
+	}
+	
+	#justHitStart {
+		position: absolute;
+		background-color: rgba(0, 0, 0, 0.66);
+		color: white;
+		font-family: starcraft;
+		text-align: center;
+		width: 100%;
+		left: 0px;
+		margin-top: 0px;
+		padding-top: 25px;
+		padding-bottom: 25px;
+		font-size: 25px;
+		text-shadow: 0px 0px 20px black;
+		box-shadow: 0px 0px 20px black, inset 0px 0px 50px black;
+	}
+</style>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$("#justHitStart").hide();
+	$("#justHitStart").fadeIn();
+	setTimeout(function(){
+		$("#justHitStart").fadeOut();
+	},3000);
+});
+</script>
+{/block}
+
+{block content}
+<div id="justHitStart">Just hit start :)</div>
+
+<iframe id="irc" src="https://kiwiirc.com/client/irc.kiwiirc.com/?nick={$username}|?&theme=basic#scmai" style="border:0; width:100%; height:500px;"></iframe>
+
+{/block}

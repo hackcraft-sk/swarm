@@ -1,0 +1,12 @@
+{block content}
+<h1>Archived tournaments</h1>
+
+<ul>
+	{foreach $tournaments as $t}
+		{if $t->isArchived()}
+			<li><a n:href="Homepage:setTournament, $t->getId()">{$t->getName()}</a></li>
+		{/if}
+	{/foreach}
+	
+</ul>
+{/block}

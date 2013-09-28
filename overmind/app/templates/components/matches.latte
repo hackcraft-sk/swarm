@@ -1,0 +1,52 @@
+{ifset $matchesCount}
+{else}
+	{var $matchesCount = 1000}
+{/ifset}
+
+{ifset $futureMatches}
+{else}
+	{var $futureMatches = 1000}
+{/ifset}
+
+{var $future = 0}
+{foreach $matches as $match}
+	{breakIf $match['state']=='FINISHED'}
+	{var $future = $future+1}
+{/foreach}
+
+<table class="matches list">
+	<tr>
+		{ifset $displayStartTime}
+		<th>{_}start_time{/_}</th>
+			{ifset $displayDuration}
+			<th>{_}duration{/_}</th>
+			{/ifset}
+		{/ifset}
+		<th>{_}host_player{/_}</th>
+		<th>{_}guest_player{/_}</th>
+		{ifset $displayDetails}<th>*</th>{/ifset}
+	</tr>
+{for $i=max(0, $future - $futureMatches), $count=0; $count < $matchesCount && $i < count($matches); $i++, $count++}
+	{var $match = $matches[$i]}
+	<tr>
+		{if $match['state']=='FINISHED'}
+			{var $hostClass = $match['result'] == 1 ? "winner" : ($match['result'] == -1 ? "looser" : "draw")}
+			{var $guestClass = $match['result'] == -1 ? "winner" : ($match['result'] == 1 ? "looser" : "draw")}
+		{else}
+			{var $hostClass = ""}
+			{var $guestClass = ""}
+		{/if}
+		{ifset $displayStartTime}
+		<td width="15%">{if $match['startTime'] != 0}{$match['startTime']|startTime}{/if}</th>
+			{ifset $displayDuration}
+			<td width="15%">{if $match['endTime'] != 0}{($match['endTime']-$match['startTime'])|shortDuration}{/if}</td>
+			{/ifset}
+		{/ifset}
+		<td class="{$hostClass}">{$match['hostName']}{if isset($displayPoints) && $match['state'] == 'FINISHED'} <small>{if $match['hostPoints']>=0}+{/if}{$match['hostPoints']}</small>{/if}</td>
+		<td class="{$guestClass}">{$match['guestName']}{if isset($displayPoints) && $match['state'] == 'FINISHED'} <small>{if $match['guestPoints']>=0}+{/if}{$match['guestPoints']}</small>{/if}</td>
+		{ifset $displayDetails}
+		<td>{if !$match['competitive']}NC{/if}</td>
+		{/ifset}
+	</tr>
+{/for}
+</table>

@@ -1,0 +1,78 @@
+hackcraft_at_uniza = "HackCraft @ UNIZA - Fakulta Riadenia a Informatiky"
+
+live_sc = "Live SC"
+live_afk = "Live AFK"
+rules = "Pravidlá"
+ladder = "Rebríček"
+matches = "Zápasy"
+my_bot = "Môj bot"
+chat = "Chat"
+administration = "Administráca"
+sign_out = "Odhlásiť"
+sign_in = "Prihlásiť"
+sign_on = "Vytvoriť účet"
+you_are_in = "Nachádzate sa v"
+go_to = "Prejsť do"
+
+username = "Užívateľské meno"
+password = "Heslo"
+password_repeat = "Heslo znova"
+stay_signed_in = "Ostať prihlásený"
+sign_in_form = "Prihlasenie"
+dont_have_account_yet = "Nemáš účet? Vytvor si ho!"
+account_creation = "Vytvorenie noveho uctu"
+
+you_have_to_enter_username = "Musíte zadať užívateľské meno"
+you_have_to_enter_password = "Musíte zadať heslo"
+passwords_are_not_equal = "Heslá sa nezhodujú"
+
+player = "Hráč"
+stream_is_viewed_as_host = "Stream je z pohľadu 1. hráča"
+
+ladder_of_bots = "Rebricek botov"
+ladder_info = "Boti sú automaticky zoradení podľa pomeru výhier / odohraným zápasom. Neaktívni boti sa v rebríčku nezobrazujú."
+
+position = "Pozícia"
+bot = "Bot"
+wins = "Výhry"
+draws = "Remízy"
+
+host_player = "1. hráč"
+guest_player = "2. hráč"
+
+planned_and_played_matches = "Planovane & odohrane zapasy"
+planned_and_played_matches_info = "Výhra je označená zelenou, prehra červenou. V prípade remízy sú obaja hráči označení na modro. Farebne neoznačené zápasy buď prebiehajú alebo sú len naplánované."
+
+upload_time = "Čas uploadu"
+is_active = "Je aktívny?"
+active = "Aktívny"
+activate = "Aktivuj"
+inactive = "Neaktívny"
+deactivate = "Deaktivuj"
+my_bot_versions = "Moje verzie bota v"
+you_dont_have_uploaded_bots = "Nemáte nahraného žiadneho bota"
+upload_new_bot_version = "Nahraj novu verziu bota"
+new_bot_upload_instructions = "Nahraj iba súbor s dll (v prípade modulu c++), jar (v prípade klienta pre javu) alebo exe (v prípade klienta c++). Systém automaticky rozlišuje súbor podľa prípony. Na samotnom názve súboru nezáleží, ten sa ignoruje."
+
+startcraft_broodwar_are_registered_trademarks_of_blizzard = "StarCraft, StarCraft: Broodwar sú registrovanými značkami Blizzard Entertainment."
+
+send = "Odoslať"
+choose_bot_file = "Vyber súbor s botom"
+you_have_to_choose_bot_file = "Musíš vybrať súbor s botom"
+
+start_time = "Štart"
+duration = "Trvanie"
+
+links = "Odkazy"
+info = "Informácie"
+
+points = "Body"
+
+win_points_description = "Za výhru obdrží výherca %d bodov, porazený %d bodov."
+partial_win_points_description = "Za čiastočnú výhru obdrží výherca %d bodov, porazený %d bodov."
+draw_points_description = "Za remízi obdržia obaja účastníci %d bodov."
+
+competitive = "Súťažní"
+non_competitive = "Nesúťažní"
+
+matches_asterisk_details = "<ul><li><strong>NC</strong> - Nesúťažný zápas (aspoň jeden bot je nesúťažný)</li></ul>"

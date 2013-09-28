@@ -1,0 +1,11 @@
+{var $robots = noindex}
+
+{block #content}
+
+<h1>{_}sign_in_form{/_}</h1>
+
+{control signInForm}
+		
+<a n:href="Sign:on">{_}dont_have_account_yet{/_}</a>
+
+{* or use {include '../components/form.latte', form => $presenter[signInForm]} *}
