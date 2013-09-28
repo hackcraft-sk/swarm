@@ -1,4 +1,4 @@
-swarm
+SWARM
 =====
 
-Starcraft War Automatic Relaunching Machines
+StarCraft War Automatic Relaunching Machines
