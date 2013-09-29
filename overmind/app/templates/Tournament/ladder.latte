@@ -1,5 +1,20 @@
 {block head}
+<script type="text/javascript" src="//www.google.com/jsapi"></script>
+<script type="text/javascript">
+  google.load('visualization', '1', { packages: ['corechart']});
+</script>
 
+<style type="text/css">
+	#visualization {
+		width: 900px;
+		height: 300px;
+		margin-bottom :20px;
+		margin: auto;
+		position: relative;
+		top: 20px;
+		box-shadow: 0px 0px 10px white;
+	}
+</style>
 {/block}
 
 {block content}
@@ -32,6 +47,45 @@
 {/foreach}
 </table>
 
+<div id="visualization"></div>
+
+<script type="text/javascript">
+	function drawVisualization() {
+		var data = {$competitiveSnapshotsJson};
+		var table;
+		
+		if(data.length >= 1) {
+			table = new google.visualization.DataTable();
+			table.addColumn('datetime', 'Time');
+
+			for(var i=1; i<data[0].length; i++) {
+				table.addColumn('number', data[0][i]);
+			}
+			table.addRows(data.length-1);
+
+			for(var row=1; row<data.length; row++) {
+				table.setValue(row-1, 0, new Date(data[row][0]*1000));
+				for(var column=1; column<data[row].length; column++) {
+					table.setValue(row-1, column, data[row][column] | 0);
+				}
+			}
+		} else {
+			table = google.visualization.arrayToDataTable([]);
+		}
+
+		// Create and draw the visualization.
+		var graph = new google.visualization.LineChart(document.getElementById('visualization'));
+		graph.draw(table, {
+		  title : '',
+		  width: 900,
+		  height: 300,
+		  vAxis: { title: "Points" },
+		  hAxis: { title: "Time" }
+		});
+	  }
+
+	  google.setOnLoadCallback(drawVisualization);
+</script>
 
 <h3>{_}non_competitive{/_}</h3>
 
@@ -57,5 +111,6 @@
 	{var $position = $position + 1;}
 {/foreach}
 </table>
+
 
 {/block}

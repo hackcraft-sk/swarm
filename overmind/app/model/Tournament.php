@@ -622,5 +622,62 @@ SQL;
 	public function getSystem() {
 		return $this->system;
 	}
+	
+	public function getLadderSnapshotData($section = 'competitive', $forLastSeconds = 79800) {
+		$now = time();
+		$limit = $now - $forLastSeconds;
+		$tournamentId = $this->data['id'];
+		
+		$stmt = $this->database->prepare("SELECT * FROM `ladder_snapshots` WHERE `time` > ? AND `tournamentId`=?");
+		$stmt->bindParam(1, $limit);
+		$stmt->bindParam(2, $tournamentId);
+		
+		if(!$stmt->execute()) {
+			throw new Exception("DB: query error");
+		}
+		
+		$snapshots = array();
+		$users = array();
+		
+		while($row = $stmt->fetch()) {
+			$data = json_decode($row['ladder'], true);
+			$sectionData = $data[$section];
+			$snapshots[] = array('time' => $row['time'], 'ladder' => $sectionData);
+			
+			foreach($sectionData as $ladderRow) {
+				$username = $ladderRow['username'];
+				if(!in_array($username, $users)) {
+					$users[] = $username;
+				}
+
+			}
+		}
+		
+		$result = array(array("Time"));
+		foreach($users as $user) {
+			$result[0][] = $user;
+		}
+		
+		foreach($snapshots as $snapshot) {
+			$row = array((int)$snapshot['time']);
+			$points = array();
+			
+			foreach($users as $user) {
+				$points[$username] = 0;
+			}
+			
+			foreach($snapshot['ladder'] as $ladderRow) {
+				$points[$ladderRow['username']] = $ladderRow['points'];
+			}
+			
+			foreach($users as $user) {
+				$row[] = $points[$user];
+			}
+			
+			$result[] = $row;
+		}
+		
+		return $result;
+	}
 }
 ?>

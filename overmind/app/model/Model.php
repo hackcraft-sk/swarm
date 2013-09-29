@@ -45,7 +45,6 @@ class Model {
 				$this->activeTournaments[$tournamentId] = $tournament;
 			}
 		}
-		
 		return $this->tournaments[$tournamentId];
 	}
 	
