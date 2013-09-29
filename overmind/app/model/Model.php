@@ -320,6 +320,8 @@ class Model {
 		if(!$stmt3->execute()) {
 			throw new Exception("DB: Query error");
 		}
+		
+		$tournament->takeLadderSnapshot();
 	}
 	
 	public function archiveTournamentAs($tournamentId, $newName, $shouldDeleteBots = false) {

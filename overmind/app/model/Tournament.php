@@ -387,6 +387,26 @@ SQL;
 		return $rows;
 	}
 	
+	public function takeLadderSnapshot() {
+		$snapshot = array(
+			'competitive' => $this->getLadder(true),
+			'noncompetitive' => $this->getLadder(false)
+		);
+		$snapshotJson = json_encode($snapshot);
+		
+		$time = time();
+		$tournamentId = $this->data['id'];
+		
+		$stmt = $this->database->prepare("INSERT INTO `ladder_snapshots` (`tournamentId`, `time`, `ladder`) VALUES(?, ?, ?)");
+		$stmt->bindParam(1, $tournamentId);
+		$stmt->bindParam(2, $time);
+		$stmt->bindParam(3, $snapshotJson);
+		
+		if(!$stmt->execute()) {
+			throw new \Exception("DB: Query error");
+		}
+	}
+	
 	public function scheduleMatch($hostId, $guestId) {
 		$id = $this->data['id'];
 		
