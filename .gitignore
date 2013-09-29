@@ -10,8 +10,7 @@
 # eclipse files
 .classpath
 .project
-bin
-lib
+*/bin
 
 # bwtv
 bwtv/bwtv.cfg
