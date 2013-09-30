@@ -5,6 +5,8 @@
  * @author nixone
  */
 class Tournament {
+	const LADDER_SNAPSHOT_LENGTH = 86400;
+	
 	/**
 	 *
 	 * @var \Nette\Database\Connection
@@ -249,7 +251,7 @@ SQL;
 		return $matches;
 	}
 	
-	private function getLadderQuery($competitive) {
+	private function getLadderQuery($competitive, $minimalStartTime = 0) {
 		$competitive = !!$competitive;
 		
 $query = <<<SQL
@@ -326,9 +328,9 @@ $query = <<<SQL
 SQL;
 
 		if($competitive) {
-			$condition = "AND host.competitive=1 AND guest.competitive=1";
+			$condition = "AND host.competitive=1 AND guest.competitive=1 AND matches.startTime >= ".(int)$minimalStartTime;
 		} else {
-			$condition = "AND (host.competitive=0 OR guest.competitive=0)";
+			$condition = "AND (host.competitive=0 OR guest.competitive=0) AND matches.startTime >= ".(int)$minimalStartTime;
 		}
 
 		$query = str_replace("%CONDITION%", $condition, $query);
@@ -337,10 +339,10 @@ SQL;
 		return $query;
 	}
 	
-	public function getLadder($competitive) {
+	public function getLadder($competitive, $minimalStartTime = 0) {
 		$id = $this->data['id'];
 	
-		$stmt = $this->database->prepare($this->getLadderQuery(!!$competitive));
+		$stmt = $this->database->prepare($this->getLadderQuery(!!$competitive, $minimalStartTime));
 		$stmt->bindParam(1, $id);
 		$stmt->bindParam(2, $id);
 		$stmt->bindParam(3, $id);
@@ -389,8 +391,8 @@ SQL;
 	
 	public function takeLadderSnapshot() {
 		$snapshot = array(
-			'competitive' => $this->getLadder(true),
-			'noncompetitive' => $this->getLadder(false)
+			'competitive' => $this->getLadder(true, self::LADDER_SNAPSHOT_LENGTH),
+			'noncompetitive' => $this->getLadder(false, self::LADDER_SNAPSHOT_LENGTH)
 		);
 		$snapshotJson = json_encode($snapshot);
 		
@@ -623,7 +625,7 @@ SQL;
 		return $this->system;
 	}
 	
-	public function getLadderSnapshotData($section = 'competitive', $forLastSeconds = 79800) {
+	public function getLadderSnapshotData($section = 'competitive', $forLastSeconds = self::LADDER_SNAPSHOT_LENGTH) {
 		$now = time();
 		$limit = $now - $forLastSeconds;
 		$tournamentId = $this->data['id'];
