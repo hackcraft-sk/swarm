@@ -390,18 +390,18 @@ SQL;
 	}
 	
 	public function takeLadderSnapshot() {
+		$now = time();
+		
 		$snapshot = array(
-			'competitive' => $this->getLadder(true, self::LADDER_SNAPSHOT_LENGTH),
-			'noncompetitive' => $this->getLadder(false, self::LADDER_SNAPSHOT_LENGTH)
+			'competitive' => $this->getLadder(true, $now-self::LADDER_SNAPSHOT_LENGTH),
+			'noncompetitive' => $this->getLadder(false, $now-self::LADDER_SNAPSHOT_LENGTH)
 		);
 		$snapshotJson = json_encode($snapshot);
-		
-		$time = time();
 		$tournamentId = $this->data['id'];
 		
 		$stmt = $this->database->prepare("INSERT INTO `ladder_snapshots` (`tournamentId`, `time`, `ladder`) VALUES(?, ?, ?)");
 		$stmt->bindParam(1, $tournamentId);
-		$stmt->bindParam(2, $time);
+		$stmt->bindParam(2, $now);
 		$stmt->bindParam(3, $snapshotJson);
 		
 		if(!$stmt->execute()) {
