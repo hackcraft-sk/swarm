@@ -37,9 +37,9 @@
 			{var $guestClass = ""}
 		{/if}
 		{ifset $displayStartTime}
-		<td width="15%">{if $match['startTime'] != 0}{$match['startTime']|startTime}{/if}</th>
+		<td style="width: 15%;">{if $match['startTime'] != 0}{$match['startTime']|startTime}{/if}</td>
 			{ifset $displayDuration}
-			<td width="15%">{if $match['endTime'] != 0}{($match['endTime']-$match['startTime'])|shortDuration}{/if}</td>
+			<td style="width: 15%;">{if $match['endTime'] != 0}{($match['endTime']-$match['startTime'])|shortDuration}{/if}</td>
 			{/ifset}
 		{/ifset}
 		<td class="{$hostClass}">{$match['hostName']}{if isset($displayPoints) && $match['state'] == 'FINISHED'} <small>{if $match['hostPoints']>=0}+{/if}{$match['hostPoints']}</small>{/if}</td>

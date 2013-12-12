@@ -352,7 +352,8 @@ class Model {
 
 		$this->copyBots($tournamentId, $newId);
 		$this->copyMatches($tournamentId, $newId);
-
+		$this->moveLadderSnapshots($tournamentId, $newId);
+		
 		$tournament->deleteMatches();
 
 		if($shouldDeleteBots) {
@@ -369,6 +370,18 @@ class Model {
 
 		$stmt = $this->database->prepare($sql);
 		$stmt->bindParam(1, $fromId);
+
+		if(!$stmt->execute()) {
+			throw new Exception("DB: Query error with {$sql}");
+		}
+	}
+	
+	public function moveLadderSnapshots($fromId, $toId) {
+		$sql = "UPDATE `ladder_snapshots` SET `tournamentId`=? WHERE `tournamentId`=?";
+
+		$stmt = $this->database->prepare($sql);
+		$stmt->bindParam(1, $toId);
+		$stmt->bindParam(2, $fromId);
 
 		if(!$stmt->execute()) {
 			throw new Exception("DB: Query error with {$sql}");
