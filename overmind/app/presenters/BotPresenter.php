@@ -76,6 +76,12 @@ class BotPresenter extends BasePresenter {
 		$this->redirect("my");
 	}
 	
+	public function renderMatches() {
+		if(!$this->requireLogin()) {
+			return;
+		}
 
+		$this->template->matches = $this->getSelectedTournament()->getMatches($this->getUser()->getIdentity()->getId());
+	}
 }
 ?>

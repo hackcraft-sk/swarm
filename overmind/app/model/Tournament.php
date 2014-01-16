@@ -217,7 +217,7 @@ class Tournament {
 		return $result;
 	}
 	
-	public function getMatches() {
+	public function getMatches($userId = 0) {
 		$id = $this->data['id'];
 		
 		$query = <<<SQL
@@ -231,12 +231,24 @@ class Tournament {
 				LEFT JOIN users AS guest ON(matches.guestUserId = guest.id) 
 			WHERE 
 				`tournamentId`=?
+				%USER_CONDITION%
 			ORDER BY id DESC
 			LIMIT 0, 10000
 SQL;
-		
+		if($userId == 0) {
+			$userCondition = "";
+		} else {
+			$userCondition = " AND (`matches`.`hostUserId`=? OR `matches`.`guestUserId`=?)";
+		}
+
+		$query = str_replace("%USER_CONDITION%", $userCondition, $query);
+
 		$stmt = $this->database->prepare($query);
 		$stmt->bindParam(1, $id);
+		if($userId != 0) {
+			$stmt->bindParam(2, $userId);
+			$stmt->bindParam(3, $userId);
+		}
 		
 		if(!$stmt->execute()) {
 			throw new Exception("DB error");
@@ -245,6 +257,13 @@ SQL;
 		$matches = array();
 
 		while($row = $stmt->fetch()) {
+			$realFile = Model::REPLAY_SERVER_LOCATION."/".$row['id'].".rep";
+			$urlFile = Model::REPLAY_URL_LOCATION."/".$row['id'].".rep";
+
+			if(file_exists($realFile)) {
+				$row['replayUrl'] = $urlFile;
+			}
+
 			$matches[] = $row;
 		}
 

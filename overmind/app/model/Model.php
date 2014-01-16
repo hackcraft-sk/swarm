@@ -2,6 +2,10 @@
 class Model {
 	const SERVER_LOCATION = "../www/uploaded_bots";
 	const URL_LOCATION = "http://scmai.hackcraft.sk/uploaded_bots";
+
+	const REPLAY_SERVER_LOCATION = "../www/replays";
+	const REPLAY_URL_LOCATION = "http://scmai.hackcraft.sk/replays";
+
 	public static $extensions = array("exe", "dll", "jar");
 	
 	private $config = false;
@@ -238,7 +242,7 @@ class Model {
 	 * @param array $data as JSON: { matchId: 1, result: OK|INVALID, botResults: [{ botId: 2, matchResult: WIN|LOST|DRAW|DISCONNECT}, { botId: 3, matchResult: WIN|LOST|DRAW|DISCONNECT }] }
 	 * @throws Exception
 	 */
-	public function handleMatchResult($data) {
+	public function handleMatchResult($data, Nette\Http\Request $request) {
 		foreach($data['botResults'] as &$bot) {
 			$details = $this->getBotDetails($bot['botId']);
 			$bot['userId'] = $details['userId'];
@@ -305,6 +309,14 @@ class Model {
 		
 		$matchId = $match['id'];
 		
+		// if replay is set
+		if(isset($data['replay'])) {
+			$file = $request->getFile("replay");
+
+			$pathToBeMovedTo = self::REPLAY_SERVER_LOCATION."/".$matchId.".rep";
+			$file->move($pathToBeMovedTo);
+		}
+
 		$now = time();
 		
 		$stmt3 = $this->database->prepare("UPDATE matches SET result = ?, state='FINISHED', `endTime`=?, `hostResult`=?, `guestResult`=?, `hostPoints`=?, `guestPoints`=? WHERE id = ?");
@@ -352,8 +364,7 @@ class Model {
 
 		$this->copyBots($tournamentId, $newId);
 		$this->copyMatches($tournamentId, $newId);
-		$this->moveLadderSnapshots($tournamentId, $newId);
-		
+
 		$tournament->deleteMatches();
 
 		if($shouldDeleteBots) {
@@ -370,18 +381,6 @@ class Model {
 
 		$stmt = $this->database->prepare($sql);
 		$stmt->bindParam(1, $fromId);
-
-		if(!$stmt->execute()) {
-			throw new Exception("DB: Query error with {$sql}");
-		}
-	}
-	
-	public function moveLadderSnapshots($fromId, $toId) {
-		$sql = "UPDATE `ladder_snapshots` SET `tournamentId`=? WHERE `tournamentId`=?";
-
-		$stmt = $this->database->prepare($sql);
-		$stmt->bindParam(1, $toId);
-		$stmt->bindParam(2, $fromId);
 
 		if(!$stmt->execute()) {
 			throw new Exception("DB: Query error with {$sql}");

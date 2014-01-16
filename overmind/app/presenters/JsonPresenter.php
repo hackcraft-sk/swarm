@@ -83,7 +83,7 @@ class JsonPresenter extends BasePresenter {
 		
 		$success = false;
 		try {
-			$this->context->model->handleMatchResult($payload);
+			$this->context->model->handleMatchResult($payload, $this->getHttpRequest());
 
 			$success = true;
 		} catch(Exception $e) {
