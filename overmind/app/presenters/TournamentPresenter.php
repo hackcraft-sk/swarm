@@ -19,12 +19,8 @@ class TournamentPresenter extends BasePresenter {
 	}
 	
 	public function renderLadder() {
-		$this->template->ladder = array(
-			"competitive" => $this->getSelectedTournament()->getLadder(true),
-			"non_competitive" => $this->getSelectedTournament()->getLadder(false)
-		);
-		
-		$this->template->competitiveSnapshotsJson = $this->getSelectedTournament()->getLadderSnapshotData("competitive");
+		$this->template->ladder = $this->getSelectedTournament()->getLadder();
+		$this->template->snapshotsJson = $this->getSelectedTournament()->getLadderSnapshotData();
 	}
 	
 	public function handleRefreshLiveMatches() {

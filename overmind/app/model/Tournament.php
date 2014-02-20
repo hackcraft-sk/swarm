@@ -270,9 +270,7 @@ SQL;
 		return $matches;
 	}
 	
-	private function getLadderQuery($competitive, $minimalStartTime = 0) {
-		$competitive = !!$competitive;
-		
+	private function getLadderQuery($minimalStartTime = 0) {
 $query = <<<SQL
 			SELECT
 				users.*,
@@ -343,25 +341,19 @@ $query = <<<SQL
 				WHERE EXISTS(
 					SELECT * FROM `bots` WHERE `isActive`=1 AND `userId`=`users`.`id` AND `tournamentId`= ?
 				)
-				AND users.competitive = %COMPETITIVE%
 SQL;
 
-		if($competitive) {
-			$condition = "AND host.competitive=1 AND guest.competitive=1 AND matches.startTime >= ".(int)$minimalStartTime;
-		} else {
-			$condition = "AND (host.competitive=0 OR guest.competitive=0) AND matches.startTime >= ".(int)$minimalStartTime;
-		}
+		$condition = "AND matches.startTime >= ".(int)$minimalStartTime;
 
 		$query = str_replace("%CONDITION%", $condition, $query);
-		$query = str_replace("%COMPETITIVE%", $competitive ? "1" : "0", $query);
 		
 		return $query;
 	}
 	
-	public function getLadder($competitive, $minimalStartTime = 0) {
+	public function getLadder($minimalStartTime = 0) {
 		$id = $this->data['id'];
 	
-		$stmt = $this->database->prepare($this->getLadderQuery(!!$competitive, $minimalStartTime));
+		$stmt = $this->database->prepare($this->getLadderQuery($minimalStartTime));
 		$stmt->bindParam(1, $id);
 		$stmt->bindParam(2, $id);
 		$stmt->bindParam(3, $id);
@@ -411,10 +403,8 @@ SQL;
 	public function takeLadderSnapshot() {
 		$now = time();
 		
-		$snapshot = array(
-			'competitive' => $this->getLadder(true, $now-self::LADDER_SNAPSHOT_LENGTH),
-			'noncompetitive' => $this->getLadder(false, $now-self::LADDER_SNAPSHOT_LENGTH)
-		);
+		$snapshot = $this->getLadder(true, $now-self::LADDER_SNAPSHOT_LENGTH);
+
 		$snapshotJson = json_encode($snapshot);
 		$tournamentId = $this->data['id'];
 		
@@ -644,7 +634,7 @@ SQL;
 		return $this->system;
 	}
 	
-	public function getLadderSnapshotData($section = 'competitive', $forLastSeconds = self::LADDER_SNAPSHOT_LENGTH) {
+	public function getLadderSnapshotData($forLastSeconds = self::LADDER_SNAPSHOT_LENGTH) {
 		$now = time();
 		$limit = $now - $forLastSeconds;
 		$tournamentId = $this->data['id'];
@@ -661,8 +651,7 @@ SQL;
 		$users = array();
 		
 		while($row = $stmt->fetch()) {
-			$data = json_decode($row['ladder'], true);
-			$sectionData = $data[$section];
+			$sectionData = json_decode($row['ladder'], true);
 			$snapshots[] = array('time' => $row['time'], 'ladder' => $sectionData);
 			
 			foreach($sectionData as $ladderRow) {
@@ -697,7 +686,7 @@ SQL;
 			
 			$result[] = $row;
 		}
-		
+
 		return $result;
 	}
 }

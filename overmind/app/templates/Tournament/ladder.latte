@@ -8,11 +8,9 @@
 	#visualization {
 		width: 1000px;
 		height: 300px;
-		margin-bottom :20px;
-		margin: auto;
-		position: relative;
-		top: 20px;
 		box-shadow: 0px 0px 10px white;
+		margin-top: 20px;
+		margin-bottom: 10px;
 	}
 </style>
 {/block}
@@ -21,8 +19,6 @@
 <h1>{_}ladder_of_bots{/_}</h1>
 
 <p>{_}ladder_info{/_}</p>
-
-<h3>{_}competitive{/_}</h3>
 
 <table class="list">
 	<tr>
@@ -34,16 +30,16 @@
 		<th>{_}points{/_}</th>
 	</tr>
 {var $position = 1}
-{foreach $ladder['competitive'] as $bot}
+{foreach $ladder as $bot}
 	<tr>
-		<td>{$position}.</td>
+		<td>{if $bot['competitive']}{$position}.{/if}</td>
 		<td>{$bot['username']}</td>
 		<td>{$bot['matchesWon']}</td>
 		<td>{$bot['matchesDraw']}</td>
 		<td>{$bot['matchesTotal']}</td>
 		<td><strong>{$bot['points']}</strong></td>
 	</tr>
-	{var $position = $position + 1;}
+	{if $bot['competitive']}{var $position = $position + 1;}{/if}
 {/foreach}
 </table>
 
@@ -51,7 +47,13 @@
 
 <script type="text/javascript">
 	function drawVisualization() {
-		var data = {$competitiveSnapshotsJson};
+		var data = {$snapshotsJson};
+
+		if(data.length <= 1) {
+			$("#visualization").hide();
+			return;
+		}
+
 		var table;
 		
 		if(data.length >= 1) {
@@ -86,31 +88,6 @@
 
 	  google.setOnLoadCallback(drawVisualization);
 </script>
-
-<h3>{_}non_competitive{/_}</h3>
-
-<table class="list">
-	<tr>
-		<th>{_}position{/_}</th>
-		<th>{_}bot{/_}</th>
-		<th>{_}wins{/_}</th>
-		<th>{_}draws{/_}</th>
-		<th>{_}matches{/_}</th>
-		<th>{_}points{/_}</th>
-	</tr>
-{var $position = 1}
-{foreach $ladder['non_competitive'] as $bot}
-	<tr>
-		<td>{$position}.</td>
-		<td>{$bot['username']}</td>
-		<td>{$bot['matchesWon']}</td>
-		<td>{$bot['matchesDraw']}</td>
-		<td>{$bot['matchesTotal']}</td>
-		<td><strong>{$bot['points']}</strong></td>
-	</tr>
-	{var $position = $position + 1;}
-{/foreach}
-</table>
 
 
 {/block}
