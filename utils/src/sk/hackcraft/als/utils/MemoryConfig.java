@@ -14,6 +14,15 @@ public class MemoryConfig implements Config
 	{
 		sections = new HashMap<>();
 	}
+	
+	public MemoryConfig(Config config)
+	{
+		for (Section section : config.getAllSections())
+		{
+			MemorySection memorySection = new MemorySection(section);
+			sections.put(memorySection.getName(), memorySection);
+		}
+	}
 
 	@Override
 	public boolean hasSection(String section)
@@ -47,6 +56,17 @@ public class MemoryConfig implements Config
 		{
 			this.name = name;
 			this.pairs = new HashMap<>();
+		}
+		
+		public MemorySection(Section section)
+		{
+			this(section.getName());
+			
+			for (Pair pair : section.getAllPairs())
+			{
+				MemoryPair memoryPair = new MemoryPair(pair);
+				addPair(memoryPair);
+			}
 		}
 
 		public MemorySection(String name, Map<String, String> values)
@@ -101,6 +121,11 @@ public class MemoryConfig implements Config
 		{
 			this.key = key;
 			this.value = value;
+		}
+		
+		public MemoryPair(Pair pair)
+		{
+			this(pair.getKey(), pair.getStringValue());
 		}
 
 		@Override
