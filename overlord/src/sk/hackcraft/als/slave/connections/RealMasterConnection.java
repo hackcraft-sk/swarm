@@ -10,54 +10,56 @@ import java.net.SocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import sk.hackcraft.als.slave.MatchInfo;
-import sk.hackcraft.als.utils.MatchResult;
+import sk.hackcraft.als.utils.Achievement;
 import sk.hackcraft.als.utils.reports.Score;
 import sk.hackcraft.als.utils.reports.SlaveMatchReport;
 
 public class RealMasterConnection implements MasterConnection
 {
 	private static final int DEFAULT_PORT = 11997;
+	private static final int timeout = (int)TimeUnit.SECONDS.toMillis(10);
 	
-	private final InetAddress host;
+	private final String address;
 	private final int port;
 	
-	private final int id;
+	private final int overlordId;
 	
 	private Socket socket;
-	private DataInputStream inputStream;
-	private DataOutputStream outputStream;
+	private DataInputStream input;
+	private DataOutputStream output;
 
-	public RealMasterConnection(InetAddress host, int id)
+	public RealMasterConnection(String address, int overlordId)
 	{
-		this.host = host;
+		this.address = address;
 		this.port = DEFAULT_PORT;
 		
-		this.id = id;
+		this.overlordId = overlordId;
 		
 		socket = null;
-		inputStream = null;
-		outputStream = null;
+		input = null;
+		output = null;
 	}
 	
 	@Override
-	public void connect() throws IOException
+	public void open() throws IOException
 	{
-		socket = new Socket();
-		SocketAddress endpoint = new InetSocketAddress(host, port);
-		socket.connect(endpoint, 10 * 1000);
+		socket = new Socket(address, port);
+		socket.setSoTimeout(timeout);
 		
-		inputStream = new DataInputStream(socket.getInputStream());
-		outputStream = new DataOutputStream(socket.getOutputStream());
+		input = new DataInputStream(socket.getInputStream());
+		output = new DataOutputStream(socket.getOutputStream());
 		
-		outputStream.writeInt(id);
+		output.writeInt(overlordId);
 	}
 	
 	@Override
-	public void disconnect() throws IOException
+	public void close() throws IOException
 	{
-		if (socket == null || !socket.isConnected())
+		if (socket == null)
 		{
 			return;
 		}
@@ -67,16 +69,16 @@ public class RealMasterConnection implements MasterConnection
 		socket.close();
 		
 		socket = null;
-		inputStream = null;
-		outputStream = null;
+		input = null;
+		output = null;
 	}
 
 	@Override
 	public MatchInfo getMatchInfo() throws IOException
 	{
-		int matchId = inputStream.readInt();
-		int botId = inputStream.readInt();
-		String mapPath = inputStream.readUTF();
+		int matchId = input.readInt();
+		int botId = input.readInt();
+		String mapPath = input.readUTF();
 		
 		return new MatchInfo(matchId, botId, mapPath);
 	}
@@ -84,44 +86,39 @@ public class RealMasterConnection implements MasterConnection
 	@Override
 	public void sendReadyState() throws IOException
 	{
-		outputStream.writeBoolean(true);
+		output.writeBoolean(true);
 	}
 
 	@Override
 	public void waitForGo() throws IOException
 	{
-		inputStream.readBoolean();
+		input.readBoolean();
 	}
 	
 	@Override
-	public void postResult(SlaveMatchReport slaveMatchReport) throws IOException
+	public void postSlaveMatchReport(SlaveMatchReport slaveMatchReport) throws IOException
 	{
-		MatchResult matchResult = slaveMatchReport.getResult();
-		int matchResultValue = matchResult.getId();
+		output.writeInt(slaveMatchReport.getBotId());
+		output.writeBoolean(slaveMatchReport.isValid());
 		
-		outputStream.writeInt(matchResultValue);
+		Set<Achievement> achievements = slaveMatchReport.getAchievements();
 		
-		Map<Score, Integer> scores = slaveMatchReport.getScores();
-		outputStream.writeInt(scores.size());
-		for (Map.Entry<Score, Integer> entry : scores.entrySet())
+		output.writeInt(achievements.size());
+		for (Achievement achievement : achievements)
 		{
-			int id = entry.getKey().getId();
-			int value = entry.getValue();
-			
-			outputStream.writeInt(id);
-			outputStream.writeInt(value);
+			output.writeUTF(achievement.getName());
 		}
 		
 		boolean hasReplay = slaveMatchReport.hasReplay();
-		outputStream.writeBoolean(hasReplay);
+		output.writeBoolean(hasReplay);
 		if (hasReplay)
 		{
 			Path replayPath = slaveMatchReport.getReplayPath();
 			byte content[] = Files.readAllBytes(replayPath);
-			
+
 			int size = content.length;
-			outputStream.writeInt(size);
-			outputStream.write(content);
+			output.writeInt(size);
+			output.write(content);
 		}
 	}
 }

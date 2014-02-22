@@ -7,11 +7,11 @@ import sk.hackcraft.als.utils.reports.SlaveMatchReport;
 
 public interface MasterConnection
 {
-	public void connect() throws IOException;
-	public void disconnect() throws IOException;
+	public void open() throws IOException;
+	public void close() throws IOException;
 
 	public MatchInfo getMatchInfo() throws IOException;
 	public void sendReadyState() throws IOException;
 	public void waitForGo() throws IOException;
-	public void postResult(SlaveMatchReport botMatchResult) throws IOException;
+	public void postSlaveMatchReport(SlaveMatchReport botMatchResult) throws IOException;
 }

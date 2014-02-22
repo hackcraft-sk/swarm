@@ -6,7 +6,6 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import sk.hackcraft.als.utils.MatchResult;
 import sk.hackcraft.bwtv.MatchInfo.MatchState;
 import sk.hackcraft.bwtv.MatchInfo.Player;
 
@@ -36,9 +35,11 @@ public class MatchInfoJsonParser
 			JSONObject botData = botsData.getJSONObject(i);
 			
 			String botName = botData.getString("name");
-			MatchResult botResult = (state == MatchState.OK) ? MatchResult.valueOf(botData.getString("result")) : MatchResult.NONE;
+			// TODO
+			System.out.println("TODO bot result setted to false everytime");
+			boolean won = false;
 			
-			Player bot = new Player(botName, botResult);
+			Player bot = new Player(botName, won);
 			bots.add(bot);
 		}
 		

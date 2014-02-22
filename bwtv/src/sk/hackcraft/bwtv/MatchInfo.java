@@ -3,8 +3,6 @@ package sk.hackcraft.bwtv;
 import java.util.LinkedList;
 import java.util.List;
 
-import sk.hackcraft.als.utils.MatchResult;
-
 public class MatchInfo
 {
 	private final String tournamentName;
@@ -68,12 +66,12 @@ public class MatchInfo
 	public static class Player
 	{
 		private final String name;
-		private final MatchResult result;
+		private final boolean won;
 	
-		public Player(String name, MatchResult result)
+		public Player(String name, boolean won)
 		{
 			this.name = name;
-			this.result = result;
+			this.won = won;
 		}
 		
 		public String getName()
@@ -81,9 +79,9 @@ public class MatchInfo
 			return name;
 		}
 		
-		public MatchResult getResult()
+		public boolean hasWon()
 		{
-			return result;
+			return won;
 		}
 	}
 }

@@ -66,9 +66,9 @@ public class MockWebConnection implements WebConnection
 	{
 		if (matchResult.isMatchValid())
 		{
-			for (SlaveMatchReport botResult : matchResult.getResults())
+			for (SlaveMatchReport botResult : matchResult.getSlavesMatchReports())
 			{
-				System.out.printf("#%d - %s%n", botResult.getBotId(), botResult.getResult().toString());
+				System.out.printf("#%d - %s%n", botResult.getBotId(), botResult.getAchievements().contains("victory"));
 			}
 		}
 		else

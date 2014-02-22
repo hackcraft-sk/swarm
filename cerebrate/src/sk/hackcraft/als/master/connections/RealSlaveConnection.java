@@ -9,8 +9,10 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Set;
 
-import sk.hackcraft.als.utils.MatchResult;
+import sk.hackcraft.als.utils.Achievement;
 import sk.hackcraft.als.utils.reports.Score;
 import sk.hackcraft.als.utils.reports.SlaveMatchReport;
 
@@ -85,19 +87,20 @@ public class RealSlaveConnection implements SlaveConnection
 	@Override
 	public SlaveMatchReport waitForMatchResult() throws IOException
 	{
-		MatchResult matchResult = MatchResult.fromId(inputStream.readInt());
+		int botId = inputStream.readInt();
+		boolean valid = inputStream.readBoolean();
 		
-		SlaveMatchReport.Builder builder = new SlaveMatchReport.Builder(activeBotId, matchResult);
-		
-		int scoresCount = inputStream.readInt();
-		
-		for (int i = 0; i < scoresCount; i++)
+		int achievementsCount = inputStream.readInt();
+		Set<Achievement> achievements = new HashSet<>();
+		for (int i = 0; i < achievementsCount; i++)
 		{
-			Score score = Score.fromId(inputStream.readInt());
-			int value = inputStream.readInt();
+			String name = inputStream.readUTF();
 			
-			builder.setScore(score, value);
+			Achievement achievement = new Achievement(name);
+			achievements.add(achievement);
 		}
+
+		Path replayPath = null;
 		
 		boolean hasReplay = inputStream.readBoolean();
 		if (hasReplay)
@@ -114,7 +117,7 @@ public class RealSlaveConnection implements SlaveConnection
 			byte content[] = new byte[replaySize];
 			inputStream.readFully(content);
 			
-			Path replayPath = Paths.get(slaveReplaysDirectoryPath.toString(), activeMatchId + ".rep");
+			replayPath = Paths.get(slaveReplaysDirectoryPath.toString(), activeMatchId + ".rep");
 			
 			try
 			{
@@ -130,16 +133,15 @@ public class RealSlaveConnection implements SlaveConnection
 				)
 				{
 					fileOutputStream.write(content);
-					
-					builder.setReplayPath(replayPath);
 				}
 			}
 			catch (IOException e)
 			{
 				System.out.println("Can't save replay file from slave " + slaveId + ": " + e.getMessage());
+				replayPath = null;
 			}
 		}
 
-		return builder.create();
+		return new SlaveMatchReport(valid, botId, achievements, replayPath);
 	}
 }

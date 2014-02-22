@@ -6,8 +6,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -134,33 +136,40 @@ public class SlavesManager
 	
 	public MatchReport waitForMatchResult(int matchId) throws IOException
 	{
-		MatchReport.Builder builder = new MatchReport.Builder(matchId);
-		
+		List<SlaveMatchReport> slavesMatchReports = new ArrayList<>();
 		Path selectedReplayPath = null;
+		Path matchReplayPath = null;
+		
+		boolean valid = true;
 		
 		for (SlaveConnection connection : connections)
 		{
-			SlaveMatchReport botResult = connection.waitForMatchResult();
+			SlaveMatchReport reports = connection.waitForMatchResult();
 			
-			builder.addResult(botResult);
-			
-			if (botResult.hasReplay())
+			if (!reports.isValid())
 			{
-				selectedReplayPath = botResult.getReplayPath();
+				valid = false;
 			}
 			
-			System.out.println("Slave ID: " + connection.getSlaveId());
-			System.out.println("Bot ID:" + botResult.getBotId());
-			System.out.println("Result: " + botResult.getResult());
+			if (reports.hasReplay() && selectedReplayPath == null)
+			{
+				selectedReplayPath = reports.getReplayPath();
+			}
 		}
 		
 		if (selectedReplayPath != null)
 		{
-			Path matchReplayPath = Paths.get(".", "replays", matchId + ".rep");
+			matchReplayPath = Paths.get(".", "replays", matchId + ".rep");
 			Files.copy(selectedReplayPath, matchReplayPath, StandardCopyOption.REPLACE_EXISTING);
-			builder.setReplayAvailability(true);
 		}
 		
-		return builder.create();
+		if (valid)
+		{
+			return new MatchReport(valid, matchId, slavesMatchReports, matchReplayPath);
+		}
+		else
+		{
+			return new MatchReport(valid, matchId, null, null);
+		}
 	}
 }

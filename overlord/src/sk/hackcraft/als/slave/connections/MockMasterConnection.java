@@ -8,12 +8,12 @@ import sk.hackcraft.als.utils.reports.SlaveMatchReport;
 public class MockMasterConnection implements MasterConnection
 {
 	@Override
-	public void connect() throws IOException
+	public void open() throws IOException
 	{
 	}
 
 	@Override
-	public void disconnect() throws IOException
+	public void close() throws IOException
 	{
 	}
 	
@@ -28,7 +28,7 @@ public class MockMasterConnection implements MasterConnection
 	}
 
 	@Override
-	public void postResult(SlaveMatchReport botMatchResult) throws IOException
+	public void postSlaveMatchReport(SlaveMatchReport botMatchResult) throws IOException
 	{
 	}
 

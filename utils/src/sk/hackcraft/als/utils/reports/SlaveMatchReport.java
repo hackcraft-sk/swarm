@@ -1,34 +1,41 @@
 package sk.hackcraft.als.utils.reports;
 
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
-import sk.hackcraft.als.utils.MatchResult;
+import sk.hackcraft.als.utils.Achievement;
 
 public class SlaveMatchReport
 {
+	private final boolean valid;
+	
 	private final int botId;
-	private final MatchResult result;
+	private final Set<Achievement> achievements;
 
-	private final Map<Score, Integer> scores;
 	private final Path replayPath;
-
-	public SlaveMatchReport(int botId, MatchResult result)
+	
+	/**
+	 * Constructs new slave match report.
+	 * @param valid validity of play
+	 * @param botId bot's id
+	 * @param achievements earned achievements, empty if valid is false
+	 * @param replayPath path to replay file, or null if replay is not available
+	 */
+	public SlaveMatchReport(boolean valid, int botId, Set<Achievement> achievements, Path replayPath)
 	{
+		this.valid = valid;
+		
 		this.botId = botId;
-		this.result = result;
-
-		this.scores = new HashMap<>();
-		replayPath = null;
+		this.achievements = new HashSet<>(achievements);
+		
+		this.replayPath = replayPath;
 	}
-
-	public SlaveMatchReport(Builder builder)
+	
+	public boolean isValid()
 	{
-		this.botId = builder.botId;
-		this.result = builder.result;
-		this.scores = new HashMap<>(builder.scores);
-		this.replayPath = builder.replayPath;
+		return valid;
 	}
 
 	public int getBotId()
@@ -36,19 +43,9 @@ public class SlaveMatchReport
 		return botId;
 	}
 
-	public MatchResult getResult()
+	public Set<Achievement> getAchievements()
 	{
-		return result;
-	}
-
-	public int getScore(Score score)
-	{
-		return scores.get(score);
-	}
-
-	public Map<Score, Integer> getScores()
-	{
-		return new HashMap<>(scores);
+		return Collections.unmodifiableSet(achievements);
 	}
 
 	public boolean hasReplay()
@@ -64,46 +61,6 @@ public class SlaveMatchReport
 	@Override
 	public String toString()
 	{
-		return String.format("#%d %s", botId, result);
-	}
-
-	public static class Builder
-	{
-		private final int botId;
-		private final MatchResult result;
-		private final Map<Score, Integer> scores;
-		private Path replayPath;
-
-		public Builder(int botId, MatchResult result)
-		{
-			this.botId = botId;
-			this.result = result;
-
-			scores = new HashMap<>();
-			replayPath = null;
-		}
-
-		public Builder setScore(Score score, int value)
-		{
-			scores.put(score, value);
-			return this;
-		}
-
-		public Builder setScores(Map<Score, Integer> scores)
-		{
-			this.scores.putAll(scores);
-			return this;
-		}
-
-		public Builder setReplayPath(Path replayPath)
-		{
-			this.replayPath = replayPath;
-			return this;
-		}
-
-		public SlaveMatchReport create()
-		{
-			return new SlaveMatchReport(this);
-		}
+		return String.format("Bot #%d match report", botId);
 	}
 }

@@ -2,9 +2,11 @@ package sk.hackcraft.als.master.connections;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
-import sk.hackcraft.als.utils.MatchResult;
+import sk.hackcraft.als.utils.Achievement;
 import sk.hackcraft.als.utils.reports.Score;
 import sk.hackcraft.als.utils.reports.SlaveMatchReport;
 
@@ -56,29 +58,19 @@ public class MockSlaveConnection implements SlaveConnection
 	@Override
 	public SlaveMatchReport waitForMatchResult() throws IOException
 	{
-		MatchResult result;
-		switch (random.nextInt(5))
+		boolean valid = random.nextBoolean();
+		
+		Set<Achievement> achievements = new HashSet<>();
+		
+		if (random.nextBoolean())
 		{
-			case 0:
-				result = MatchResult.WIN;
-				break;
-			case 1:
-				result = MatchResult.LOST;
-				break;
-			case 2:
-				result = MatchResult.DRAW;
-				break;
-			case 3:
-				result = MatchResult.DISCONNECT;
-				break;
-			default:
-				result = MatchResult.INVALID;
-				break;
+			achievements.add(new Achievement("victory"));
+		}
+		else
+		{
+			achievements.add(new Achievement("defeat"));
 		}
 		
-		return new SlaveMatchReport.Builder(botId, result)
-		.setScore(Score.DESTROYED_UNITS, 3000)
-		.setReplayPath(Paths.get(".", "replays", "dummy.rep"))
-		.create();
+		return new SlaveMatchReport(valid, botId, achievements, null);
 	}
 }

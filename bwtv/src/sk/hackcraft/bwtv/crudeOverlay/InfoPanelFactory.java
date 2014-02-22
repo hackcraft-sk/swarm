@@ -7,7 +7,6 @@ import java.util.List;
 import javax.swing.JComponent;
 
 import sk.hackcraft.als.utils.MatchEvent;
-import sk.hackcraft.als.utils.MatchResult;
 import sk.hackcraft.bwtv.EventInfo;
 import sk.hackcraft.bwtv.MatchInfo;
 import sk.hackcraft.bwtv.MatchInfo.MatchState;
@@ -97,16 +96,13 @@ public class InfoPanelFactory
 	
 	public Container createDuelMatchFinishedInfoPanel(MatchInfo matchInfo)
 	{
-		String resultText;
-		String pointsText;
-		
-		MatchState state = matchInfo.getState();
+		/*MatchState state = matchInfo.getState();
 
 		if (state == MatchInfo.MatchState.OK)
 		{
 			String winner = null;
 			String looser = null;
-			MatchResult matchResult = MatchResult.NONE;
+			String matchResult = "";
 			
 			List<Player> players = matchInfo.getPlayers();
 			
@@ -159,7 +155,10 @@ public class InfoPanelFactory
 		{
 			resultText = "Error!";
 			pointsText = "An error has occured.";
-		}
+		}*/
+		
+		String resultText = "Work in progress";
+		String pointsText = "Soon(c)";
 		
 		return new DuelMatchFinishedInfoPanel(resultText, pointsText);
 	}

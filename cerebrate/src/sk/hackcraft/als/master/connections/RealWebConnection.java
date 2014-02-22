@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import sk.hackcraft.als.master.MatchInfo;
 import sk.hackcraft.als.master.MatchReport;
+import sk.hackcraft.als.utils.Achievement;
 import sk.hackcraft.als.utils.files.FileChecksumCreator;
 import sk.hackcraft.als.utils.files.FileMD5ChecksumCreator;
 import sk.hackcraft.als.utils.reports.SlaveMatchReport;
@@ -113,35 +114,35 @@ public class RealWebConnection implements WebConnection
 		multipartRequestBuilder.setActionUrl("json/post-match-result");
 		JSONObject requestData = new JSONObject();
 		
+		boolean valid = matchReport.isMatchValid();
+		requestData.put("result", (valid) ? "OK" : "INVALID");
+		
 		int matchId = matchReport.getMatchId();
 		requestData.put("matchId", matchId);
 		
-		if (matchReport.isMatchValid())
+		if (valid)
 		{
-			requestData.put("result", "OK");
-			
+			// achievements
 			JSONArray botResults = new JSONArray();
-			for (SlaveMatchReport botResult : matchReport.getResults())
+			for (SlaveMatchReport reports : matchReport.getSlavesMatchReports())
 			{
-				int botId = botResult.getBotId();
-				String matchResultValue = botResult.getResult().toString();
+				int botId = reports.getBotId();
 				
-				JSONObject botResultData = new JSONObject();
-				botResultData.put("botId", botId);
-				botResultData.put("matchResult", matchResultValue);
+				JSONObject botResult = new JSONObject();
+				botResult.put("botId", botId);
 				
-				botResults.put(botResultData);
+				JSONArray achievementsArray = new JSONArray();
+				for (Achievement achievement : reports.getAchievements())
+				{
+					achievementsArray.put(achievement.getName());
+				}
+				
+				botResult.put("achievements", achievementsArray);
 			}
 			
 			requestData.put("botResults", botResults);
-		}
-		else
-		{
-			requestData.put("result", "INVALID");
-		}
-
-		if (matchReport.hasReplay())
-		{
+			
+			// replay
 			JSONObject replayJson = new JSONObject();
 
 			Path replayPath = Paths.get(".", "replays", matchReport.getMatchId() + ".rep");
