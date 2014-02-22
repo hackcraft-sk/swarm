@@ -15,7 +15,7 @@ public class MockWebConnection implements WebConnection
 		switch (botId)
 		{
 			case 0:
-				return new Bot(botId, "JoeBot", Type.CPP_MODULE, "...", "555");
+				return new Bot(botId, "ZergyBot", Type.CPP_MODULE, "...", "555");
 			case 1:
 				return new Bot(botId, "cjay", Type.JAVA_CLIENT, "...", "555");
 			case 2:
@@ -41,7 +41,7 @@ public class MockWebConnection implements WebConnection
 		switch (bot.getId())
 		{
 			case 0:
-				return Paths.get("bots", "JoeBot.dll");
+				return Paths.get("bots", "ZergyBotModule.dll");
 			case 1:
 				return Paths.get("bots", "cjay.jar");
 			case 2:
@@ -64,6 +64,6 @@ public class MockWebConnection implements WebConnection
 	@Override
 	public String prepareMapFile(String mapUrl) throws IOException
 	{
-		return "scmai\\scmai2-arena-beginners.scx";
+		return "maps\\scmai\\arena3-exp-comp1.scx";
 	}
 }

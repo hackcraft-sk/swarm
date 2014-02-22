@@ -21,8 +21,8 @@ public class MockMasterConnection implements MasterConnection
 	public MatchInfo getMatchInfo() throws IOException
 	{
 		int matchId = 22;
-		int botId = 1;
-		String mapPath = "maps/scmai/scmai2-arena-beginners.scx";
+		int botId = 0;
+		String mapPath = "maps/scmai/scmai3-exp.scx";
 
 		return new MatchInfo(matchId, botId, mapPath);
 	}

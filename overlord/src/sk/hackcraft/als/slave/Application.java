@@ -267,6 +267,8 @@ public class Application implements Runnable
 			catch (Exception e)
 			{
 				log.error("An error has occured: " + e.getMessage());
+				
+				e.printStackTrace();
 
 				try
 				{
@@ -347,7 +349,8 @@ public class Application implements Runnable
 			{
 				boolean valid = e.wasMatchValid();
 
-				log.info("Disconnect! Match validity: " + valid);
+				log.error("Disconnect: " + e.getMessage());
+				log.info("Match validity: " + valid);
 
 				Set<Achievement> achievements = new HashSet<>();
 

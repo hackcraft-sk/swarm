@@ -87,7 +87,23 @@ namespace Parasite
 
 	void SocketMessageInterface::sendMessage(string message)
 	{
-		int iResult = send(ConnectSocket, message.c_str(), message.size(), 0);
+		int size = message.length();
+
+		char sizeBytes[4];
+		sizeBytes[0] = (size >> 24) & 0xFF;
+		sizeBytes[1] = (size >> 16) & 0xFF;
+		sizeBytes[2] = (size >> 8) & 0xFF;
+		sizeBytes[3] = size & 0xFF;
+
+		const char *messageBytes = message.c_str();
+
+		int bufferSize = sizeof(int) + size;
+		char *buffer = new char[bufferSize];
+
+		memcpy(buffer, sizeBytes, 4);
+		memcpy(buffer + 4, messageBytes, size);
+
+		int iResult = send(ConnectSocket, buffer, bufferSize, 0);
 		if (iResult == SOCKET_ERROR)
 		{
 			log.printf("send failed with error: %d", WSAGetLastError());

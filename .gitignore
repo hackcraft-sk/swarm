@@ -23,6 +23,7 @@ replays/
 
 # overlord
 overlord/overlord.cfg
+overlord/bots
 game/
 
 # parasite

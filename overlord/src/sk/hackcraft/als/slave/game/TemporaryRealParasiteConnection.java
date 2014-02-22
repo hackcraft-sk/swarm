@@ -72,7 +72,7 @@ public class TemporaryRealParasiteConnection implements ParasiteConnection
 			while (run)
 			{
 				String message = messageInterface.waitForMessage();
-
+System.out.println(message);
 				JSONObject jsonMessage = new JSONObject(message);
 
 				if (jsonMessage.has("ping"))
