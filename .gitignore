@@ -22,3 +22,9 @@ cerebrate/master.cfg
 
 # overlord
 overlord/slave.cfg
+
+# parasite
+.cproject
+Debug
+Release
+Parasite.vcproj.*
