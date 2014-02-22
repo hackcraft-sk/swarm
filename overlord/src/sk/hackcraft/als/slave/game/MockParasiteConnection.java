@@ -1,6 +1,7 @@
 package sk.hackcraft.als.slave.game;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 
 import sk.hackcraft.als.utils.Achievement;
@@ -34,6 +35,12 @@ public class MockParasiteConnection implements ParasiteConnection
 	@Override
 	public void run() throws IOException
 	{
+		matchStartedEvent.emit(this, new PlayerColor("#006699"));
+		
+		Set<Achievement> achievements = new HashSet<>();
+		achievements.add(new Achievement("victory"));
+		
+		matchEndedEvent.emit(this, achievements);
 	}
 
 	@Override

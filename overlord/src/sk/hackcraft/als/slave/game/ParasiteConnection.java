@@ -59,18 +59,18 @@ public interface ParasiteConnection
 	{
 		private static final long serialVersionUID = -1419986170394259067L;
 
-		private final boolean connectionEstabilished;
+		private final boolean matchValid;
 
-		public ParasiteConnectionException(String message, Throwable cause, boolean connectionEstabilished)
+		public ParasiteConnectionException(String message, Throwable cause, boolean matchValid)
 		{
 			super(message, cause);
 
-			this.connectionEstabilished = connectionEstabilished;
+			this.matchValid = matchValid;
 		}
 
-		public boolean wasConnectionEstabilished()
+		public boolean wasMatchValid()
 		{
-			return connectionEstabilished;
+			return matchValid;
 		}
 	}
 }

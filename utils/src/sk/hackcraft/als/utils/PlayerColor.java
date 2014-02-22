@@ -17,6 +17,6 @@ public class PlayerColor
 	@Override
 	public String toString()
 	{
-		return "PlayerColor: " + hexColor;
+		return hexColor;
 	}
 }

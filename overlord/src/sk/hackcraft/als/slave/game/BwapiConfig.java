@@ -27,7 +27,7 @@ public class BwapiConfig
 
 	public String getReplay()
 	{
-		return config.getSection("config").getPair("save_replay").getStringValue();
+		return config.getSection("auto_menu").getPair("save_replay").getStringValue();
 	}
 
 	public Editor edit()

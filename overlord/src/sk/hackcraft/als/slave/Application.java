@@ -19,7 +19,7 @@ import sk.hackcraft.als.slave.game.GameEnvironment;
 import sk.hackcraft.als.slave.game.MockGameEnvironment;
 import sk.hackcraft.als.slave.game.MockParasiteConnection;
 import sk.hackcraft.als.slave.game.ParasiteConnection;
-import sk.hackcraft.als.slave.game.RealParasiteConnection;
+import sk.hackcraft.als.slave.game.TemporaryRealParasiteConnection;
 import sk.hackcraft.als.slave.game.ParasiteConnection.ParasiteConnectionException;
 import sk.hackcraft.als.slave.game.Profile;
 import sk.hackcraft.als.slave.game.RealGameEnvironment;
@@ -147,7 +147,7 @@ public class Application implements Runnable
 		}
 		else
 		{
-			this.parasiteConnection = new RealParasiteConnection();
+			this.parasiteConnection = new TemporaryRealParasiteConnection();
 		}
 
 		if (mockBotLauncherFactory)
@@ -345,7 +345,7 @@ public class Application implements Runnable
 			@Override
 			public void onEvent(Object origin, ParasiteConnectionException e)
 			{
-				boolean valid = e.wasConnectionEstabilished();
+				boolean valid = e.wasMatchValid();
 
 				log.info("Disconnect! Match validity: " + valid);
 

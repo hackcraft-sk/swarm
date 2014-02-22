@@ -92,6 +92,15 @@ public class BWTV
 				{
 					e.printStackTrace();
 
+					try
+					{
+						Thread.sleep(10000);
+					}
+					catch (InterruptedException ie)
+					{
+						Thread.currentThread().interrupt();
+					}
+					
 					runNewConnectionDaemon();
 				}
 			};

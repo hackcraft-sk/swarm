@@ -136,7 +136,32 @@ public class MemoryConfig implements Config
 		@Override
 		public Set<MemoryPair> getAllPairs()
 		{
-			return new TreeSet<>(pairs.values());
+			return new HashSet<>(pairs.values());
+		}
+		
+		@Override
+		public String toString()
+		{
+			StringBuilder builder = new StringBuilder("[");
+			
+			boolean first = true;
+			for (Pair pair : pairs.values())
+			{
+				if (!first)
+				{
+					builder.append(", ");
+				}
+				else
+				{
+					first = false;
+				}
+				
+				builder.append(pair);
+			}
+			
+			builder.append("]");
+			
+			return builder.toString();
 		}
 	}
 
@@ -264,6 +289,12 @@ public class MemoryConfig implements Config
 		public void setDoubleValue(double value)
 		{
 			this.value = Double.toString(value);
+		}
+		
+		@Override
+		public String toString()
+		{
+			return key + "=" + value;
 		}
 	}
 }
