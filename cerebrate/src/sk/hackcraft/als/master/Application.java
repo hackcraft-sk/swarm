@@ -14,6 +14,7 @@ import sk.hackcraft.als.master.connections.SlaveConnectionsFactory;
 import sk.hackcraft.als.master.connections.WebConnection;
 import sk.hackcraft.als.utils.Config;
 import sk.hackcraft.als.utils.IniFileConfig;
+import sk.hackcraft.als.utils.MemoryConfig;
 
 public class Application implements Runnable
 {
@@ -31,22 +32,23 @@ public class Application implements Runnable
 	
 	public Application(String[] args)
 	{
-		File iniFile = new File("master.cfg");
-		IniFileConfig.IniFileParser configParser = new IniFileConfig.IniFileParser(iniFile);
+		File iniFile = new File("cerebrate.cfg");
 		
-		Config config;
+		IniFileConfig configLoader = new IniFileConfig();
+
+		MemoryConfig config;
 		try
 		{
-			config = configParser.create();
+			config = configLoader.load(iniFile);
 		}
 		catch (IOException e)
 		{
 			throw new RuntimeException(e);
 		}
 
-		Config.Section componentsConfig = config.getSection("components");
-		boolean mockWebConnection = componentsConfig.get("webConnection").equals("mock");
-		boolean mockSlaveConnection = componentsConfig.get("slaveConnection").equals("mock");
+		Config.Section componentsConfig = config.getSection("mockComponents");
+		boolean mockWebConnection = componentsConfig.getPair("webConnection").getBooleanValue();
+		boolean mockSlaveConnection = componentsConfig.getPair("slaveConnection").getBooleanValue();
 		
 		if (mockWebConnection)
 		{
@@ -56,9 +58,9 @@ public class Application implements Runnable
 		{
 			try
 			{
-				String address = config.get("web", "address");
+				String address = config.getSection("web").getPair("address").getStringValue();
 				
-				String rawAcceptingTournamentIds[] = config.getArray("tournament", "acceptingIds");
+				String rawAcceptingTournamentIds[] = config.getSection("tournament").getPair("acceptingIds").getStringValueAsArray();
 				Set<Integer> acceptingTournamentIds = new HashSet<>();
 				for (String rawId : rawAcceptingTournamentIds)
 				{
@@ -66,7 +68,7 @@ public class Application implements Runnable
 					acceptingTournamentIds.add(id);
 				}
 				
-				String rawStreamIds[] = config.getArray("tournament", "videoStreams");
+				String rawStreamIds[] = config.getSection("tournament").getPair("videoStreams").getStringValueAsArray();
 				Set<Integer> streamIds = new HashSet<>();
 				for (String rawId : rawStreamIds)
 				{
@@ -91,7 +93,7 @@ public class Application implements Runnable
 			slaveConnectionsFactory = new RealSlaveConnectionsFactory();
 		}
 
-		int desiredSlaves = Integer.parseInt(config.get("tournament", "playersCount"));
+		int desiredSlaves = config.getSection("tournament").getPair("playersCount").getIntValue();
 		slavesManager = new SlavesManager(desiredSlaves, slaveConnectionsFactory);
 	}
 	

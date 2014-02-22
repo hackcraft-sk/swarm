@@ -16,13 +16,13 @@ public class RealSlaveConnection implements SlaveConnection
 	
 	private static final int CONNECTION_TIMEOUT = 5 * 60 * 1000;
 	
-	private final InetAddress address;
+	private final String address;
 	private final int port;
 	
 	private Socket socket;
 	private DataInputStream input;
 	
-	public RealSlaveConnection(InetAddress address)
+	public RealSlaveConnection(String address)
 	{
 		this.address = address;
 		this.port = 12987;

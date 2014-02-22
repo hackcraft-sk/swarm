@@ -9,6 +9,7 @@ import javax.swing.SwingUtilities;
 
 import sk.hackcraft.als.utils.Config;
 import sk.hackcraft.als.utils.IniFileConfig;
+import sk.hackcraft.als.utils.MemoryConfig;
 import sk.hackcraft.bwtv.connections.MockSlaveConnection;
 import sk.hackcraft.bwtv.connections.MockWebConnection;
 import sk.hackcraft.bwtv.connections.RealSlaveConnection;
@@ -38,24 +39,24 @@ public class Application
 			throw new RuntimeException("bwtv.cfg is missing.");
 		}
 		
-		IniFileConfig.IniFileParser iniFileParser = new IniFileConfig.IniFileParser(configFile);
-		
-		IniFileConfig settings;
+		IniFileConfig configLoader = new IniFileConfig();
+
+		MemoryConfig config;
 		try
 		{
-			settings = iniFileParser.create();
+			config = configLoader.load(configFile);
 		}
 		catch (IOException e)
 		{
 			throw new RuntimeException("Can't create config from file.", e);
 		}
 		
-		Config.Section componentsSection = settings.getSection("components");
-		final boolean slaveMock = componentsSection.get("slaveConnection").equals("mock");
-		final boolean webMock = componentsSection.get("webConnection").equals("mock");
+		Config.Section componentsSection = config.getSection("mockComponents");
+		final boolean slaveMock = componentsSection.getPair("slaveConnection").getBooleanValue();
+		final boolean webMock = componentsSection.getPair("webConnection").getBooleanValue();
 		
-		String webAddress = settings.get("web", "address");
-		String rawSlaveAddress = settings.get("slave", "address");
+		String webAddress = config.getSection("web").getPair("address").getStringValue();
+		String slaveAddress = config.getSection("slave").getPair("address").getStringValue();
 
 		final WebConnection webConnection;
 		if (webMock)
@@ -72,16 +73,6 @@ public class Application
 			{
 				throw new RuntimeException(e);
 			}
-		}
-		
-		final InetAddress slaveAddress;
-		try
-		{
-			slaveAddress = InetAddress.getByName(rawSlaveAddress);
-		}
-		catch (UnknownHostException e)
-		{
-			throw new RuntimeException(e);
 		}
 		
 		final SlaveConnection slaveConnection;

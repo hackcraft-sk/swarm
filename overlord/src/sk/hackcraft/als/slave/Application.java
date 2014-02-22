@@ -34,6 +34,7 @@ import sk.hackcraft.als.slave.launcher.ReplayRetriever;
 import sk.hackcraft.als.slave.plugins.BWTV;
 import sk.hackcraft.als.utils.Config;
 import sk.hackcraft.als.utils.IniFileConfig;
+import sk.hackcraft.als.utils.MemoryConfig;
 import sk.hackcraft.als.utils.MatchEvent;
 import sk.hackcraft.als.utils.MatchResult;
 import sk.hackcraft.als.utils.reports.Score;
@@ -71,14 +72,15 @@ public class Application implements Runnable
 	
 	public Application(String[] args)
 	{
-		String configFileName = (args.length > 1) ? args[1] : "overlord.cfg"; 
-		File configFile = new File(configFileName);
-		IniFileConfig.IniFileParser iniFileParser = new IniFileConfig.IniFileParser(configFile);
+		String iniFileName = (args.length > 1) ? args[1] : "overlord.cfg"; 
+		File iniFile = new File(iniFileName);
+		
+		IniFileConfig configLoader = new IniFileConfig();
 
-		Config config;
+		MemoryConfig config;
 		try
 		{
-			config = iniFileParser.create();
+			config = configLoader.load(iniFile);
 		}
 		catch (IOException e)
 		{
@@ -87,23 +89,23 @@ public class Application implements Runnable
 		
 		Config.Section pathsSection = config.getSection("paths");
 		
-		Path chaosLauncherPath = Paths.get(pathsSection.get("chaosLauncher"));
-		starCraftPath = Paths.get(pathsSection.get("starCraft"));	
+		Path chaosLauncherPath = Paths.get(pathsSection.getPair("chaosLauncher").getStringValue());
+		starCraftPath = Paths.get(pathsSection.getPair("starCraft").getStringValue());	
 		
-		masterAddress = config.get("master", "address");
+		masterAddress = config.getSection("master").getPair("address").getStringValue();
 		
 		Config.Section programSection = config.getSection("program");
-		id = Integer.parseInt(programSection.get("id"));
-		host = programSection.get("host").equals("true");
+		id = programSection.getPair("id").getIntValue();
+		host = programSection.getPair("host").getBooleanValue();
 		
-		String webAddress = config.get("web", "address");
+		String webAddress = config.getSection("web").getPair("address").getStringValue();
 		
-		Config.Section componentsSection = config.getSection("components");
-		boolean mockWeb = componentsSection.get("web").equals("mock");
-		mockMaster = componentsSection.get("master").equals("mock");
-		boolean mockGameEnvironment = componentsSection.get("gameEnvironment").equals("mock");
-		boolean mockGameConnection = componentsSection.get("gameConnection").equals("mock");
-		boolean mockBotLauncherFactory = componentsSection.get("botLauncherFactory").equals("mock");
+		Config.Section componentsSection = config.getSection("mockComponents");
+		boolean mockWeb = componentsSection.getPair("web").getBooleanValue();
+		mockMaster = componentsSection.getPair("master").getBooleanValue();
+		boolean mockGameEnvironment = componentsSection.getPair("gameEnvironment").getBooleanValue();
+		boolean mockGameConnection = componentsSection.getPair("gameConnection").getBooleanValue();
+		boolean mockBotLauncherFactory = componentsSection.getPair("botLauncherFactory").getBooleanValue();
 		
 		if (mockWeb)
 		{

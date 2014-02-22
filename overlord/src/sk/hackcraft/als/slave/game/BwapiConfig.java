@@ -4,58 +4,55 @@ import java.io.File;
 import java.io.IOException;
 
 import sk.hackcraft.als.utils.IniFileConfig;
+import sk.hackcraft.als.utils.MemoryConfig;
 
 public class BwapiConfig
 {
 	private final String iniFilePath;
-	private final IniFileConfig ini;
+	private final MemoryConfig config;
 	
 	public BwapiConfig(String starCraftPath) throws IOException
 	{
 		iniFilePath = starCraftPath + "/bwapi-data/bwapi.ini";
 		File iniFile = new File(iniFilePath);
-		IniFileConfig.IniFileParser parser = new IniFileConfig.IniFileParser(iniFile);
-		this.ini = parser.create();
+		
+		IniFileConfig configLoader = new IniFileConfig();
+		config = configLoader.load(iniFile);
 	}
 	
 	public String getMap()
 	{
-		return ini.get("auto_menu", "map");
+		return config.getSection("auto_menu").getPair("map").getStringValue();
 	}
 	
 	public String getReplay()
 	{
-		return ini.get("config", "save_replay");
+		return config.getSection("config").getPair("save_replay").getStringValue();
 	}
 	
 	public Editor edit()
 	{
-		return new Editor(ini.edit());
+		return new Editor();
 	}
 
 	public class Editor
-	{
-		private final IniFileConfig.Editor configEditor;
-		
-		public Editor(IniFileConfig.Editor configEditor)
-		{
-			this.configEditor = configEditor;
-		}
-		
+	{		
 		public void setMap(String mapRelativePath)
 		{
-			configEditor.set("auto_menu", "map", mapRelativePath);
+			config.getSection("auto_menu").getPair("map").setStringValue(mapRelativePath);
 		}
 		
 		public void setReplay(String replayName)
 		{
 			String replayGamePath = "maps\\replays\\" + replayName;
-			configEditor.set("auto_menu", "save_replay", replayGamePath);
+			
+			config.getSection("auto_menu").getPair("save_replay").setStringValue(replayGamePath);
 		}
 		
 		public void save() throws IOException
 		{
-			configEditor.saveAsIniFile(iniFilePath);
+			IniFileConfig configSaver = new IniFileConfig();
+			configSaver.save(config, iniFilePath);
 		}
 	}
 }
