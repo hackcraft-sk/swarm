@@ -52,7 +52,8 @@ public class Application implements Runnable
 
 		if (mockWebConnection)
 		{
-			webConnection = new MockWebConnection(false);
+			int playerCount = config.getSection("tournament").getPair("playersCount").getIntValue();
+			webConnection = new MockWebConnection(false, playerCount);
 		}
 		else
 		{
@@ -86,7 +87,8 @@ public class Application implements Runnable
 
 		if (mockSlaveConnection)
 		{
-			slaveConnectionsFactory = new MockSlaveConnectionsFactory();
+			int playerCount = config.getSection("tournament").getPair("playersCount").getIntValue();
+			slaveConnectionsFactory = new MockSlaveConnectionsFactory(playerCount);
 		}
 		else
 		{

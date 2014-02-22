@@ -18,7 +18,9 @@ bwtv/bwtv.cfg
 bwtv/banners
 
 # cerebrate
-cerebrate/master.cfg
+cerebrate/cerebrate.cfg
+replays/
 
 # overlord
 overlord/overlord.cfg
+game/

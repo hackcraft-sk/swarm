@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,27 +22,35 @@ public class SlavesManager
 {
 	private final int desiredConnectionsCount;
 	private final SlaveConnectionsFactory connectionsFactory;
-	private Set<SlaveConnection> connections;
+	private Map<Integer, SlaveConnection> connections;
 
 	public SlavesManager(int desiredConnectionsCount, SlaveConnectionsFactory connectionsFactory)
 	{
 		this.desiredConnectionsCount = desiredConnectionsCount;
 
 		this.connectionsFactory = connectionsFactory;
-		connections = new HashSet<>();
+		connections = new HashMap<>();
 	}
 
 	public void waitForConnection(int timeout) throws IOException
 	{
 		SlaveConnection connection = connectionsFactory.create(timeout);
-		connections.add(connection);
+		
+		int slaveId = connection.getSlaveId();
+		
+		if (connections.containsKey(slaveId))
+		{
+			return;
+		}
+		
+		connections.put(slaveId, connection);
 	}
 
 	public void closeAll() throws IOException
 	{
 		try
 		{
-			for (SlaveConnection connection : connections)
+			for (SlaveConnection connection : connections.values())
 			{
 				connection.disconnect();
 			}
@@ -62,7 +71,7 @@ public class SlavesManager
 		int matchId = matchInfo.getMatchId();
 		String mapUrl = matchInfo.getMapUrl();
 
-		Set<SlaveConnection> freeSlaveConnections = new HashSet<>(connections);
+		Set<SlaveConnection> freeSlaveConnections = new HashSet<>(connections.values());
 		Set<Integer> freeBotIds = matchInfo.getBotIds();
 		Map<Integer, Integer> botToStreamMapping = matchInfo.getBotToStreamMapping();
 
@@ -98,7 +107,7 @@ public class SlavesManager
 	private SlaveConnection getAssociatedSlaveOfStream(int streamId)
 	{
 		SlaveConnection streamConnection = null;
-		for (SlaveConnection connection : connections)
+		for (SlaveConnection connection : connections.values())
 		{
 			if (connection.getSlaveId() == 1)
 			{
@@ -119,7 +128,7 @@ public class SlavesManager
 
 	public void waitForReadySignals() throws IOException
 	{
-		for (SlaveConnection connection : connections)
+		for (SlaveConnection connection : connections.values())
 		{
 			connection.waitForReadySignal();
 		}
@@ -127,7 +136,7 @@ public class SlavesManager
 
 	public void broadcastGo() throws IOException
 	{
-		for (SlaveConnection connection : connections)
+		for (SlaveConnection connection : connections.values())
 		{
 			connection.sendGo();
 		}
@@ -141,18 +150,20 @@ public class SlavesManager
 
 		boolean valid = true;
 
-		for (SlaveConnection connection : connections)
+		for (SlaveConnection connection : connections.values())
 		{
-			SlaveMatchReport reports = connection.waitForMatchResult();
+			SlaveMatchReport report = connection.waitForMatchResult();
 
-			if (!reports.isValid())
+			slavesMatchReports.add(report);
+			
+			if (!report.isValid())
 			{
 				valid = false;
 			}
 
-			if (reports.hasReplay() && selectedReplayPath == null)
+			if (report.hasReplay() && selectedReplayPath == null)
 			{
-				selectedReplayPath = reports.getReplayPath();
+				selectedReplayPath = report.getReplayPath();
 			}
 		}
 

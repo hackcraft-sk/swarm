@@ -138,11 +138,15 @@ public class RealWebConnection implements WebConnection
 				}
 
 				botResult.put("achievements", achievementsArray);
+				
+				botResults.put(botResult);
 			}
 
 			requestData.put("botResults", botResults);
 
 			// replay
+			// disabled for now, until we will solve problems with replay corruption etc
+			/*
 			JSONObject replayJson = new JSONObject();
 
 			Path replayPath = Paths.get(".", "replays", matchReport.getMatchId() + ".rep");
@@ -153,6 +157,7 @@ public class RealWebConnection implements WebConnection
 			requestData.put("replay", replayJson);
 
 			multipartRequestBuilder.addFile("replay", replayPath);
+			*/
 		}
 
 		multipartRequestBuilder.addString("content", requestData.toString());

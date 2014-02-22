@@ -16,11 +16,15 @@ public class MockWebConnection implements WebConnection
 {
 	private Scanner input;
 	private Random random;
+	
+	private int botsCount;
 
-	public MockWebConnection(boolean humanInput)
+	public MockWebConnection(boolean humanInput, int botsCount)
 	{
-		input = (humanInput) ? new Scanner(System.in) : null;
-		random = new Random();
+		this.input = (humanInput) ? new Scanner(System.in) : null;
+		this.random = new Random();
+		
+		this.botsCount = botsCount;
 	}
 
 	@Override
@@ -39,22 +43,16 @@ public class MockWebConnection implements WebConnection
 		}
 		else
 		{
-			int bot1 = random.nextInt(8);
-			botIds.add(bot1);
-
-			botStreamMapping.put(bot1, 1);
-
-			while (true)
+			while (botIds.size() < botsCount)
 			{
-				int bot2 = random.nextInt(8);
-
-				if (botIds.contains(bot2))
+				int botId = random.nextInt(8);
+				
+				if (botIds.contains(botIds))
 				{
 					continue;
 				}
-
-				botIds.add(bot2);
-				break;
+				
+				botIds.add(botId);
 			}
 		}
 
