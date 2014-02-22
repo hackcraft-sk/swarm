@@ -11,27 +11,27 @@ import java.util.Map;
 public class WindowsTasklist implements ProcessesList
 {
 	private final Map<String, Integer> processes;
-	
+
 	public WindowsTasklist() throws IOException
-	{		
+	{
 		processes = new HashMap<>();
-		
+
 		Runtime runtime = Runtime.getRuntime();
 		Process ps = runtime.exec("tasklist");
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(ps.getInputStream()));
-		
+
 		String line;
 		while ((line = reader.readLine()) != null)
 		{
 			List<String> words = tokenizeLine(line);
-			
+
 			// no empty lines
 			if (words.size() == 0)
 			{
 				continue;
 			}
-			
+
 			// only valid process names
 			if (!words.get(0).contains(".exe"))
 			{
@@ -42,7 +42,7 @@ public class WindowsTasklist implements ProcessesList
 			{
 				String processName = words.get(0);
 				int pid = Integer.parseInt(words.get(1));
-				
+
 				processes.put(processName, pid);
 			}
 			catch (NumberFormatException e)
@@ -51,17 +51,17 @@ public class WindowsTasklist implements ProcessesList
 			}
 		}
 	}
-	
+
 	private List<String> tokenizeLine(String line)
 	{
 		List<String> words = new LinkedList<>();
-		
+
 		boolean insideWord = false;
 		int wordStart = -1;
 		for (int i = 0; i < line.length(); i++)
 		{
 			char c = line.charAt(i);
-			
+
 			// word start
 			if (c != ' ' && !insideWord)
 			{
@@ -73,9 +73,9 @@ public class WindowsTasklist implements ProcessesList
 			if (insideWord && c == ' ' || i + 1 == line.length())
 			{
 				insideWord = false;
-				
+
 				int wordEnd = (i + 1 == line.length()) ? i + 1 : i;
-				
+
 				String word = line.substring(wordStart, wordEnd);
 				words.add(word);
 			}
@@ -83,13 +83,13 @@ public class WindowsTasklist implements ProcessesList
 
 		return words;
 	}
-	
+
 	@Override
 	public boolean has(String processName)
 	{
 		return processes.containsKey(processName);
 	}
-	
+
 	@Override
 	public boolean has(int pid)
 	{

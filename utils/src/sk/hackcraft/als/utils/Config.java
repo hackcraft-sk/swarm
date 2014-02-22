@@ -110,9 +110,10 @@ public interface Config
 		 *             if it's not possible to convert value to int
 		 */
 		int getIntValue();
-		
+
 		/**
 		 * Gets pair value as boolean
+		 * 
 		 * @return value as boolean
 		 */
 		boolean getBooleanValue();

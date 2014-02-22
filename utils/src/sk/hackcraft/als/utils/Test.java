@@ -17,7 +17,7 @@ public class Test
 		try
 		{
 			final EventLoop eventLoop = new EventLoop();
-			
+
 			new Thread(new Runnable()
 			{
 				@Override
@@ -26,7 +26,7 @@ public class Test
 					eventLoop.start();
 				}
 			}).start();
-			
+
 			eventLoop.post(new Runnable()
 			{
 				@Override
@@ -35,7 +35,7 @@ public class Test
 					System.out.println("1");
 				}
 			});
-			
+
 			eventLoop.postDelayed(new Runnable()
 			{
 				@Override
@@ -44,7 +44,7 @@ public class Test
 					System.out.println("2");
 				}
 			}, 100000);
-			
+
 			eventLoop.post(new Runnable()
 			{
 				@Override
@@ -53,7 +53,7 @@ public class Test
 					System.out.println("3");
 				}
 			});
-			
+
 			eventLoop.post(new Runnable()
 			{
 				@Override
@@ -62,7 +62,7 @@ public class Test
 					System.out.println("4");
 				}
 			});
-			
+
 			eventLoop.post(new Runnable()
 			{
 				@Override
@@ -74,7 +74,7 @@ public class Test
 						public void run()
 						{
 							JOptionPane.showMessageDialog(null, "huh");
-							
+
 							eventLoop.post(new Runnable()
 							{
 								@Override

@@ -10,12 +10,24 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * Class for loading and saving ini files.
+ */
 public class IniFileConfig
 {
+	/**
+	 * Returns config class representing specified ini file.
+	 * 
+	 * @param iniFile
+	 *            file to load
+	 * @return config representing ini file
+	 * @throws IOException
+	 *             if it's not possible to load or parse ini file
+	 */
 	public MemoryConfig load(File iniFile) throws IOException
 	{
 		MemoryConfig config = new MemoryConfig();
-		
+
 		String actualSection = null;
 
 		try (FileReader fileReader = new FileReader(iniFile); BufferedReader reader = new BufferedReader(fileReader);)
@@ -39,7 +51,7 @@ public class IniFileConfig
 				if (line.charAt(0) == '[')
 				{
 					actualSection = line.substring(1, line.length() - 1);
-					
+
 					MemoryConfig.MemorySection section = new MemoryConfig.MemorySection(actualSection);
 					config.addSection(section);
 					continue;
@@ -67,16 +79,22 @@ public class IniFileConfig
 
 		return config;
 	}
-	
+
+	/**
+	 * Save config to specified ini file.
+	 * 
+	 * @param config
+	 *            config to save
+	 * @param destinationPath
+	 *            destination ini file
+	 * @throws IOException
+	 *             if it's not possible to save config
+	 */
 	public void save(Config config, String destinationPath) throws IOException
 	{
 		File outputFile = new File(destinationPath);
 
-		try
-		(
-			FileWriter fileWriter = new FileWriter(outputFile);
-			BufferedWriter writer = new BufferedWriter(fileWriter);
-		)
+		try (FileWriter fileWriter = new FileWriter(outputFile); BufferedWriter writer = new BufferedWriter(fileWriter);)
 		{
 			boolean firstSection = true;
 
@@ -91,7 +109,7 @@ public class IniFileConfig
 					writer.newLine();
 				}
 
-				writer.write("[" + section.getName() +"]");
+				writer.write("[" + section.getName() + "]");
 				writer.newLine();
 
 				for (Config.Pair pair : section.getAllPairs())
