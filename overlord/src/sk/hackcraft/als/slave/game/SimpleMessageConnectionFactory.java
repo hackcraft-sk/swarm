@@ -4,5 +4,5 @@ import java.io.IOException;
 
 public interface SimpleMessageConnectionFactory
 {
-	public SimpleMessageConnection create() throws IOException;
+	public ParasiteMessageInterface create() throws IOException;
 }

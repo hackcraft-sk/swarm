@@ -12,26 +12,26 @@ public class FastForceProcessesKiller implements ProcessesKiller
 
 	private final List<String> processNames;
 	private final ProcessesListFactory processesListFactory;
-	
+
 	public FastForceProcessesKiller(List<String> processNames, ProcessesListFactory processesListFactory)
 	{
 		this.processNames = new LinkedList<>(processNames);
 		this.processesListFactory = processesListFactory;
 	}
-	
+
 	@Override
 	public void killAll() throws IOException
 	{
 		killAll(DEFAULT_TIMEOUT);
 	}
-	
+
 	@Override
 	public void killAll(int timeout) throws IOException
 	{
 		final int CHECK_TIMEOUT = 3000;
-		
+
 		long killingStart = System.currentTimeMillis();
-		
+
 		// initial kills
 		for (String processName : processNames)
 		{
@@ -46,7 +46,7 @@ public class FastForceProcessesKiller implements ProcessesKiller
 				System.out.println(killingStart + " + " + timeout + " < " + System.currentTimeMillis());
 				throw new IOException("Timeout to kill all processes has expired.");
 			}
-			
+
 			try
 			{
 				Thread.sleep(CHECK_TIMEOUT);
@@ -54,14 +54,14 @@ public class FastForceProcessesKiller implements ProcessesKiller
 			catch (InterruptedException e)
 			{
 			}
-			
+
 			ProcessesList processesList = processesListFactory.create();
 
 			Iterator<String> iterator = processNames.iterator();
 			while (iterator.hasNext())
 			{
 				String processName = iterator.next();
-				
+
 				if (processesList.has(processName))
 				{
 					kill(processName);
@@ -74,7 +74,7 @@ public class FastForceProcessesKiller implements ProcessesKiller
 		}
 		while (processNames.size() > 0);
 	}
-	
+
 	private void kill(String processName) throws IOException
 	{
 		new ProcessBuilder("taskkill", "/IM", processName, "/f").start();

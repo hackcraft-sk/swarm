@@ -16,23 +16,23 @@ import sk.hackcraft.bwtv.SwingMatchEventListener;
 public class FfmpegStream implements Stream
 {
 	private static final Logger logger = Logger.getLogger(FfmpegStream.class.getName());
-	
+
 	private final int RESTART_TIMEOUT = 60 * 60;
-	
+
 	private final MatchEventBroadcaster matchEventBroadcaster;
 	private final MatchEventListener matchEventListener;
-	
+
 	private final int x, y;
-	
+
 	private final long startTime;
 	private long partStartTime;
-	
+
 	private ProcessBuilder streamProcessBuilder;
 	private Process streamProcess;
-	
+
 	private boolean stopped = false;
 	private boolean running;
-	
+
 	private final OutputStream outputStream;
 
 	public FfmpegStream(MatchEventBroadcaster matchEventBroadcaster, int x, int y) throws IOException
@@ -45,22 +45,22 @@ public class FfmpegStream implements Stream
 			}
 		});
 	}
-	
+
 	public FfmpegStream(MatchEventBroadcaster matchEventBroadcaster, int x, int y, OutputStream outputStream) throws IOException
 	{
 		this.matchEventBroadcaster = matchEventBroadcaster;
-		
+
 		this.x = x;
 		this.y = y;
-		
+
 		this.outputStream = outputStream;
-		
+
 		startStream();
-		
+
 		running = true;
-		
+
 		startTime = System.currentTimeMillis();
-		
+
 		matchEventListener = new SwingMatchEventListener(new MatchEventListener()
 		{
 			@Override
@@ -71,17 +71,17 @@ public class FfmpegStream implements Stream
 		});
 		matchEventBroadcaster.registerListener(matchEventListener);
 	}
-	
+
 	@Override
 	public void stop()
 	{
 		stopStream();
-		
+
 		stopped = true;
-		
+
 		matchEventBroadcaster.unregisterListener(matchEventListener);
 	}
-	
+
 	@Override
 	public boolean isStopped()
 	{
@@ -91,12 +91,12 @@ public class FfmpegStream implements Stream
 	@Override
 	public int getRunningTime()
 	{
-		return (int)(System.currentTimeMillis() - startTime) / 1000;
+		return (int) (System.currentTimeMillis() - startTime) / 1000;
 	}
-	
+
 	private int getPartRunningTime()
 	{
-		return (int)(System.currentTimeMillis() - partStartTime) / 1000;
+		return (int) (System.currentTimeMillis() - partStartTime) / 1000;
 	}
 
 	private void onEvent(EventInfo stateInfo)
@@ -105,54 +105,52 @@ public class FfmpegStream implements Stream
 		{
 			return;
 		}
-		
+
 		MatchEvent matchEvent = stateInfo.getEvent();
 		boolean restartStream = shouldRestartStream(matchEvent);
-		
+
 		if (restartStream)
 		{
 			try
 			{
 				logger.info("Restarting stream...");
-				
+
 				restartStream();
-				
+
 				running = true;
 			}
 			catch (IOException e)
 			{
 				logger.log(Level.SEVERE, "Can't restart stream", e);
-				
+
 				running = false;
 			}
 		}
 	}
-	
+
 	private boolean shouldRestartStream(MatchEvent matchEvent)
 	{
 		if (!running)
 		{
 			return true;
 		}
-		
+
 		int partRunningTime = getPartRunningTime();
 		if (partRunningTime > RESTART_TIMEOUT && matchEvent == MatchEvent.PREPARE)
 		{
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	private void startStream() throws IOException
 	{
 		streamProcessBuilder = new ProcessBuilder("bash", "stream.sh", Integer.toString(x), Integer.toString(y));
-		streamProcessBuilder
-		.directory(new File("./stream"))
-		.redirectErrorStream(true);
-		
+		streamProcessBuilder.directory(new File("./stream")).redirectErrorStream(true);
+
 		streamProcess = streamProcessBuilder.start();
-		
+
 		if (outputStream != null)
 		{
 			InputStream inputStream = streamProcess.getInputStream();
@@ -160,36 +158,36 @@ public class FfmpegStream implements Stream
 		}
 
 		partStartTime = System.currentTimeMillis();
-		
+
 		logger.info("Stream started");
 	}
-	
+
 	private void stopStream()
 	{
 		streamProcess.destroy();
-		
+
 		logger.info("Stream stopped");
 	}
-	
+
 	private void restartStream() throws IOException
 	{
 		stopStream();
 		startStream();
 	}
-	
+
 	private class StreamRedirectDaemon extends Thread
 	{
 		private final InputStream is;
 		private final OutputStream os;
-		
+
 		public StreamRedirectDaemon(InputStream is, OutputStream os)
 		{
 			this.is = is;
 			this.os = os;
-			
+
 			setDaemon(true);
 		}
-		
+
 		@Override
 		public void run()
 		{
@@ -200,8 +198,8 @@ public class FfmpegStream implements Stream
 				while (len != -1)
 				{
 					os.write(buffer, 0, len);
-				    len = is.read(buffer);
-				}    
+					len = is.read(buffer);
+				}
 			}
 			catch (IOException e)
 			{

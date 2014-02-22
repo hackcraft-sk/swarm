@@ -7,5 +7,6 @@ import sk.hackcraft.bwtv.MatchInfo;
 public interface WebConnection
 {
 	public MatchInfo getMatchInfo(int matchId) throws IOException;
+
 	public MatchInfo waitForFinishedMatchInfo(int matchId) throws IOException;
 }

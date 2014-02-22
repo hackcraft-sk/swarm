@@ -15,32 +15,32 @@ import sk.hackcraft.jwebcomm.json.SimpleJsonRequestFactory;
 public class RealWebConnection implements WebConnection
 {
 	private SimpleJsonRequestFactory requestFactory;
-	
+
 	public RealWebConnection(String url) throws IOException
 	{
 		FormRequestFactory rawRequestFactory = new FormRequestFactory(url);
 		requestFactory = new SimpleJsonRequestFactory(rawRequestFactory);
 	}
-	
+
 	@Override
 	public MatchInfo getMatchInfo(int matchId) throws IOException
 	{
 		JSONObject jsonData = new JSONObject();
 		jsonData.put("matchId", matchId);
-		
+
 		SimpleJsonRequest request = requestFactory.createGetRequest("json/get-match-info", jsonData);
 		JSONObject response = request.send();
-		
+
 		if (response.has("error"))
 		{
 			throw JsonResponseException.createFromJson(response);
 		}
-		
+
 		// TODO vyhodit ked sa upravi server
 		response.put("state", response.get("result"));
 		response.put("startTime", 0);
 		response.put("duration", 0);
-		
+
 		MatchInfoJsonParser parser = new MatchInfoJsonParser(response);
 		return parser.parse();
 	}
@@ -50,10 +50,10 @@ public class RealWebConnection implements WebConnection
 	{
 		final int pause = 200;
 		boolean first = true;
-		
+
 		long startTime = System.currentTimeMillis();
 		int timeout = 15 * 1000;
-		
+
 		MatchInfo matchInfo;
 		do
 		{
@@ -61,7 +61,7 @@ public class RealWebConnection implements WebConnection
 			{
 				throw new IOException("Could not fetch finished match info.");
 			}
-			
+
 			if (!first)
 			{
 				try

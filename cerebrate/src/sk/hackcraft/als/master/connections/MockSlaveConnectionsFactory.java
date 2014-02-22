@@ -6,17 +6,24 @@ public class MockSlaveConnectionsFactory implements SlaveConnectionsFactory
 {
 	private int nextId = 1;
 	
+	private final int maximumConnectionsCount;
+	
+	public MockSlaveConnectionsFactory(int maximumConnectionsCount)
+	{
+		this.maximumConnectionsCount = maximumConnectionsCount;
+	}
+
 	@Override
 	public SlaveConnection create(int timeout) throws IOException
 	{
 		int id = nextId;
-		
+
 		nextId++;
-		if (nextId > 2)
+		if (nextId > maximumConnectionsCount)
 		{
 			nextId = 1;
 		}
-		
+
 		return new MockSlaveConnection(id);
 	}
 }

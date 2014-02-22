@@ -14,14 +14,14 @@ public class BotFilePreparer
 	{
 		String botFileName = String.format("%d-%s.%s", bot.getId(), bot.getName(), bot.getType().getFilenameExtension());
 		String workingDirectory = System.getProperty("user.dir");
-		
+
 		Path destinationBotFilePath = Paths.get(workingDirectory, "bots", botFileName);
 		String checksum = bot.getBotFileChecksum();
 		String botFileUrl = bot.getBotFileUrl();
 
 		FileSynchronizer botFileSyncronizer = new WebFileSynchronizer(botFileUrl, checksum, destinationBotFilePath);
 		botFileSyncronizer.synchronize();
-		
+
 		return destinationBotFilePath;
 	}
 }

@@ -7,23 +7,23 @@ import java.nio.file.Path;
 public class MockGameEnvironment implements GameEnvironment
 {
 	private final Path starCraftPath;
-	
+
 	public MockGameEnvironment(Path starCraftPath)
 	{
 		this.starCraftPath = starCraftPath;
 	}
-	
+
 	@Override
 	public void launch()
 	{
 		System.out.println("Game environment launched.");
-		
+
 		try
 		{
 			BwapiConfig bwapiConfig = new BwapiConfig(starCraftPath.toString());
 			String gameReplayPath = bwapiConfig.getReplay();
 			gameReplayPath = gameReplayPath.replace('\\', '/');
-			
+
 			File file = new File("./game/" + gameReplayPath);
 			file.createNewFile();
 		}

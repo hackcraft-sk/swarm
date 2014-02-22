@@ -11,22 +11,22 @@ import javax.imageio.ImageIO;
 public class BannerPicker
 {
 	private Queue<BufferedImage> banners;
-	
+
 	public BannerPicker()
 	{
 		banners = new LinkedList<>();
 	}
-	
+
 	public void addBanner(String name) throws IOException
 	{
 		banners.add(ImageIO.read(new File("banners/" + name + ".bmp")));
 	}
-	
+
 	public BufferedImage pickBanner()
 	{
 		BufferedImage banner = banners.remove();
 		banners.add(banner);
-		
+
 		return banner;
 	}
 }

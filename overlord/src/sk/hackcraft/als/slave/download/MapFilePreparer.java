@@ -15,7 +15,7 @@ public class MapFilePreparer
 	{
 		this.starCraftPath = starCraftPath;
 	}
-	
+
 	public String prepareMap(String mapUrl) throws IOException
 	{
 		String mapName = parseMapName(mapUrl);
@@ -24,27 +24,27 @@ public class MapFilePreparer
 
 		FileSynchronizer botFileSyncronizer = new WebFileSynchronizer(mapUrl, checksum, destinationMapFilePath);
 		botFileSyncronizer.synchronize();
-		
+
 		return "maps\\download\\" + mapName;
 	}
-	
+
 	private String parseMapName(String mapUrl)
 	{
 		String[] tokens = mapUrl.split("/");
 		int index = tokens.length - 1;
 		String rawName = tokens[index];
-		
+
 		String[] nameTokens = rawName.split("\\.");
-		
+
 		int index1 = nameTokens.length - 3;
 		int index2 = nameTokens.length - 1;
 		return nameTokens[index1] + "." + nameTokens[index2];
 	}
-	
+
 	private String parseChecksum(String mapName)
 	{
 		String[] tokens = mapName.split("\\.");
-		
+
 		int index = tokens.length - 2;
 		return tokens[index];
 	}

@@ -17,44 +17,42 @@ public class MockWebConnection implements WebConnection
 	private Scanner input;
 	private Random random;
 	
-	public MockWebConnection(boolean humanInput)
+	private int botsCount;
+
+	public MockWebConnection(boolean humanInput, int botsCount)
 	{
-		input = (humanInput) ? new Scanner(System.in) : null;
-		random = new Random();
+		this.input = (humanInput) ? new Scanner(System.in) : null;
+		this.random = new Random();
+		
+		this.botsCount = botsCount;
 	}
-	
+
 	@Override
 	public MatchInfo requestMatch() throws IOException
 	{
 		Set<Integer> botIds = new HashSet<>();
 		Map<Integer, Integer> botStreamMapping = new HashMap<>();
-		
+
 		if (input != null)
 		{
 			System.out.print("Bot 1:");
 			botIds.add(input.nextInt());
-			
+
 			System.out.print("Bot 2:");
 			botIds.add(input.nextInt());
 		}
 		else
 		{
-			int bot1 = random.nextInt(8);
-			botIds.add(bot1);
-			
-			botStreamMapping.put(bot1, 1);
-			
-			while (true)
+			while (botIds.size() < botsCount)
 			{
-				int bot2 = random.nextInt(8);
+				int botId = random.nextInt(8);
 				
-				if (botIds.contains(bot2))
+				if (botIds.contains(botIds))
 				{
 					continue;
 				}
 				
-				botIds.add(bot2);
-				break;
+				botIds.add(botId);
 			}
 		}
 
@@ -66,9 +64,9 @@ public class MockWebConnection implements WebConnection
 	{
 		if (matchResult.isMatchValid())
 		{
-			for (SlaveMatchReport botResult : matchResult.getResults())
+			for (SlaveMatchReport botResult : matchResult.getSlavesMatchReports())
 			{
-				System.out.printf("#%d - %s%n", botResult.getBotId(), botResult.getResult().toString());
+				System.out.printf("#%d - %s%n", botResult.getBotId(), botResult.getAchievements().contains("victory"));
 			}
 		}
 		else

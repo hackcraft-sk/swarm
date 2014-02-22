@@ -19,14 +19,14 @@ public class RealGameEnvironment implements GameEnvironment
 	{
 		this.chaosLauncherPath = chaosLauncherPath;
 	}
-	
+
 	@Override
 	public void launch()
 	{
 		try
 		{
 			ProcessBuilder builder = new ProcessBuilder(chaosLauncherPath.toString() + "\\Chaoslauncher.exe");
-			
+
 			builder.directory(chaosLauncherPath.toFile());
 			builder.start();
 		}
@@ -35,16 +35,16 @@ public class RealGameEnvironment implements GameEnvironment
 			throw new RuntimeException("Can't launch game environment.", e);
 		}
 	}
-	
+
 	@Override
 	public void killApplications()
 	{
 		try
-		{			
+		{
 			List<String> processNames = new LinkedList<>();
 			processNames.add("StarCraft.exe");
 			processNames.add("Chaoslauncher.exe");
-			
+
 			ProcessesListFactory processesListFactory = new ProcessesListFactory()
 			{
 				@Override
@@ -53,7 +53,7 @@ public class RealGameEnvironment implements GameEnvironment
 					return new WindowsTasklist();
 				}
 			};
-			
+
 			ProcessesKiller processesKiller = new FastForceProcessesKiller(processNames, processesListFactory);
 			processesKiller.killAll();
 		}

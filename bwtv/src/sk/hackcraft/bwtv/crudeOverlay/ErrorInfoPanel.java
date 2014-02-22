@@ -16,15 +16,12 @@ public class ErrorInfoPanel extends JPanel
 	public ErrorInfoPanel()
 	{
 		setBackground(Color.BLACK);
-		
+
 		JLabelBuilder builder = new JLabelBuilder();
-		builder
-		.setFont(new Font("sans", Font.PLAIN, 30))
-		.setForegroundColor(Color.WHITE)
-		.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		
+		builder.setFont(new Font("sans", Font.PLAIN, 30)).setForegroundColor(Color.WHITE).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
 		JLabel errorMessage = builder.create("Sorry, an error has occured.");
-		
+
 		add(errorMessage);
 	}
 }

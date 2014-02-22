@@ -18,10 +18,12 @@ bwtv/bwtv.cfg
 bwtv/banners
 
 # cerebrate
-cerebrate/master.cfg
+cerebrate/cerebrate.cfg
+replays/
 
 # overlord
-overlord/slave.cfg
+overlord/overlord.cfg
+game/
 
 # parasite
 .cproject

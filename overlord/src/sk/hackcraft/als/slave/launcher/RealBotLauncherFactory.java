@@ -8,16 +8,16 @@ import sk.hackcraft.als.slave.Bot.Type;
 public class RealBotLauncherFactory implements BotLauncherFactory
 {
 	private Path starCraftPath;
-	
+
 	public RealBotLauncherFactory(Path starCraftPath)
 	{
 		this.starCraftPath = starCraftPath;
 	}
-	
+
 	public BotLauncher create(Bot bot, Path botFilePath)
 	{
 		Type botType = bot.getType();
-		
+
 		switch (botType)
 		{
 			case CPP_CLIENT:

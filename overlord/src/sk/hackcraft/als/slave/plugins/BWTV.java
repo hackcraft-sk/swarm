@@ -13,28 +13,28 @@ public class BWTV
 	private volatile DataOutputStream output;
 
 	private int matchId = 0;
-	
+
 	public BWTV()
 	{
 		runNewConnectionDaemon();
 	}
-	
+
 	public void setMatchId(int matchId)
 	{
 		this.matchId = matchId;
 	}
-	
+
 	public void sendEvent(MatchEvent matchEvent)
-	{		
+	{
 		if (socket == null)
 		{
 			return;
 		}
-		
+
 		try
 		{
 			System.out.println("Broadcasting " + matchEvent + " to BWTV.");
-			
+
 			output.writeInt(matchEvent.toValue());
 			output.writeInt(matchId);
 		}
@@ -46,12 +46,12 @@ public class BWTV
 			{
 				forceSocketClose();
 				socket = null;
-				
+
 				runNewConnectionDaemon();
 			}
 		}
 	}
-	
+
 	public void close()
 	{
 		if (socket != null)
@@ -59,7 +59,7 @@ public class BWTV
 			forceSocketClose();
 		}
 	}
-	
+
 	private void forceSocketClose()
 	{
 		try
@@ -70,7 +70,7 @@ public class BWTV
 		{
 		}
 	}
-	
+
 	private void runNewConnectionDaemon()
 	{
 		new Thread()
@@ -78,19 +78,25 @@ public class BWTV
 			@Override
 			public void run()
 			{
-				try
-				(
-					ServerSocket serverSocket = new ServerSocket(12987);
-				)
+				try (ServerSocket serverSocket = new ServerSocket(12987);)
 				{
 					System.out.println("Waiting for BWTV connect...");
-					
+
 					socket = serverSocket.accept();
 					output = new DataOutputStream(socket.getOutputStream());
 				}
 				catch (IOException e)
 				{
 					e.printStackTrace();
+
+					try
+					{
+						Thread.sleep(10000);
+					}
+					catch (InterruptedException ie)
+					{
+						Thread.currentThread().interrupt();
+					}
 
 					runNewConnectionDaemon();
 				}
