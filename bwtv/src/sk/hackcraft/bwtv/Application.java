@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 import javax.swing.SwingUtilities;
 
 import sk.hackcraft.als.utils.Config;
+import sk.hackcraft.als.utils.IniFileConfig;
 import sk.hackcraft.bwtv.connections.MockSlaveConnection;
 import sk.hackcraft.bwtv.connections.MockWebConnection;
 import sk.hackcraft.bwtv.connections.RealSlaveConnection;
@@ -37,9 +38,9 @@ public class Application
 			throw new RuntimeException("bwtv.cfg is missing.");
 		}
 		
-		Config.IniFileParser iniFileParser = new Config.IniFileParser(configFile);
+		IniFileConfig.IniFileParser iniFileParser = new IniFileConfig.IniFileParser(configFile);
 		
-		Config settings;
+		IniFileConfig settings;
 		try
 		{
 			settings = iniFileParser.create();

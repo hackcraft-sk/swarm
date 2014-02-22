@@ -21,4 +21,4 @@ bwtv/banners
 cerebrate/master.cfg
 
 # overlord
-overlord/slave.cfg
+overlord/overlord.cfg

@@ -13,6 +13,7 @@ import sk.hackcraft.als.master.connections.RealWebConnection;
 import sk.hackcraft.als.master.connections.SlaveConnectionsFactory;
 import sk.hackcraft.als.master.connections.WebConnection;
 import sk.hackcraft.als.utils.Config;
+import sk.hackcraft.als.utils.IniFileConfig;
 
 public class Application implements Runnable
 {
@@ -31,7 +32,7 @@ public class Application implements Runnable
 	public Application(String[] args)
 	{
 		File iniFile = new File("master.cfg");
-		Config.IniFileParser configParser = new Config.IniFileParser(iniFile);
+		IniFileConfig.IniFileParser configParser = new IniFileConfig.IniFileParser(iniFile);
 		
 		Config config;
 		try

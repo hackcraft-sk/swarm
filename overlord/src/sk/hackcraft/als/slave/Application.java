@@ -33,6 +33,7 @@ import sk.hackcraft.als.slave.launcher.RealBotLauncherFactory;
 import sk.hackcraft.als.slave.launcher.ReplayRetriever;
 import sk.hackcraft.als.slave.plugins.BWTV;
 import sk.hackcraft.als.utils.Config;
+import sk.hackcraft.als.utils.IniFileConfig;
 import sk.hackcraft.als.utils.MatchEvent;
 import sk.hackcraft.als.utils.MatchResult;
 import sk.hackcraft.als.utils.reports.Score;
@@ -70,9 +71,9 @@ public class Application implements Runnable
 	
 	public Application(String[] args)
 	{
-		String configFileName = (args.length > 1) ? args[1] : "slave.cfg"; 
+		String configFileName = (args.length > 1) ? args[1] : "overlord.cfg"; 
 		File configFile = new File(configFileName);
-		Config.IniFileParser iniFileParser = new Config.IniFileParser(configFile);
+		IniFileConfig.IniFileParser iniFileParser = new IniFileConfig.IniFileParser(configFile);
 
 		Config config;
 		try

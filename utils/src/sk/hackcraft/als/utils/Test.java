@@ -6,8 +6,8 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import sk.hackcraft.als.utils.Config.Pair;
-import sk.hackcraft.als.utils.Config.Section;
+import sk.hackcraft.als.utils.IniFileConfig.IniPair;
+import sk.hackcraft.als.utils.IniFileConfig.IniSection;
 import sk.hackcraft.als.utils.appcore.EventLoop;
 
 public class Test

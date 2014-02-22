@@ -3,18 +3,18 @@ package sk.hackcraft.als.slave.game;
 import java.io.File;
 import java.io.IOException;
 
-import sk.hackcraft.als.utils.Config;
+import sk.hackcraft.als.utils.IniFileConfig;
 
 public class BwapiConfig
 {
 	private final String iniFilePath;
-	private final Config ini;
+	private final IniFileConfig ini;
 	
 	public BwapiConfig(String starCraftPath) throws IOException
 	{
 		iniFilePath = starCraftPath + "/bwapi-data/bwapi.ini";
 		File iniFile = new File(iniFilePath);
-		Config.IniFileParser parser = new Config.IniFileParser(iniFile);
+		IniFileConfig.IniFileParser parser = new IniFileConfig.IniFileParser(iniFile);
 		this.ini = parser.create();
 	}
 	
@@ -35,9 +35,9 @@ public class BwapiConfig
 
 	public class Editor
 	{
-		private final Config.Editor configEditor;
+		private final IniFileConfig.Editor configEditor;
 		
-		public Editor(Config.Editor configEditor)
+		public Editor(IniFileConfig.Editor configEditor)
 		{
 			this.configEditor = configEditor;
 		}
