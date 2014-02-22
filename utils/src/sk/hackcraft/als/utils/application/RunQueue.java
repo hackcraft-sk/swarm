@@ -6,19 +6,22 @@ package sk.hackcraft.als.utils.application;
 public interface RunQueue
 {
 	/**
-	 * Posts runnable to executing mechanism. Implementation should be
-	 * thread safe.
+	 * Posts runnable to executing mechanism. Implementation should be thread
+	 * safe.
 	 * 
-	 * @param runnable Runnable to execute
+	 * @param runnable
+	 *            Runnable to execute
 	 */
 	public void post(Runnable runnable);
-	
+
 	/**
-	 * Posts runnable to executing mechanism with specified delay. Implementation should be
-	 * thread safe.
+	 * Posts runnable to executing mechanism with specified delay.
+	 * Implementation should be thread safe.
 	 * 
-	 * @param runnable Runnable to execute
-	 * @param delay Delay in milliseconds after which runnable is executed
+	 * @param runnable
+	 *            Runnable to execute
+	 * @param delay
+	 *            Delay in milliseconds after which runnable is executed
 	 */
 	public void post(Runnable runnable, long delay);
 }

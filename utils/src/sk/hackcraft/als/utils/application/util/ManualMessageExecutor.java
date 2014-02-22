@@ -1,6 +1,5 @@
 package sk.hackcraft.als.utils.application.util;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -26,10 +25,10 @@ public class ManualMessageExecutor implements RunQueue
 	{
 		messagesQueue.add(runnable);
 	}
-	
+
 	public void post(Runnable runnable, long delay)
 	{
-		//messagesQueue.enqueue(element);
+		// messagesQueue.enqueue(element);
 		// TODO
 	}
 

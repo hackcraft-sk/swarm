@@ -18,33 +18,33 @@ import sk.hackcraft.bwtv.connections.WebConnection;
 public class CrudeOverlay implements Overlay
 {
 	private static final Logger logger = Logger.getLogger(CrudeOverlay.class.getName());
-	
+
 	private MatchEventBroadcaster matchEventBroadcaster;
 	private final MatchEventListener matchEventListener;
-	
+
 	private final JFrame frame;
-	
+
 	private Point pivot;
 	private Point offset;
-	
+
 	private final InfoPanelFactory infoPanelFactory;
-	
+
 	public CrudeOverlay(WebConnection webConnection, MatchEventBroadcaster matchEventBroadcaster)
 	{
 		this.matchEventBroadcaster = matchEventBroadcaster;
-		
+
 		frame = new JFrame("BWTV Overlay");
-		
+
 		frame.setUndecorated(true);
 		frame.setFocusable(false);
-		
+
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		
+
 		pivot = new Point();
 		offset = new Point();
-		
+
 		infoPanelFactory = new InfoPanelFactory(webConnection);
-		
+
 		matchEventListener = new SwingMatchEventListener(new MatchEventListener()
 		{
 			@Override
@@ -55,7 +55,7 @@ public class CrudeOverlay implements Overlay
 		});
 		matchEventBroadcaster.registerListener(matchEventListener);
 	}
-	
+
 	@Override
 	public void changeScreen(EventInfo eventInfo)
 	{
@@ -63,7 +63,7 @@ public class CrudeOverlay implements Overlay
 		contentPane.removeAll();
 
 		final boolean showInfoPanel = infoPanelFactory.hasInfoPanelForEvent(eventInfo);
-		
+
 		if (showInfoPanel)
 		{
 			Container infoPanel;
@@ -77,20 +77,20 @@ public class CrudeOverlay implements Overlay
 
 				infoPanel = infoPanelFactory.createErrorInfoPanel();
 			}
-	
+
 			contentPane.add(infoPanel);
 		}
-		
+
 		frame.pack();
-		
+
 		if (showInfoPanel)
 		{
 			int frameWidth = frame.getWidth();
 			int frameHeight = frame.getHeight();
-			
+
 			int offsetX = (640 - frameWidth) / 2;
 			int offsetY = (480 - frameHeight) / 2;
-			
+
 			offset = new Point(offsetX, offsetY);
 			resetInnerLocation();
 		}
@@ -99,24 +99,24 @@ public class CrudeOverlay implements Overlay
 			offset = new Point(10000, 10000);
 			resetInnerLocation();
 		}
-		
+
 		frame.pack();
-		
+
 		frame.setAlwaysOnTop(true);
 	}
-	
+
 	@Override
 	public void setLocation(int x, int y)
 	{
 		pivot = new Point(x, y);
 		resetInnerLocation();
 	}
-	
+
 	private void resetInnerLocation()
 	{
-		int newX = (int)(pivot.getX() + offset.getX());
-		int newY = (int)(pivot.getY() + offset.getY());
-		
+		int newX = (int) (pivot.getX() + offset.getX());
+		int newY = (int) (pivot.getY() + offset.getY());
+
 		Point newLocation = new Point(newX, newY);
 		frame.setLocation(newLocation);
 	}
@@ -132,12 +132,12 @@ public class CrudeOverlay implements Overlay
 	{
 		return frame.isVisible();
 	}
-	
+
 	@Override
 	public void dispose()
 	{
 		frame.dispose();
-		
+
 		matchEventBroadcaster.unregisterListener(matchEventListener);
 	}
 }

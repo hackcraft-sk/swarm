@@ -27,66 +27,66 @@ public class RealWebConnection implements WebConnection
 {
 	public final Set<Integer> acceptingTournamentIds;
 	public final Set<Integer> videoStreams;
-	
+
 	private final SimpleJsonRequestFactory jsonRequestFactory;
 	private final FormRequestFactory plainRequestFactory;
 	private final MultipartRequest.Builder multipartRequestBuilder;
-	
+
 	public RealWebConnection(String url, Set<Integer> acceptingTournamentIds, Set<Integer> videoStreams) throws IOException
 	{
 		plainRequestFactory = new FormRequestFactory(url);
 		jsonRequestFactory = new SimpleJsonRequestFactory(plainRequestFactory);
 		multipartRequestBuilder = new MultipartRequest.Builder(url);
-		
+
 		this.acceptingTournamentIds = acceptingTournamentIds;
 		this.videoStreams = videoStreams;
 	}
-	
+
 	@Override
 	public MatchInfo requestMatch() throws IOException
 	{
 		JSONObject extras = new JSONObject();
 		extras.put("videoStreamS", videoStreams);
-		
+
 		JSONObject requestData = new JSONObject();
 		requestData.put("tournamentIds", acceptingTournamentIds);
 		requestData.put("extras", extras);
-		
+
 		SimpleJsonRequest request = jsonRequestFactory.createGetRequest("json/assign-match", requestData);
-		
+
 		JSONObject response = request.send();
-		
+
 		if (response.has("error"))
 		{
 			throw JsonResponseException.createFromJson(response);
 		}
-		
+
 		if (response.get("matchId").equals("NONE"))
 		{
 			throw new IOException("No matches are scheduled.");
 		}
-		
+
 		int matchId = response.getInt("matchId");
 		String mapUrl = response.getString("mapUrl");
-		
+
 		JSONArray botIdsArray = response.getJSONArray("botIds");
-		
+
 		if (botIdsArray.length() != 2)
 		{
 			throw new RuntimeException("Currently only 2 bots are supported.");
 		}
-		
+
 		Set<Integer> botIds = new HashSet<>();
 		for (int i = 0; i < botIdsArray.length(); i++)
 		{
 			botIds.add(botIdsArray.getInt(i));
 		}
-		
+
 		// TODO hack kym to nieje na servru implementovane
 		response.put("extras", new JSONObject());
-		
+
 		JSONObject responseExtras = response.getJSONObject("extras");
-		
+
 		Map<Integer, Integer> botToStreamMapping = new HashMap<>();
 		if (extras.has("videoViews"))
 		{
@@ -94,14 +94,14 @@ public class RealWebConnection implements WebConnection
 			for (int i = 0; i < jsonVideoViews.length(); i++)
 			{
 				JSONObject videoView = jsonVideoViews.getJSONObject(i);
-				
+
 				int botId = videoView.getInt("botId");
 				int streamId = videoView.getInt("streamId");
-				
+
 				botToStreamMapping.put(botId, streamId);
 			}
 		}
-		
+
 		// TODO hack kym to nieje na servru implementovane
 		botToStreamMapping.put(botIdsArray.getInt(0), 1);
 
@@ -113,13 +113,13 @@ public class RealWebConnection implements WebConnection
 	{
 		multipartRequestBuilder.setActionUrl("json/post-match-result");
 		JSONObject requestData = new JSONObject();
-		
+
 		boolean valid = matchReport.isMatchValid();
 		requestData.put("result", (valid) ? "OK" : "INVALID");
-		
+
 		int matchId = matchReport.getMatchId();
 		requestData.put("matchId", matchId);
-		
+
 		if (valid)
 		{
 			// achievements
@@ -127,21 +127,21 @@ public class RealWebConnection implements WebConnection
 			for (SlaveMatchReport reports : matchReport.getSlavesMatchReports())
 			{
 				int botId = reports.getBotId();
-				
+
 				JSONObject botResult = new JSONObject();
 				botResult.put("botId", botId);
-				
+
 				JSONArray achievementsArray = new JSONArray();
 				for (Achievement achievement : reports.getAchievements())
 				{
 					achievementsArray.put(achievement.getName());
 				}
-				
+
 				botResult.put("achievements", achievementsArray);
 			}
-			
+
 			requestData.put("botResults", botResults);
-			
+
 			// replay
 			JSONObject replayJson = new JSONObject();
 
@@ -156,9 +156,9 @@ public class RealWebConnection implements WebConnection
 		}
 
 		multipartRequestBuilder.addString("content", requestData.toString());
-		
+
 		MultipartRequest request = multipartRequestBuilder.create();
-		
+
 		MultipartRequest.Response response = request.send();
 
 		String responseContent = response.getContent();

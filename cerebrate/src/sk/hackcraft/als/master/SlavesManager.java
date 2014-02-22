@@ -1,6 +1,5 @@
 package sk.hackcraft.als.master;
 
-import java.awt.image.ReplicateScaleFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,11 +22,11 @@ public class SlavesManager
 	private final int desiredConnectionsCount;
 	private final SlaveConnectionsFactory connectionsFactory;
 	private Set<SlaveConnection> connections;
-	
+
 	public SlavesManager(int desiredConnectionsCount, SlaveConnectionsFactory connectionsFactory)
 	{
 		this.desiredConnectionsCount = desiredConnectionsCount;
-		
+
 		this.connectionsFactory = connectionsFactory;
 		connections = new HashSet<>();
 	}
@@ -37,7 +36,7 @@ public class SlavesManager
 		SlaveConnection connection = connectionsFactory.create(timeout);
 		connections.add(connection);
 	}
-	
+
 	public void closeAll() throws IOException
 	{
 		try
@@ -52,50 +51,50 @@ public class SlavesManager
 			connections.clear();
 		}
 	}
-	
+
 	public boolean hasEnoughConnections()
 	{
 		return connections.size() == desiredConnectionsCount;
 	}
-	
+
 	public void broadcastMatchInfo(MatchInfo matchInfo) throws IOException
 	{
 		int matchId = matchInfo.getMatchId();
 		String mapUrl = matchInfo.getMapUrl();
-		
+
 		Set<SlaveConnection> freeSlaveConnections = new HashSet<>(connections);
 		Set<Integer> freeBotIds = matchInfo.getBotIds();
 		Map<Integer, Integer> botToStreamMapping = matchInfo.getBotToStreamMapping();
-		
+
 		if (freeBotIds.size() > connections.size())
 		{
 			throw new RuntimeException("Not enough slaves for all bots");
 		}
-		
+
 		// TODO adhoc riesenie, neskor by to chcelo spravit krajsie
 		// Priradenie bota, ktory ma byt na streame, ku spravnemu slavovi
 		for (Map.Entry<Integer, Integer> botStreamMapping : botToStreamMapping.entrySet())
 		{
 			int botId = botStreamMapping.getKey();
 			int streamId = botStreamMapping.getValue();
-			
+
 			SlaveConnection connection = getAssociatedSlaveOfStream(streamId);
 			connection.sendMatchInfo(matchId, mapUrl, botId);
-			
+
 			freeBotIds.remove(botId);
 			freeSlaveConnections.remove(connection);
 		}
-		
+
 		// rozdelenie zvysnych botov a slavov
 		Queue<SlaveConnection> freeConnectionsQueue = new LinkedList<>(freeSlaveConnections);
 		for (Integer botId : freeBotIds)
 		{
 			SlaveConnection connection = freeConnectionsQueue.remove();
-			
+
 			connection.sendMatchInfo(matchId, mapUrl, botId);
 		}
 	}
-	
+
 	private SlaveConnection getAssociatedSlaveOfStream(int streamId)
 	{
 		SlaveConnection streamConnection = null;
@@ -107,7 +106,7 @@ public class SlavesManager
 				break;
 			}
 		}
-		
+
 		if (streamId == 1 && streamConnection != null)
 		{
 			return streamConnection;
@@ -117,7 +116,7 @@ public class SlavesManager
 			throw new RuntimeException("Mappign of streams is not finished yet; only stream 1 and slaveId 1 is supported.");
 		}
 	}
-	
+
 	public void waitForReadySignals() throws IOException
 	{
 		for (SlaveConnection connection : connections)
@@ -125,7 +124,7 @@ public class SlavesManager
 			connection.waitForReadySignal();
 		}
 	}
-	
+
 	public void broadcastGo() throws IOException
 	{
 		for (SlaveConnection connection : connections)
@@ -133,36 +132,36 @@ public class SlavesManager
 			connection.sendGo();
 		}
 	}
-	
+
 	public MatchReport waitForMatchResult(int matchId) throws IOException
 	{
 		List<SlaveMatchReport> slavesMatchReports = new ArrayList<>();
 		Path selectedReplayPath = null;
 		Path matchReplayPath = null;
-		
+
 		boolean valid = true;
-		
+
 		for (SlaveConnection connection : connections)
 		{
 			SlaveMatchReport reports = connection.waitForMatchResult();
-			
+
 			if (!reports.isValid())
 			{
 				valid = false;
 			}
-			
+
 			if (reports.hasReplay() && selectedReplayPath == null)
 			{
 				selectedReplayPath = reports.getReplayPath();
 			}
 		}
-		
+
 		if (selectedReplayPath != null)
 		{
 			matchReplayPath = Paths.get(".", "replays", matchId + ".rep");
 			Files.copy(selectedReplayPath, matchReplayPath, StandardCopyOption.REPLACE_EXISTING);
 		}
-		
+
 		if (valid)
 		{
 			return new MatchReport(valid, matchId, slavesMatchReports, matchReplayPath);

@@ -1,13 +1,8 @@
 package sk.hackcraft.als.utils;
 
-import java.io.File;
-import java.io.IOException;
-
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import sk.hackcraft.als.utils.MemoryConfig.MemoryPair;
-import sk.hackcraft.als.utils.MemoryConfig.MemorySection;
 import sk.hackcraft.als.utils.appcore.EventLoop;
 
 public class Test

@@ -5,10 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOError;
 import java.io.IOException;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Class for loading and saving ini files.

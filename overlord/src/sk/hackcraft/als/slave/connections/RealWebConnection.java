@@ -19,26 +19,26 @@ public class RealWebConnection implements WebConnection
 	private SimpleJsonRequestFactory requestFactory;
 	private BotFilePreparer botFilePreparer;
 	private MapFilePreparer mapFilePreparer;
-	
+
 	public RealWebConnection(String url, MapFilePreparer mapFilePreparer) throws IOException
 	{
 		FormRequestFactory rawRequestFactory = new FormRequestFactory(url);
 		this.requestFactory = new SimpleJsonRequestFactory(rawRequestFactory);
-		
+
 		botFilePreparer = new BotFilePreparer();
 		this.mapFilePreparer = mapFilePreparer;
 	}
-	
+
 	@Override
 	public Bot getBotInfo(int botId) throws IOException
-	{		
+	{
 		JSONObject requestData = new JSONObject();
 		requestData.put("id", botId);
-		
+
 		SimpleJsonRequest request = requestFactory.createGetRequest("json/bot-info", requestData);
-		
+
 		JSONObject response = request.send();
-		
+
 		if (response.has("error"))
 		{
 			throw JsonResponseException.createFromJson(response);
@@ -48,7 +48,7 @@ public class RealWebConnection implements WebConnection
 		Type codeType = Type.valueOf(response.getString("type"));
 		String botFileUrl = response.getString("botFileUrl");
 		String botFileHash = response.getString("botFileHash");
-		
+
 		return new Bot(botId, name, codeType, botFileUrl, botFileHash);
 	}
 

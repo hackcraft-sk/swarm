@@ -3,15 +3,15 @@ package sk.hackcraft.bwtv;
 public class NullOverlay implements Overlay
 {
 	private boolean visible;
-	
+
 	@Override
 	public void changeScreen(EventInfo stateInfo)
 	{
 	}
-	
+
 	@Override
 	public void setLocation(int x, int y)
-	{	
+	{
 	}
 
 	@Override
@@ -25,7 +25,7 @@ public class NullOverlay implements Overlay
 	{
 		return visible;
 	}
-	
+
 	@Override
 	public void dispose()
 	{

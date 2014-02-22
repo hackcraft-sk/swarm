@@ -7,7 +7,8 @@ import sk.hackcraft.bwtv.EventInfo;
 public interface SlaveConnection
 {
 	public void connect() throws IOException;
+
 	public void disconnect();
-	
+
 	public EventInfo waitForStateChange() throws IOException;
 }

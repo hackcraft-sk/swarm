@@ -8,21 +8,24 @@ public interface Log
 	/**
 	 * Method for logging error messages.
 	 * 
-	 * @param message Content of message
+	 * @param message
+	 *            Content of message
 	 */
 	void error(String message);
 
 	/**
 	 * Method for logging info messages.
 	 * 
-	 * @param message Content of message
+	 * @param message
+	 *            Content of message
 	 */
 	void info(String message);
 
 	/**
 	 * Method for logging debug messages.
 	 * 
-	 * @param message Content of message
+	 * @param message
+	 *            Content of message
 	 */
 	void debug(String message);
 

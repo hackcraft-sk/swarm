@@ -47,7 +47,7 @@ public class ThreadRunnableExecutor implements RunQueue, ApplicationService
 		{
 			throw new IllegalStateException("Runnable executor was already started.");
 		}
-		
+
 		this.started = true;
 
 		workerThread.start();
@@ -59,12 +59,12 @@ public class ThreadRunnableExecutor implements RunQueue, ApplicationService
 		{
 			return;
 		}
-		
+
 		this.stopped = true;
 
 		worker.stop();
 	}
-	
+
 	public boolean isRunning()
 	{
 		return started && !stopped;
@@ -73,18 +73,17 @@ public class ThreadRunnableExecutor implements RunQueue, ApplicationService
 	private class Worker implements Runnable
 	{
 		private volatile boolean run = true;
-		
+
 		private final EnvironmentTime time;
-		
+
 		private final Queue<Runnable> instantRunnables;
 		private final Queue<DelayedRunnableHolder> delayedRunnables;
-		
+
 		public Worker(EnvironmentTime time)
 		{
 			this.time = time;
-			
+
 			this.instantRunnables = new LinkedList<>();
-			
 
 			this.delayedRunnables = new PriorityQueue<>(10, new Comparator<DelayedRunnableHolder>()
 			{
@@ -93,7 +92,7 @@ public class ThreadRunnableExecutor implements RunQueue, ApplicationService
 				{
 					long comparingTimestamp = comparingElement.getExecutionTimestamp();
 					long comparedTimestamp = comparedElement.getExecutionTimestamp();
-					
+
 					if (comparingTimestamp < comparedTimestamp)
 					{
 						return 1;
@@ -105,21 +104,21 @@ public class ThreadRunnableExecutor implements RunQueue, ApplicationService
 				}
 			});
 		}
-		
+
 		public synchronized void addInstantRunnable(Runnable runnable)
 		{
 			instantRunnables.add(runnable);
-			
+
 			notify();
 		}
-		
+
 		public synchronized void addDelayedRunnable(Runnable runnable, long delay)
 		{
 			long executionTimestamp = time.getMillis() + delay;
-			
+
 			DelayedRunnableHolder delayedRunnable = new DelayedRunnableHolder(runnable, executionTimestamp);
 			delayedRunnables.remove(delayedRunnable);
-			
+
 			notify();
 		}
 
@@ -133,7 +132,7 @@ public class ThreadRunnableExecutor implements RunQueue, ApplicationService
 					{
 						requeueReadyDelayedRunnables();
 						processReadyRunnables(10);
-						
+
 						if (run)
 						{
 							rest();
@@ -146,21 +145,21 @@ public class ThreadRunnableExecutor implements RunQueue, ApplicationService
 				Thread.currentThread().interrupt();
 			}
 		}
-		
+
 		public void stop()
 		{
 			this.run = false;
-			
+
 			synchronized (ThreadRunnableExecutor.this)
 			{
 				ThreadRunnableExecutor.this.notify();
 			}
 		}
-		
+
 		private void requeueReadyDelayedRunnables()
 		{
 			long currentTimestamp = time.getMillis();
-			
+
 			while (!delayedRunnables.isEmpty())
 			{
 				DelayedRunnableHolder holder = (DelayedRunnableHolder) delayedRunnables.peek();
@@ -170,7 +169,7 @@ public class ThreadRunnableExecutor implements RunQueue, ApplicationService
 				if (executionTimestamp < currentTimestamp)
 				{
 					delayedRunnables.remove();
-					
+
 					Runnable runnable = holder.getRunnable();
 					instantRunnables.add(runnable);
 				}
@@ -180,23 +179,23 @@ public class ThreadRunnableExecutor implements RunQueue, ApplicationService
 				}
 			}
 		}
-		
+
 		private void processReadyRunnables(int limit)
 		{
 			int size = instantRunnables.size();
-			
+
 			if (size > limit)
 			{
 				size = limit;
 			}
-			
+
 			for (int i = 0; i < size; i++)
 			{
 				Runnable runnable = (Runnable) instantRunnables.remove();
 				runnable.run();
 			}
 		}
-		
+
 		private void rest() throws InterruptedException
 		{
 			if (!instantRunnables.isEmpty())
@@ -205,9 +204,9 @@ public class ThreadRunnableExecutor implements RunQueue, ApplicationService
 			}
 			else if (!delayedRunnables.isEmpty())
 			{
-				DelayedRunnableHolder runnable = (DelayedRunnableHolder)delayedRunnables.peek();
+				DelayedRunnableHolder runnable = (DelayedRunnableHolder) delayedRunnables.peek();
 				long delay = runnable.getExecutionTimestamp() - time.getMillis();
-				
+
 				wait(delay);
 			}
 			else
@@ -237,7 +236,7 @@ public class ThreadRunnableExecutor implements RunQueue, ApplicationService
 		{
 			return runnable;
 		}
-		
+
 		public String toString()
 		{
 			return "R " + runnable + " ExecTime " + executionTimestamp;

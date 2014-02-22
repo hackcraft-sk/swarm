@@ -14,14 +14,14 @@ public class MockParasiteConnection implements ParasiteConnection
 	private final Event<PlayerColor> matchStartedEvent;
 	private final Event<Set<Achievement>> matchEndedEvent;
 	private final Event<ParasiteConnectionException> disconnectEvent;
-	
+
 	public MockParasiteConnection()
 	{
 		matchStartedEvent = new Event<>();
 		matchEndedEvent = new Event<>();
 		disconnectEvent = new Event<>();
 	}
-	
+
 	@Override
 	public void open()
 	{
@@ -31,15 +31,15 @@ public class MockParasiteConnection implements ParasiteConnection
 	public void close()
 	{
 	}
-	
+
 	@Override
 	public void run() throws IOException
 	{
 		matchStartedEvent.emit(this, new PlayerColor("#006699"));
-		
+
 		Set<Achievement> achievements = new HashSet<>();
 		achievements.add(new Achievement("victory"));
-		
+
 		matchEndedEvent.emit(this, achievements);
 	}
 

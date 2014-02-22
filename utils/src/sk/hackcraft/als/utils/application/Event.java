@@ -3,13 +3,14 @@ package sk.hackcraft.als.utils.application;
 import java.util.HashSet;
 import java.util.Set;
 
+import sk.hackcraft.als.utils.application.util.RunQueueEventListener;
+
 /**
  * <p>
  * Class for object communication. It is designed in way, that it's trying to
  * keep good things form Java listeners, observer pattern and C# events, but
  * also its trying to not repeat their flaws.
  * </p>
- * 
  * <p>
  * If you want to receive notifications from event, just call
  * {@link Event#addListener(EventListener)} method. When
@@ -20,14 +21,12 @@ import java.util.Set;
  * call {@link EventListener#onEvent(Object, Object)} method, add message to
  * {@link RunQueue MessageQueue} or something else.
  * </p>
- * 
  * <p>
  * Keep in mind, that data parameter of {@link Event#emit(Object, Object)}
  * method should be either inmutable, safe for cross thread usage and later
  * access to event data, or caller have to be sure that event will be processed
  * in the same thread.
  * </p>
- * 
  * <p>
  * Direct access to event should be always kept inside parent object. For
  * registering receivers to event, use either {@link EventListeners} interface
@@ -36,7 +35,6 @@ import java.util.Set;
  * 
  * @see EventListeners
  * @see EventEmitter
- * 
  * @see DirectEventReceiver
  * @see RunQueueEventListener
  */

@@ -8,6 +8,6 @@ import sk.hackcraft.als.master.MatchReport;
 public interface WebConnection
 {
 	public MatchInfo requestMatch() throws IOException;
-	
+
 	public void postMatchResult(MatchReport matchResult) throws IOException;
 }

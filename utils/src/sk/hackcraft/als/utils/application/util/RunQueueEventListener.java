@@ -13,7 +13,8 @@ public abstract class RunQueueEventListener<D> implements EventListener<D>
 	/**
 	 * Constructs new event listener with specified run queue.
 	 * 
-	 * @param runQueue Run queue for posting event.
+	 * @param runQueue
+	 *            Run queue for posting event.
 	 */
 	public RunQueueEventListener(RunQueue runQueue)
 	{
@@ -33,11 +34,14 @@ public abstract class RunQueueEventListener<D> implements EventListener<D>
 			}
 		});
 	}
-	
+
 	/**
 	 * Method for notifying listening object.
-	 * @param origin Origin of event
-	 * @param data Data of event
+	 * 
+	 * @param origin
+	 *            Origin of event
+	 * @param data
+	 *            Data of event
 	 */
 	protected abstract void postedOnEvent(Object origin, Object data);
 }

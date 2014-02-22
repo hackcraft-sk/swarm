@@ -14,7 +14,8 @@ public class PrintStreamLog implements Log
 	 * Constructs new log which is outputting messages to desired output in
 	 * default format.
 	 * 
-	 * @param printer Output for messages
+	 * @param printer
+	 *            Output for messages
 	 */
 	public PrintStreamLog(PrintStream printer, String name)
 	{
@@ -26,8 +27,10 @@ public class PrintStreamLog implements Log
 	 * Constructs new log which is outputting messages to desired output with
 	 * custom format.
 	 * 
-	 * @param printer Output for messages
-	 * @param formatter Formatter for custom messages format
+	 * @param printer
+	 *            Output for messages
+	 * @param formatter
+	 *            Formatter for custom messages format
 	 */
 	public PrintStreamLog(PrintStream printer, Formatter formatter)
 	{
@@ -73,8 +76,10 @@ public class PrintStreamLog implements Log
 		/**
 		 * Returns formatted message.
 		 * 
-		 * @param type Type of message
-		 * @param message Content of message
+		 * @param type
+		 *            Type of message
+		 * @param message
+		 *            Content of message
 		 * @return Formatted message
 		 */
 		String format(String type, String message);

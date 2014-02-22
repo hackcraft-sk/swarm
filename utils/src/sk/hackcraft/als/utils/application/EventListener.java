@@ -4,7 +4,6 @@ package sk.hackcraft.als.utils.application;
  * <p>
  * Event listener for notifying listening objects.
  * </p>
- * 
  * <p>
  * It is advised to always documented which type of parameters can specific
  * event receive. You should use syntax like: origin(<name of origin class),
@@ -16,8 +15,10 @@ public interface EventListener<D>
 	/**
 	 * Method for notifying listening object.
 	 * 
-	 * @param origin Origin of event. May be null.
-	 * @param data Event data. May be null-
+	 * @param origin
+	 *            Origin of event. May be null.
+	 * @param data
+	 *            Event data. May be null-
 	 */
 	void onEvent(Object origin, D data);
 

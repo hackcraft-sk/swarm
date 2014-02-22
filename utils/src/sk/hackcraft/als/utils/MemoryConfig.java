@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Config class which is hold in memory. It's possible to change sections and
@@ -138,12 +137,12 @@ public class MemoryConfig implements Config
 		{
 			return new HashSet<>(pairs.values());
 		}
-		
+
 		@Override
 		public String toString()
 		{
 			StringBuilder builder = new StringBuilder("[");
-			
+
 			boolean first = true;
 			for (Pair pair : pairs.values())
 			{
@@ -155,12 +154,12 @@ public class MemoryConfig implements Config
 				{
 					first = false;
 				}
-				
+
 				builder.append(pair);
 			}
-			
+
 			builder.append("]");
-			
+
 			return builder.toString();
 		}
 	}
@@ -290,7 +289,7 @@ public class MemoryConfig implements Config
 		{
 			this.value = Double.toString(value);
 		}
-		
+
 		@Override
 		public String toString()
 		{

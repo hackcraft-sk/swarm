@@ -11,7 +11,8 @@ public interface EventListeners<D>
 	 * possible to add new listener during event emit. If a new listener is
 	 * added during event emit, it will not be emitted.
 	 * 
-	 * @param listener Listener to add
+	 * @param listener
+	 *            Listener to add
 	 */
 	public void addListener(EventListener<D> listener);
 
@@ -20,7 +21,8 @@ public interface EventListeners<D>
 	 * should be possible to remove listener during event emit. If listener was
 	 * removed during event emit, it will be still emitted.
 	 * 
-	 * @param listener Listener to remove
+	 * @param listener
+	 *            Listener to remove
 	 */
 	public void removeListener(EventListener<D> listener);
 }

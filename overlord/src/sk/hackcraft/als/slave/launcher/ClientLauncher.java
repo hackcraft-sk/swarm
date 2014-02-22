@@ -9,9 +9,9 @@ import java.nio.file.StandardCopyOption;
 public abstract class ClientLauncher extends BotLauncherBase
 {
 	private Process clientProcess;
-	
+
 	protected final Path activeBotFilePath;
-	
+
 	public ClientLauncher(Path starCraftPath, Path botFilePath)
 	{
 		super(starCraftPath, botFilePath);
@@ -24,7 +24,7 @@ public abstract class ClientLauncher extends BotLauncherBase
 	{
 		Path source = botFilePath;
 		Path target = activeBotFilePath;
-		
+
 		Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
 
 		ProcessBuilder builder = getProcessBuilder();
@@ -33,31 +33,22 @@ public abstract class ClientLauncher extends BotLauncherBase
 		clientProcess = builder.start();
 
 		// TODO upravit tak, aby to nestrkalo do stdout, alebo vyhodit
-		/*new Thread(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				try
-				{
-					BufferedReader reader = new BufferedReader(new InputStreamReader(clientProcess.getInputStream()));
-					
-					String line;
-					while ((line = reader.readLine()) != null)
-					{
-						System.out.println ("CLIENT SAYS: " + line);
-					}
-				}
-				catch (IOException e)
-				{
-					System.out.println("Client output stream abruptly closed.");
-				}
-			}
-		}).start();*/
+		/*
+		 * new Thread(new Runnable() {
+		 * 
+		 * @Override public void run() { try { BufferedReader reader = new
+		 * BufferedReader(new
+		 * InputStreamReader(clientProcess.getInputStream()));
+		 * 
+		 * String line; while ((line = reader.readLine()) != null) {
+		 * System.out.println ("CLIENT SAYS: " + line); } } catch (IOException
+		 * e) { System.out.println("Client output stream abruptly closed."); } }
+		 * }).start();
+		 */
 	}
-	
+
 	protected abstract String createBotName();
-	
+
 	protected abstract ProcessBuilder getProcessBuilder() throws IOException;
 
 	@Override

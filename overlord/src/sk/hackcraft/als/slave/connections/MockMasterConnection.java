@@ -16,14 +16,14 @@ public class MockMasterConnection implements MasterConnection
 	public void close() throws IOException
 	{
 	}
-	
+
 	@Override
 	public MatchInfo getMatchInfo() throws IOException
 	{
 		int matchId = 22;
 		int botId = 1;
 		String mapPath = "maps/scmai/scmai2-arena-beginners.scx";
-		
+
 		return new MatchInfo(matchId, botId, mapPath);
 	}
 

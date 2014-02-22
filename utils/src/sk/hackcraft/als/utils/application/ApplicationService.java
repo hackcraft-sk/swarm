@@ -11,7 +11,8 @@ public interface ApplicationService
 	 * calling this method. If service is running, nothing should happen.
 	 * Implementation of this method should be threadsafe.
 	 * 
-	 * @throws IllegalStateException if service is running
+	 * @throws IllegalStateException
+	 *             if service is running
 	 */
 	void start();
 
@@ -21,7 +22,8 @@ public interface ApplicationService
 	 * calling this method. If service is stopped, nothing should happen.
 	 * Implementation of this method should be threadsafe.
 	 * 
-	 * @throws IllegalStateException if service is not running
+	 * @throws IllegalStateException
+	 *             if service is not running
 	 */
 	void stop();
 

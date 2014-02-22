@@ -10,7 +10,7 @@ public class MockSlaveConnection implements SlaveConnection
 {
 	private Random random = new Random();
 	private int lastState = 0;
-	
+
 	@Override
 	public void connect() throws IOException
 	{
@@ -28,18 +28,18 @@ public class MockSlaveConnection implements SlaveConnection
 		{
 			long sleepMillis = 1000;
 			Thread.sleep(sleepMillis);
-			
+
 			int state = lastState;
-			
+
 			lastState++;
-			
+
 			if (lastState > 2)
 			{
 				lastState = 0;
 			}
-			
+
 			int matchId = random.nextInt(5000);
-			
+
 			switch (state)
 			{
 				case 0:

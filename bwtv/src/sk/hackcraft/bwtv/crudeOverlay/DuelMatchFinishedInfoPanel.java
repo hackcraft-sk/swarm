@@ -20,32 +20,29 @@ public class DuelMatchFinishedInfoPanel extends JPanel
 		setLayout(new GridBagLayout());
 		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		setBackground(Color.BLACK);
-		
+
 		Font resultFont = new Font("sans", Font.PLAIN, 30);
 		Font pointsFont = new Font("sans", Font.PLAIN, 20);
-		
+
 		JLabelBuilder builder = new JLabelBuilder();
-		builder
-		.setForegroundColor(Color.WHITE)
-		.setFont(resultFont)
-		.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		
+		builder.setForegroundColor(Color.WHITE).setFont(resultFont).setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
 		JLabel resultLabel = builder.create(resultText);
-		
+
 		builder.setFont(pointsFont);
-		
+
 		JLabel pointsLabel = builder.create(pointsText);
-		
+
 		GridBagConstraints c = new GridBagConstraints();
-		
+
 		c.gridx = 0;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.CENTER;
-		
+
 		add(resultLabel, c);
-		
+
 		c.gridy += 1;
-		
+
 		add(pointsLabel, c);
 	}
 }

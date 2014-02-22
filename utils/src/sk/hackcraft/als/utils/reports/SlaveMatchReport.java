@@ -10,29 +10,34 @@ import sk.hackcraft.als.utils.Achievement;
 public class SlaveMatchReport
 {
 	private final boolean valid;
-	
+
 	private final int botId;
 	private final Set<Achievement> achievements;
 
 	private final Path replayPath;
-	
+
 	/**
 	 * Constructs new slave match report.
-	 * @param valid validity of play
-	 * @param botId bot's id
-	 * @param achievements earned achievements, empty if valid is false
-	 * @param replayPath path to replay file, or null if replay is not available
+	 * 
+	 * @param valid
+	 *            validity of play
+	 * @param botId
+	 *            bot's id
+	 * @param achievements
+	 *            earned achievements, empty if valid is false
+	 * @param replayPath
+	 *            path to replay file, or null if replay is not available
 	 */
 	public SlaveMatchReport(boolean valid, int botId, Set<Achievement> achievements, Path replayPath)
 	{
 		this.valid = valid;
-		
+
 		this.botId = botId;
 		this.achievements = new HashSet<>(achievements);
-		
+
 		this.replayPath = replayPath;
 	}
-	
+
 	public boolean isValid()
 	{
 		return valid;

@@ -21,7 +21,7 @@ import sk.hackcraft.als.utils.application.EventListeners;
 public class TemporaryRealParasiteConnection implements ParasiteConnection
 {
 	private final ParasiteMessageInterface messageInterface;
-	
+
 	private final Event<PlayerColor> matchStartedEvent;
 	private final Event<Set<Achievement>> matchEndedEvent;
 	private final Event<ParasiteConnectionException> disconnectEvent;
@@ -29,7 +29,7 @@ public class TemporaryRealParasiteConnection implements ParasiteConnection
 	public TemporaryRealParasiteConnection()
 	{
 		this.messageInterface = new ParasiteMessageInterface();
-		
+
 		matchStartedEvent = new Event<>();
 		matchEndedEvent = new Event<>();
 		disconnectEvent = new Event<>();
@@ -66,44 +66,44 @@ public class TemporaryRealParasiteConnection implements ParasiteConnection
 	{
 		boolean run = true;
 		boolean connected = false;
-		
+
 		try
 		{
 			while (run)
 			{
 				String message = messageInterface.waitForMessage();
-				
+
 				JSONObject jsonMessage = new JSONObject(message);
-				
+
 				if (jsonMessage.has("ping"))
 				{
 					continue;
 				}
-				
+
 				if (jsonMessage.has("playerColor"))
 				{
 					connected = true;
-					
+
 					String hexColor = jsonMessage.getString("playerColor");
 					PlayerColor playerColor = new PlayerColor(hexColor);
-					
+
 					matchStartedEvent.emit(this, playerColor);
 				}
-				
+
 				if (jsonMessage.has("achievements"))
 				{
 					Set<Achievement> achievements = new HashSet<>();
-					
+
 					JSONArray achievementsJsonArray = jsonMessage.getJSONArray("achievements");
 					for (int i = 0; i < achievementsJsonArray.length(); i++)
 					{
 						JSONObject achievementJsonObject = achievementsJsonArray.getJSONObject(i);
-						
+
 						String achievementName = achievementJsonObject.getString("name");
-						
+
 						achievements.add(new Achievement(achievementName));
 					}
-					
+
 					matchEndedEvent.emit(this, achievements);
 				}
 			}

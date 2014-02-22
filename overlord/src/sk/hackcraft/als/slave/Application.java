@@ -19,10 +19,10 @@ import sk.hackcraft.als.slave.game.GameEnvironment;
 import sk.hackcraft.als.slave.game.MockGameEnvironment;
 import sk.hackcraft.als.slave.game.MockParasiteConnection;
 import sk.hackcraft.als.slave.game.ParasiteConnection;
-import sk.hackcraft.als.slave.game.TemporaryRealParasiteConnection;
 import sk.hackcraft.als.slave.game.ParasiteConnection.ParasiteConnectionException;
 import sk.hackcraft.als.slave.game.Profile;
 import sk.hackcraft.als.slave.game.RealGameEnvironment;
+import sk.hackcraft.als.slave.game.TemporaryRealParasiteConnection;
 import sk.hackcraft.als.slave.launcher.BotLauncher;
 import sk.hackcraft.als.slave.launcher.BotLauncherFactory;
 import sk.hackcraft.als.slave.launcher.MockBotLauncherFactory;
@@ -305,7 +305,7 @@ public class Application implements Runnable
 		}
 
 		final SlaveMatchReportHolder holder = new SlaveMatchReportHolder();
-		
+
 		EventListener<PlayerColor> matchStartedEventListener = new EventListener<PlayerColor>()
 		{
 			@Override
@@ -370,7 +370,7 @@ public class Application implements Runnable
 		parasiteConnection.run();
 
 		parasiteConnection.close();
-		
+
 		parasiteConnection.getMatchStartedEvent().removeListener(matchStartedEventListener);
 		parasiteConnection.getMatchEndedEvent().removeListener(matchEndedEventListener);
 		parasiteConnection.getDisconnectEvent().removeListener(disconnectEventListener);

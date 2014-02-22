@@ -24,14 +24,14 @@ public class MultipartRequest implements Request<MultipartRequest.Response>
 	private final String url;
 	private final String actionUrl;
 	private final Map<String, ContentBody> parts;
-	
+
 	public MultipartRequest(Builder builder)
 	{
 		this.url = builder.url;
 		this.actionUrl = builder.actionUrl;
 		this.parts = new HashMap<>(builder.parts);
 	}
-	
+
 	@Override
 	public Response send() throws IOException
 	{
@@ -43,38 +43,38 @@ public class MultipartRequest implements Request<MultipartRequest.Response>
 		{
 			String name = entry.getKey();
 			ContentBody body = entry.getValue();
-			
+
 			entity.addPart(name, body);
 		}
-		
+
 		httpPost.setEntity(entity);
-		
+
 		HttpResponse response = httpClient.execute(httpPost);
 		HttpEntity responseEntity = response.getEntity();
-		
+
 		return new Response(EntityUtils.toString(responseEntity));
 	}
-	
+
 	public static class Builder
 	{
 		private final String url;
-		
+
 		private String actionUrl;
 		private final Map<String, ContentBody> parts;
-		
+
 		public Builder(String url)
 		{
 			this.url = url;
 			this.actionUrl = "";
 			parts = new HashMap<>();
 		}
-		
+
 		public Builder setActionUrl(String actionUrl)
 		{
 			this.actionUrl = actionUrl;
 			return this;
 		}
-		
+
 		public Builder addString(String name, String content)
 		{
 			StringBody body;
@@ -86,34 +86,34 @@ public class MultipartRequest implements Request<MultipartRequest.Response>
 			{
 				throw new RuntimeException(e);
 			}
-			
+
 			parts.put(name, body);
 			return this;
 		}
-		
+
 		public Builder addFile(String name, Path filePath)
 		{
 			File file = filePath.toFile();
-			
+
 			parts.put(name, new FileBody(file));
 			return this;
 		}
-		
+
 		public MultipartRequest create()
 		{
 			return new MultipartRequest(this);
 		}
 	}
-	
+
 	public static class Response
 	{
 		private final String content;
-		
+
 		public Response(String content)
 		{
 			this.content = content;
 		}
-		
+
 		public String getContent()
 		{
 			return content;
