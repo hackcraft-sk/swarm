@@ -413,7 +413,7 @@ public class Application implements Runnable
 				}
 
 				holder.report = new SlaveMatchReport(valid, bot.getId(), achievements, null);
-				holder.connected = true;
+				holder.connected = false;
 			}
 		};
 
