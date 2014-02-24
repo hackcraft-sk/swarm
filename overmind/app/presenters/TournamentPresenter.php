@@ -19,7 +19,14 @@ class TournamentPresenter extends BasePresenter {
 	}
 	
 	public function renderLadder() {
-		$this->template->ladder = $this->getSelectedTournament()->getLadder();
+		$ladder = $this->getSelectedTournament()->getLadder();
+
+		foreach($ladder as &$user) {
+			$user['achievements'] = $this->getSelectedTournament()->getAchievements()->getAchievementsForUser($user['id']);
+		}
+
+		$this->template->ladder = $ladder;
+
 		$this->template->snapshotsJson = $this->getSelectedTournament()->getLadderSnapshotData();
 	}
 	

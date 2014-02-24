@@ -1,4 +1,6 @@
 <?php
+include_once "Achievements.php";
+
 /**
  * Description of Tournament
  *
@@ -24,6 +26,8 @@ class Tournament {
 	 * @var TournamentSystem
 	 */
 	private $system;
+
+	private $achievements;
 	
 	public function __construct(\Nette\Database\Connection $database, $data) {
 		$this->database = $database;
@@ -38,6 +42,8 @@ class Tournament {
 		
 		$systemClass = $this->data['system'];
 		$this->system = new $systemClass($this);
+
+		$this->achievements = new Achievements($database, $this->data['id']);
 	}
 	
 	public function getId() {
@@ -86,6 +92,23 @@ class Tournament {
 
 	public function getSystemClassName() {
 		return $this->data['system'];
+	}
+
+	public function getPointsDependingOnAchievements($hostAchievements, $guestAchievements) {
+		if(isset($hostAchievements['victory']) && isset($guestAchievements['defeat'])) { // WIN LOST
+			list($hostPoints, $guestPoints) = $this->getSystem()->getWinPoints();
+			$result = 1;
+		} else if(isset($hostAchievements['defeat']) && isset($guestAchievements['victory'])) { // LOST WIN
+			list($guestPoints, $hostPoints) = $this->getSystem()->getWinPoints();
+			$result = -1;
+		} else if(isset($hostAchievements['defeat']) && isset($guestAchievements['defeat'])) { // LOST LOST = DRAW
+			$hostPoints = $guestPoints = $this->getSystem()->getDrawPoints();
+			$result = 0;
+		} else {
+			throw new Exception("Wrong victory/defeat arrangement!");
+		}
+
+		return array($result, $hostPoints, $guestPoints);
 	}
 	
 	public function update($data) {
@@ -224,8 +247,7 @@ class Tournament {
 			SELECT 
 				matches.*, 
 				host.username AS hostName, 
-				guest.username AS guestName,
-				(guest.competitive && host.competitive) AS competitive
+				guest.username AS guestName
 			FROM matches 
 				LEFT JOIN users AS host ON(matches.hostUserId = host.id) 
 				LEFT JOIN users AS guest ON(matches.guestUserId = guest.id) 
@@ -474,7 +496,7 @@ SQL;
 			$toCreate = $numberOfMatches - $realNumberOfMatches;
 
 			for($i=0; $i<$toCreate; $i++) {
-				$ladder = array_merge($this->getLadder(true), $this->getLadder(false));
+				$ladder = $this->getLadder();
 
 				if(count($ladder) < 2) {
 					throw new Exception("Not enough players to schedule a match.");
@@ -571,10 +593,12 @@ SQL;
 		
 		$now = time();
 		
-		$stmt3 = $this->database->prepare("UPDATE `matches` SET `state`='PLAYING', `startTime`=? WHERE `id`=?");
+		$stmt3 = $this->database->prepare("UPDATE `matches` SET `state`='PLAYING', `startTime`=?, `hostBotId`=?, `guestBotId`=? WHERE `id`=?");
 		$matchId = $match['id'];
 		$stmt3->bindParam(1, $now);
-		$stmt3->bindParam(2, $matchId);
+		$stmt3->bindParam(2, $hostBot['id']);
+		$stmt3->bindParam(3, $guestBot['id']);
+		$stmt3->bindParam(4, $matchId);
 		
 		if(!$stmt3->execute()) {
 			throw new Exception("DB: Query error");
@@ -688,6 +712,33 @@ SQL;
 		}
 
 		return $result;
+	}
+
+	public function getEarnedAchievements($earned) {
+		$result = array();
+		foreach($earned as $achievementName => $achievementData) {
+			$achievement = $this->achievements->getAchievement($achievementName);
+			$result[$achievement->getId()] = $achievement;
+		}
+		return $result;
+	}
+/*
+	public function handleEarnedAchievement($userId, $achievement) {
+		$achievementName = $achievement['name'];
+		unset($achievement['name']);
+		$currentAchievementData = $achievement;
+
+		try {
+			$oldAchievementData = $this->getAchievementData($userId, $achievementName);
+			$currentAchievementData = $this->mergeAchievements($oldAchievementData, $currentAchievementData);
+			$this->updateAchievementData($userId, $achievementName, $currentAchievementData);
+		} catch(Exception $e) {
+			$this->createAchievementData($userId, $achievementName, $currentAchievementData);
+		}
+	}*/
+
+	public function getAchievements() {
+		return $this->achievements;
 	}
 }
 ?>

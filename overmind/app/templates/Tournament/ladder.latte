@@ -33,7 +33,11 @@
 {foreach $ladder as $bot}
 	<tr>
 		<td>{if $bot['competitive']}{$position}.{/if}</td>
-		<td>{$bot['username']}</td>
+		<td>{$bot['username']}
+
+		{includeblock '../components/achievements.latte', achievements => $bot['achievements']}
+
+		</td>
 		<td>{$bot['matchesWon']}</td>
 		<td>{$bot['matchesDraw']}</td>
 		<td>{$bot['matchesTotal']}</td>
