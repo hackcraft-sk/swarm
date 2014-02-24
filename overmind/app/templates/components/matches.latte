@@ -23,14 +23,13 @@
 <table class="matches list">
 	<tr>
 		{ifset $displayStartTime}
-		<th>{_}start_time{/_}</th>
+		<th>{_}start_time{/_} <small>({? echo \Scmai\Utils\getCurrentTimezoneAbbr()})</small></th>
 			{ifset $displayDuration}
 			<th>{_}duration{/_}</th>
 			{/ifset}
 		{/ifset}
 		<th>{_}host_player{/_}</th>
 		<th>{_}guest_player{/_}</th>
-		{ifset $displayDetails}<th>*</th>{/ifset}
 		{if $displayReplay}<th>Replay</th>{/if}
 	</tr>
 {for $i=max(0, $future - $futureMatches), $count=0; $count < $matchesCount && $i < count($matches); $i++, $count++}
@@ -51,9 +50,6 @@
 		{/ifset}
 		<td class="{$hostClass}">{$match['hostName']}{if isset($displayPoints) && $match['state'] == 'FINISHED'} <small>{if $match['hostPoints']>=0}+{/if}{$match['hostPoints']}</small>{/if}</td>
 		<td class="{$guestClass}">{$match['guestName']}{if isset($displayPoints) && $match['state'] == 'FINISHED'} <small>{if $match['guestPoints']>=0}+{/if}{$match['guestPoints']}</small>{/if}</td>
-		{ifset $displayDetails}
-		<td>{if !$match['competitive']}NC{/if}</td>
-		{/ifset}
 		{if $displayReplay}
 		<td>
 			{ifset $match['replayUrl']}

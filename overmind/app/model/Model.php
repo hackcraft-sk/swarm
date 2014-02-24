@@ -239,7 +239,6 @@ class Model {
 
 	/**
 	 * 
-	 * @param array $data as JSON: { matchId: 1, result: OK|INVALID, botResults: [{ botId: 2, matchResult: WIN|LOST|DRAW|DISCONNECT}, { botId: 3, matchResult: WIN|LOST|DRAW|DISCONNECT }] }
 	 * @throws Exception
 	 */
 	public function handleMatchResult($data, Nette\Http\Request $request) {
@@ -274,56 +273,43 @@ class Model {
 		} else if($data['result'] != 'OK') {
 			throw new Exception("Unknown match result '{$data['result']}'");
 		}
-		
+
+		// RESULT IS OK
 		if($match['hostUserId'] == $data['botResults'][0]['userId'] && $match['guestUserId'] == $data['botResults'][1]['userId']) {
-			$hostResult = $data['botResults'][0]['matchResult'];
-			$guestResult = $data['botResults'][1]['matchResult'];
+			$hostMatch = $data['botResults'][0];
+			$guestMatch = $data['botResults'][1];
 		} else if($match['hostUserId'] == $data['botResults'][1]['userId'] && $match['guestUserId'] == $data['botResults'][0]['userId']) {
-			$hostResult = $data['botResults'][1]['matchResult'];
-			$guestResult = $data['botResults'][0]['matchResult'];
+			$hostMatch = $data['botResults'][1];
+			$guestMatch = $data['botResults'][0];
 		} else {
 			throw new Exception("Bot ids for result don't match the match info");
 		}
 
-		// WIN xxx
-		if($hostResult == 'WIN' || $hostResult == 'PARTIAL_WIN') {
-			if($hostResult == 'WIN') {
-				list($hostPoints, $guestPoints) = $tournament->getSystem()->getWinPoints();
-			} else {
-				list($hostPoints, $guestPoints) = $tournament->getSystem()->getPartialWinPoints();
-			}
-			$result = 1;
-		// xxx WIN
-		} else if($guestResult == 'WIN' || $guestResult == 'PARTIAL_WIN') {
-			if($guestResult == 'WIN') {
-				list($guestPoints, $hostPoints) = $tournament->getSystem()->getWinPoints();
-			} else {
-				list($guestPoints, $hostPoints) = $tournament->getSystem()->getPartialWinPoints();
-			}
-			$result = -1;
-		// anything else is draw
+		if(isset($hostMatch['achievements'])) {
+			$hostAchievements = $tournament->getEarnedAchievements($hostMatch['achievements']);
 		} else {
-			$hostPoints = $guestPoints = $tournament->getSystem()->getDrawPoints();
-			$result = 0;
+			$hostAchievements = array();
 		}
-		
-		$matchId = $match['id'];
-		
-		// if replay is set
-		/*if(isset($data['replay'])) {
-			$file = $request->getFile("replay");
+		if(isset($guestMatch['achievements'])) {
+			$guestAchievements = $tournament->getEarnedAchievements($guestMatch['achievements']);
+		} else {
+			$guestAchievements = array();
+		}
 
-			$pathToBeMovedTo = self::REPLAY_SERVER_LOCATION."/".$matchId.".rep";
-			$file->move($pathToBeMovedTo);
-		}*/
+		list($result, $hostPoints, $guestPoints) = $tournament->getPointsDependingOnAchievements(
+			$hostAchievements, 
+			$guestAchievements
+		);
+
+		$matchId = $match['id'];
 
 		$now = time();
 		
 		$stmt3 = $this->database->prepare("UPDATE matches SET result = ?, state='FINISHED', `endTime`=?, `hostResult`=?, `guestResult`=?, `hostPoints`=?, `guestPoints`=? WHERE id = ?");
 		$stmt3->bindParam(1, $result);
 		$stmt3->bindParam(2, $now);
-		$stmt3->bindParam(3, $hostResult);
-		$stmt3->bindParam(4, $guestResult);
+		$stmt3->bindParam(3, $hostMatch['matchResult']);
+		$stmt3->bindParam(4, $guestMatch['matchResult']);
 		$stmt3->bindParam(5, $hostPoints);
 		$stmt3->bindParam(6, $guestPoints);
 		$stmt3->bindParam(7, $matchId);
@@ -333,6 +319,13 @@ class Model {
 		}
 		
 		$tournament->takeLadderSnapshot();
+
+		foreach($hostAchievements as $hostAchievement) {
+			$tournament->getAchievements()->addEarnedAchievement($match['hostBotId'], $match['id'], $hostAchievement);
+		}
+		foreach($guestAchievements as $guestAchievement) {
+			$tournament->getAchievements()->addEarnedAchievement($match['guestBotId'], $match['id'], $guestAchievement);
+		}
 	}
 	
 	public function archiveTournamentAs($tournamentId, $newName, $shouldDeleteBots = false) {
@@ -362,32 +355,25 @@ class Model {
 
 		$newId = $this->database->lastInsertId();
 
-		$this->copyBots($tournamentId, $newId);
-		$this->copyMatches($tournamentId, $newId);
+		$this->moveMatches($tournamentId, $newId);
+		$this->moveBots($tournamentId, $newId);
 		$this->moveLadderSnapshots($tournamentId, $newId);
 
-		$tournament->deleteMatches();
-
-		if($shouldDeleteBots) {
-			$tournament->deleteBots();
+		if(!$shouldDeleteBots) {
+			$this->copyBots($newId, $tournamentId);
 		}
 	}
 
-	public function copyMatches($fromId, $toId) {
-		$sql = "INSERT INTO `matches` ".
-			"(tournamentId, state, hostUserId, guestUserId, result, startTime, endTime, hostResult, guestResult, hostPoints, guestPoints) ".
-			"SELECT ".
-			"{$toId} as newTournamentId, state, hostUserId, guestUserId, result, startTime, endTime, hostResult, guestResult, hostPoints, guestPoints ".
-			"FROM `matches` WHERE `tournamentId`=?";
-
-		$stmt = $this->database->prepare($sql);
-		$stmt->bindParam(1, $fromId);
+	public function moveMatches($fromId, $toId) {
+		$stmt = $this->database->prepare("UPDATE `matches` SET `tournamentId`=? WHERE `tournamentId`=?");
+		$stmt->bindParam(1, $toId);
+		$stmt->bindParam(2, $fromId);
 
 		if(!$stmt->execute()) {
-			throw new Exception("DB: Query error with {$sql}");
+			throw new Exception("DB: Query error");
 		}
 	}
-	
+
 	public function moveLadderSnapshots($fromId, $toId) {
 		$sql = "UPDATE `ladder_snapshots` SET `tournamentId`=? WHERE `tournamentId`=?";
 	 
@@ -397,6 +383,16 @@ class Model {
 
 		if(!$stmt->execute()) {
 			throw new Exception("DB: Query error with {$sql}");
+		}
+	}
+
+	public function moveBots($fromId, $toId) {
+		$stmt = $this->database->prepare("UPDATE `bots` SET `tournamentId`=? WHERE `tournamentId`=?");
+		$stmt->bindParam(1, $toId);
+		$stmt->bindParam(2, $fromId);
+
+		if(!$stmt->execute()) {
+			throw new Exception("DB: Query error");
 		}
 	}
 
