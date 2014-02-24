@@ -131,13 +131,15 @@ public class RealWebConnection implements WebConnection
 				JSONObject botResult = new JSONObject();
 				botResult.put("botId", botId);
 
-				JSONArray achievementsArray = new JSONArray();
+				JSONObject achievementsSet = new JSONObject();
 				for (Achievement achievement : reports.getAchievements())
 				{
-					achievementsArray.put(achievement.getName());
+					JSONObject achievementObject = new JSONObject();
+					
+					achievementsSet.put(achievement.getName(), achievementObject);
 				}
 
-				botResult.put("achievements", achievementsArray);
+				botResult.put("achievements", achievementsSet);
 				
 				botResults.put(botResult);
 			}
