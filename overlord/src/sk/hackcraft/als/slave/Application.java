@@ -315,13 +315,9 @@ public class Application implements Runnable
 					botLauncher.dispose();
 				}
 			}
-			catch (RuntimeException e)
-			{
-				throw e;
-			}
 			catch (Exception e)
 			{
-				log.error("An error has occured: " + e.getMessage());
+				log.error("Error: " + e.getMessage());
 
 				e.printStackTrace();
 
