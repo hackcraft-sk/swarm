@@ -14,6 +14,7 @@
 #include "Parasite/OverlordConnection.h"
 #include "Parasite/PlayerColor.h"
 #include "Parasite/AchievementsCollector.h"
+#include "Parasite/MessageInterface.h"
 
 #include "Parasite/Watchers/GameResultWatcher.h"
 #include "Parasite/Watchers/FastGameWatcher.h"
@@ -35,9 +36,9 @@ namespace Parasite
 	, autocam(AutoCamera(&game))
 	{
 		gameResultWatcher = new GameResultWatcher(gameWatcher);
-		winUnder1MinutesWatcher = new FastGameWatcher(gameWatcher, game, 60, "winUnder1Minutes");
+		winUnder1MinutesWatcher = new FastGameWatcher(gameWatcher, game, 60, "winUnder1Minute");
 		winUnder3MinutesWatcher = new FastGameWatcher(gameWatcher, game, 60 * 3, "winUnder3Minutes");
-		defetUnder1MinutesWatcher = new FastGameWatcher(gameWatcher, game, 60, "defeatUnder1Minutes");
+		defetUnder1MinutesWatcher = new FastGameWatcher(gameWatcher, game, 60, "defeatUnder1Minute");
 	}
 
 	void ParasiteModule::onStart()

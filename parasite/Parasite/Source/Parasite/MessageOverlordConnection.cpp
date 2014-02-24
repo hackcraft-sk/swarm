@@ -46,7 +46,7 @@ namespace Parasite
 		s << "{";
 		s << "\"achievements\":";
 
-			s << "[";
+			s << "{";
 			bool first = true;
 			set<Achievement*>::const_iterator it;
 			for (it = achievements.begin(); it != achievements.end(); it++)
@@ -64,9 +64,9 @@ namespace Parasite
 
 				string achievementName = achievement->getName();
 
-				s << "{\"name\": \"" << achievementName << "\"}";
+				s << "\"" << achievementName << "\": {}";
 			}
-			s << "]";
+			s << "}";
 
 		s << "}";
 

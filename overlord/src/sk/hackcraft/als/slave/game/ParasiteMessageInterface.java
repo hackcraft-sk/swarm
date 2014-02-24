@@ -58,10 +58,18 @@ public class ParasiteMessageInterface
 
 	public String waitForMessage() throws IOException
 	{
+		try
+		{
 		int size = input.readInt();
 		byte bytes[] = new byte[size]; 
 		input.readFully(bytes);
 
 		return new String(bytes);
+		}
+		catch (NullPointerException e)
+		{
+			e.printStackTrace();
+			throw e;
+		}
 	}
 }

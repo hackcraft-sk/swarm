@@ -94,12 +94,12 @@ System.out.println(message);
 				{
 					Set<Achievement> achievements = new HashSet<>();
 
-					JSONArray achievementsJsonArray = jsonMessage.getJSONArray("achievements");
-					for (int i = 0; i < achievementsJsonArray.length(); i++)
+					JSONObject achievementsJsonSet = jsonMessage.getJSONObject("achievements");
+					
+					Set<String> keys = achievementsJsonSet.keySet();
+					for (String key : keys)
 					{
-						JSONObject achievementJsonObject = achievementsJsonArray.getJSONObject(i);
-
-						String achievementName = achievementJsonObject.getString("name");
+						String achievementName = key;
 
 						achievements.add(new Achievement(achievementName));
 					}
