@@ -154,7 +154,7 @@ public class JSONObject
 	/**
 	 * The map where the JSONObject's properties are kept.
 	 */
-	private final Map<Object, Object> map;
+	private final Map<String, Object> map;
 
 	/**
 	 * It is sometimes more convenient and less ambiguous to have a
@@ -278,15 +278,15 @@ public class JSONObject
 	 *            the JSONObject.
 	 * @throws JSONException
 	 */
-	public JSONObject(Map<Object, Object> map)
+	public JSONObject(Map<String, Object> map)
 	{
 		this.map = new HashMap<>();
 		if (map != null)
 		{
-			Iterator<Map.Entry<Object, Object>> i = map.entrySet().iterator();
+			Iterator<Map.Entry<String, Object>> i = map.entrySet().iterator();
 			while (i.hasNext())
 			{
-				Map.Entry<Object, Object> e = i.next();
+				Map.Entry<String, Object> e = i.next();
 				Object value = e.getValue();
 				if (value != null)
 				{
@@ -685,7 +685,7 @@ public class JSONObject
 		{
 			return null;
 		}
-		Iterator<Object> iterator = jo.keys();
+		Iterator<String> iterator = jo.keys();
 		String[] names = new String[length];
 		int i = 0;
 		while (iterator.hasNext())
@@ -814,7 +814,7 @@ public class JSONObject
 	 * 
 	 * @return An iterator of the keys.
 	 */
-	public Iterator<Object> keys()
+	public Iterator<String> keys()
 	{
 		return this.keySet().iterator();
 	}
@@ -824,7 +824,7 @@ public class JSONObject
 	 * 
 	 * @return A keySet.
 	 */
-	public Set<Object> keySet()
+	public Set<String> keySet()
 	{
 		return this.map.keySet();
 	}
@@ -849,7 +849,7 @@ public class JSONObject
 	public JSONArray names()
 	{
 		JSONArray ja = new JSONArray();
-		Iterator<Object> keys = this.keys();
+		Iterator<String> keys = this.keys();
 		while (keys.hasNext())
 		{
 			ja.put(keys.next());
@@ -1850,7 +1850,7 @@ public class JSONObject
 		{
 			boolean commanate = false;
 			final int length = this.length();
-			Iterator<Object> keys = this.keys();
+			Iterator<String> keys = this.keys();
 			writer.write('{');
 
 			if (length == 1)

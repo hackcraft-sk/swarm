@@ -24,7 +24,6 @@ namespace Parasite
 	{
 		private:
 			SOCKET ConnectSocket;
-			BWU::Log &log;
 
 			std::string address;
 			const char *defaultPort;
@@ -32,7 +31,7 @@ namespace Parasite
 			void buildString(char* output, const char* key, const char* value);
 
 		public:
-			SocketMessageInterface(std::string address, BWU::Log &log);
+			SocketMessageInterface(std::string address);
 
 			virtual void open();
 			virtual void close();

@@ -21,8 +21,8 @@ using BWU::Log;
 
 namespace Parasite
 {
-	SocketMessageInterface::SocketMessageInterface(string address, Log &log)
-			: address(address), log(log), defaultPort("11998"), ConnectSocket(INVALID_SOCKET)
+	SocketMessageInterface::SocketMessageInterface(string address)
+			: address(address), defaultPort("11998"), ConnectSocket(INVALID_SOCKET)
 	{
 	}
 
@@ -36,7 +36,7 @@ namespace Parasite
 		iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
 		if (iResult != 0)
 		{
-			throw new MessageInterfaceException("Function WSAStartup failed: " + iResult);
+			throw new MessageInterfaceException("Function WSAStartup failed.");
 		}
 
 		ZeroMemory( &hints, sizeof(hints) );
@@ -50,7 +50,7 @@ namespace Parasite
 		if (iResult != 0)
 		{
 			WSACleanup();
-			throw new MessageInterfaceException("Function getaddrinfo failed: " + iResult);
+			throw new MessageInterfaceException("Function getaddrinfo failed.");
 		}
 
 		// Attempt to connect to an address until one succeeds
@@ -62,7 +62,7 @@ namespace Parasite
 			if (ConnectSocket == INVALID_SOCKET)
 			{
 				WSACleanup();
-				throw new MessageInterfaceException("Opening socket failed: " + WSAGetLastError());
+				throw new MessageInterfaceException("Opening socket failed.");
 			}
 
 			// Connect to server
@@ -106,7 +106,6 @@ namespace Parasite
 		int iResult = send(ConnectSocket, buffer, bufferSize, 0);
 		if (iResult == SOCKET_ERROR)
 		{
-			log.printf("send failed with error: %d", WSAGetLastError());
 			closesocket(ConnectSocket);
 			WSACleanup();
 

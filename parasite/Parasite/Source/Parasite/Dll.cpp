@@ -56,15 +56,7 @@ extern "C" __declspec(dllexport)     AIModule* newTournamentAI(Game* game)
 	MessageInterface *messageInterface;
 
 	// real interface
-	try
-	{
-		messageInterface = new SocketMessageInterface("localhost", *log);
-	}
-	catch (MessageInterfaceException *e)
-	{
-		cout << e->what() << endl;
-		std::exit(EXIT_FAILURE);
-	}
+	messageInterface = new SocketMessageInterface("localhost");
 
 	// debug interface
 	//messageInterface = new LogMessageInterface(*log);
