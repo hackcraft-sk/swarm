@@ -86,7 +86,7 @@ namespace Parasite
 
 	void ParasiteModule::onFrame()
 	{
-		//autocam.update();
+		autocam.update();
 
 		if(game.getFrameCount() % 30 == 0)
 		{

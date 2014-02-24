@@ -4,18 +4,20 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class FastForceProcessesKiller implements ProcessesKiller
 {
 	// should be enough to kill everything everytime
 	private static final int DEFAULT_TIMEOUT = 60 * 1000;
 
-	private final List<String> processNames;
+	private final Set<String> processNames;
 	private final ProcessesListFactory processesListFactory;
 
-	public FastForceProcessesKiller(List<String> processNames, ProcessesListFactory processesListFactory)
+	public FastForceProcessesKiller(Set<String> processNames, ProcessesListFactory processesListFactory)
 	{
-		this.processNames = new LinkedList<>(processNames);
+		this.processNames = new TreeSet<>(processNames);
 		this.processesListFactory = processesListFactory;
 	}
 

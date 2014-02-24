@@ -166,6 +166,11 @@ namespace Parasite
 			score += 30;
 		}
 
+		if (unit->isUnderAttack())
+		{
+			score += 30;
+		}
+
 		std::set<BWAPI::Unit*> nearbyUnits = unit->getUnitsInRadius(200);
 		std::set<BWAPI::Unit*> enemyUnits;
 		std::set<BWAPI::Unit*>::iterator it;

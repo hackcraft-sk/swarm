@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import sk.hackcraft.als.utils.FastForceProcessesKiller;
 import sk.hackcraft.als.utils.ProcessesKiller;
@@ -41,7 +43,7 @@ public class RealGameEnvironment implements GameEnvironment
 	{
 		try
 		{
-			List<String> processNames = new LinkedList<>();
+			Set<String> processNames = new TreeSet<>();
 			processNames.add("StarCraft.exe");
 			processNames.add("Chaoslauncher.exe");
 

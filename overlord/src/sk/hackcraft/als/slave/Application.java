@@ -31,10 +31,17 @@ import sk.hackcraft.als.slave.launcher.ReplayRetriever;
 import sk.hackcraft.als.slave.plugins.BWTV;
 import sk.hackcraft.als.utils.Achievement;
 import sk.hackcraft.als.utils.Config;
+import sk.hackcraft.als.utils.EnvironmentCleaner;
+import sk.hackcraft.als.utils.FastForceProcessesKiller;
 import sk.hackcraft.als.utils.IniFileConfig;
 import sk.hackcraft.als.utils.MatchEvent;
 import sk.hackcraft.als.utils.MemoryConfig;
 import sk.hackcraft.als.utils.PlayerColor;
+import sk.hackcraft.als.utils.ProcessStarter;
+import sk.hackcraft.als.utils.ProcessesKiller;
+import sk.hackcraft.als.utils.ProcessesList;
+import sk.hackcraft.als.utils.ProcessesListFactory;
+import sk.hackcraft.als.utils.WindowsTasklist;
 import sk.hackcraft.als.utils.application.EventListener;
 import sk.hackcraft.als.utils.log.Log;
 import sk.hackcraft.als.utils.log.PrintStreamLog;
@@ -65,6 +72,8 @@ public class Application implements Runnable
 	private final boolean host;
 
 	private BWTV bwtv;
+
+	private EnvironmentCleaner environmentCleaner;
 
 	private Path starCraftPath;
 	private final ReplayRetriever replayRetriever;
@@ -165,18 +174,64 @@ public class Application implements Runnable
 		log = new PrintStreamLog(System.out, "Overlord");
 
 		bwtv = new BWTV();
+
+		this.environmentCleaner = new EnvironmentCleaner()
+		{
+			private int runsWithoutClean = 0;
+			private final int runsWithoutCleanLimit = 0;
+
+			private final ProcessesKiller explorerKiller;
+			private final ProcessStarter explorerStarter;
+
+			{
+				Set<String> processNames = new HashSet<>();
+				processNames.add("explorer.exe");
+
+				ProcessesListFactory factory = new ProcessesListFactory()
+				{
+					@Override
+					public ProcessesList create() throws IOException
+					{
+						return new WindowsTasklist();
+					}
+				};
+
+				this.explorerKiller = new FastForceProcessesKiller(processNames, factory);
+
+				this.explorerStarter = new ProcessStarter("explorer.exe");
+			}
+
+			@Override
+			public void clean() throws IOException
+			{
+				gameEnvironment.killApplications();
+
+				// TODO not working properly
+				// first kill is perfect
+				// but subsequent one are opening my documents and not clearing
+				// chaoslauncher taskbar icons
+				/*
+				 * if (runsWithoutClean >= runsWithoutCleanLimit) {
+				 * log.info("Restarting explorer.exe...");
+				 * 
+				 * explorerKiller.killAll(); explorerStarter.start();
+				 * 
+				 * runsWithoutClean = 0; } else { runsWithoutClean++; }
+				 */
+			}
+		};
 	}
 
 	@Override
 	public void run()
 	{
-		log.info("Preventive environment kill");
-		gameEnvironment.killApplications();
-
 		while (run)
 		{
 			try
 			{
+				log.info("Preventive environment clean");
+				environmentCleaner.clean();
+
 				BwapiConfig bwapiConfig = new BwapiConfig(starCraftPath.toString());
 
 				log.info("Connecting to master");
@@ -267,7 +322,7 @@ public class Application implements Runnable
 			catch (Exception e)
 			{
 				log.error("An error has occured: " + e.getMessage());
-				
+
 				e.printStackTrace();
 
 				try
@@ -301,12 +356,13 @@ public class Application implements Runnable
 
 		bwtv.sendEvent(MatchEvent.PREPARE);
 
-		class SlaveMatchReportHolder
+		class AsyncHolder
 		{
 			public SlaveMatchReport report;
+			public boolean connected = true;
 		}
 
-		final SlaveMatchReportHolder holder = new SlaveMatchReportHolder();
+		final AsyncHolder holder = new AsyncHolder();
 
 		EventListener<PlayerColor> matchStartedEventListener = new EventListener<PlayerColor>()
 		{
@@ -324,7 +380,7 @@ public class Application implements Runnable
 			@Override
 			public void onEvent(Object origin, Set<Achievement> achievements)
 			{
-				log.info("Match ended. Bot earned " + achievements.size() + " achievements.");
+				log.info("Match ended. Bot earned :" + achievements);
 
 				Path replayPath;
 				try
@@ -356,10 +412,12 @@ public class Application implements Runnable
 
 				if (valid)
 				{
+					achievements.add(new Achievement("defeat"));
 					achievements.add(new Achievement("crash"));
 				}
 
 				holder.report = new SlaveMatchReport(valid, bot.getId(), achievements, null);
+				holder.connected = true;
 			}
 		};
 
@@ -367,9 +425,14 @@ public class Application implements Runnable
 		parasiteConnection.getMatchEndedEvent().addListener(matchEndedEventListener);
 		parasiteConnection.getDisconnectEvent().addListener(disconnectEventListener);
 
+		log.info("Connecting to parasite...");
 		parasiteConnection.open();
 
-		log.info("Launching parasite connection.");
+		if (!holder.connected)
+		{
+			throw new IOException("Cant connect to Parasite.");
+		}
+
 		parasiteConnection.run();
 
 		parasiteConnection.close();
