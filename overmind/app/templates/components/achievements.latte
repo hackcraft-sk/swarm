@@ -1,0 +1,10 @@
+{ifset $achievements}
+	{foreach $achievements as $achievement}
+		{var $class=(isset($imgClass) ? $imgClass.", achievement" : "achievement")}
+		{if file_exists($achievement->getImageLocalFile())}
+			<img class="{$class}" src="{$achievement->getImageURL()}" />
+		{else}
+			<div class="{$class}"><span>{$achievement->getName()}</span></div>
+		{/if}
+	{/foreach}
+{/ifset}
