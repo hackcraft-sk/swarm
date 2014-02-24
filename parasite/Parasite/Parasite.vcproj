@@ -125,7 +125,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="../include;C:\scmai\SCMAI\Parasite\Source"
+				AdditionalIncludeDirectories="../include;C:\swarm\parasite\Parasite\Source"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;EXAMPLETOURNAMENTMODULE_EXPORTS;_SECURE_SCL 0"
 				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
