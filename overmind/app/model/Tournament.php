@@ -246,9 +246,20 @@ class Tournament {
 		$query = <<<SQL
 			SELECT 
 				matches.*, 
-				host.username AS hostName, 
-				guest.username AS guestName
-			FROM matches 
+				host.username AS hostName,
+				guest.username AS guestName,
+				(
+					SELECT GROUP_CONCAT(DISTINCT `ae`.achievementId SEPARATOR ' ') 
+					FROM achievements_earned AS `ae` 
+					WHERE `ae`.matchId=matches.id AND `ae`.botId=matches.hostBotId
+				) AS `hostBotAchievementsString`,
+				(
+					SELECT GROUP_CONCAT(DISTINCT `ae2`.achievementId SEPARATOR ' ') 
+					FROM achievements_earned AS `ae2` 
+					WHERE `ae2`.matchId=matches.id AND `ae2`.botId=matches.guestBotId
+				) AS `guestBotAchievementsString`
+			FROM 
+				matches
 				LEFT JOIN users AS host ON(matches.hostUserId = host.id) 
 				LEFT JOIN users AS guest ON(matches.guestUserId = guest.id) 
 			WHERE 
@@ -285,6 +296,9 @@ SQL;
 			if(file_exists($realFile)) {
 				$row['replayUrl'] = $urlFile;
 			}
+
+			$row['hostBotAchievements'] = $this->getAchievementsFromString($row['hostBotAchievementsString']);
+			$row['guestBotAchievements'] = $this->getAchievementsFromString($row['guestBotAchievementsString']);
 
 			$matches[] = $row;
 		}
@@ -709,6 +723,21 @@ SQL;
 			}
 			
 			$result[] = $row;
+		}
+
+		return $result;
+	}
+
+	public function getAchievementsFromString($string) {
+		$ar = explode(" ", $string);
+		$result = array();
+
+		foreach($ar as $name) {
+			if($name == "") {
+				continue;
+			}
+			$achievement = $this->achievements->getAchievement($name);
+			$result[$achievement->getId()] = $achievement;
 		}
 
 		return $result;

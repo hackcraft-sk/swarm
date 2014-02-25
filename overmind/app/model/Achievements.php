@@ -118,9 +118,15 @@ class Achievement {
 	private $name;
 	private $description;
 	private $isVisible;
+	private $nature;
+	private $abbr;
 
 	public function getId() {
 		return $this->id;
+	}
+
+	public function getAbbr() {
+		return $this->abbr;
 	}
 
 	public function getName() {
@@ -141,5 +147,13 @@ class Achievement {
 
 	public function getImageURL() {
 		return "http://scmai.hackcraft.sk/achievements/{$this->id}.png";
+	}
+
+	public function isGood() {
+		return $this->nature > 0;
+	}
+
+	public function isBad() {
+		return $this->nature < 0;
 	}
 }

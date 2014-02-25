@@ -14,6 +14,11 @@
 	{var $displayReplay = false}
 {/ifset}
 
+{ifset $displayAchievements}
+{else}
+	{var $displayAchievements = false}
+{/ifset}
+
 {var $future = 0}
 {foreach $matches as $match}
 	{breakIf $match['state']=='FINISHED'}
@@ -48,12 +53,36 @@
 			<td width="15%">{if $match['endTime'] != 0}{($match['endTime']-$match['startTime'])|shortDuration}{/if}</td>
 			{/ifset}
 		{/ifset}
-		<td class="{$hostClass}">{$match['hostName']}{if isset($displayPoints) && $match['state'] == 'FINISHED'} <small>{if $match['hostPoints']>=0}+{/if}{$match['hostPoints']}</small>{/if}</td>
-		<td class="{$guestClass}">{$match['guestName']}{if isset($displayPoints) && $match['state'] == 'FINISHED'} <small>{if $match['guestPoints']>=0}+{/if}{$match['guestPoints']}</small>{/if}</td>
+		<td class="{$hostClass}">{$match['hostName']}
+
+		{if isset($displayPoints) && $match['state'] == 'FINISHED'}
+			<small>{if $match['hostPoints']>=0}+{/if}{$match['hostPoints']}</small>
+			{if $displayAchievements}
+				{foreach $match['hostBotAchievements'] as $achievement}
+					{includeblock '../components/achievement.latte', achievement => $achievement}
+				{/foreach}
+			{/if}
+		{/if}
+
+		</td>
+		<td class="{$guestClass}">{$match['guestName']}
+
+		{if isset($displayPoints) && $match['state'] == 'FINISHED'}
+			<small>{if $match['guestPoints']>=0}+{/if}{$match['guestPoints']}</small>
+			{if $displayAchievements}
+				{foreach $match['guestBotAchievements'] as $achievement}
+					{includeblock '../components/achievement.latte', achievement => $achievement}
+				{/foreach}
+			{/if}
+		{/if}
+
+		</td>
 		{if $displayReplay}
 		<td>
 			{ifset $match['replayUrl']}
-			<a href="{$match['replayUrl']}">Download</a>
+				<a href="{$match['replayUrl']}">Download</a>
+			{else}
+				N/A
 			{/ifset}
 		</td>
 		{/if}
