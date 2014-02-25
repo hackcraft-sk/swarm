@@ -335,6 +335,7 @@ public class Application implements Runnable
 			{
 				try
 				{
+					log.info("Closing master connection...");
 					masterConnection.close();
 				}
 				catch (IOException e)
@@ -413,29 +414,34 @@ public class Application implements Runnable
 				}
 
 				holder.report = new SlaveMatchReport(valid, bot.getId(), achievements, null);
-				holder.connected = true;
+				holder.connected = false;
 			}
 		};
 
-		parasiteConnection.getMatchStartedEvent().addListener(matchStartedEventListener);
-		parasiteConnection.getMatchEndedEvent().addListener(matchEndedEventListener);
-		parasiteConnection.getDisconnectEvent().addListener(disconnectEventListener);
-
-		log.info("Connecting to parasite...");
-		parasiteConnection.open();
-
-		if (!holder.connected)
+		try
 		{
-			throw new IOException("Cant connect to Parasite.");
+			parasiteConnection.getMatchStartedEvent().addListener(matchStartedEventListener);
+			parasiteConnection.getMatchEndedEvent().addListener(matchEndedEventListener);
+			parasiteConnection.getDisconnectEvent().addListener(disconnectEventListener);
+
+			log.info("Connecting to parasite...");
+			parasiteConnection.open();
+	
+			if (!holder.connected)
+			{
+				throw new IOException("Cant connect to Parasite.");
+			}
+	
+			parasiteConnection.run();
+	
+			parasiteConnection.close();
 		}
-
-		parasiteConnection.run();
-
-		parasiteConnection.close();
-
-		parasiteConnection.getMatchStartedEvent().removeListener(matchStartedEventListener);
-		parasiteConnection.getMatchEndedEvent().removeListener(matchEndedEventListener);
-		parasiteConnection.getDisconnectEvent().removeListener(disconnectEventListener);
+		finally
+		{
+			parasiteConnection.getMatchStartedEvent().removeListener(matchStartedEventListener);
+			parasiteConnection.getMatchEndedEvent().removeListener(matchEndedEventListener);
+			parasiteConnection.getDisconnectEvent().removeListener(disconnectEventListener);
+		}
 
 		return holder.report;
 	}
