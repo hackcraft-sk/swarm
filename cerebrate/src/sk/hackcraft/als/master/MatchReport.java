@@ -13,7 +13,7 @@ public class MatchReport
 
 	public static MatchReport createInvalid(int matchId)
 	{
-		return new MatchReport(false, matchId, Collections.<SlaveMatchReport>emptyList());
+		return new MatchReport(false, matchId, Collections.<SlaveMatchReport> emptyList());
 	}
 
 	public MatchReport(boolean valid, int matchId, List<SlaveMatchReport> reports)

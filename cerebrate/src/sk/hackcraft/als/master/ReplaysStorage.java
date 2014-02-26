@@ -2,7 +2,6 @@ package sk.hackcraft.als.master;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import sk.hackcraft.als.utils.Replay;
 
@@ -25,11 +24,13 @@ public interface ReplaysStorage
 
 	/**
 	 * Checks if replay for specified match exists.
-	 * @param matchId match id
+	 * 
+	 * @param matchId
+	 *            match id
 	 * @return true if replay exists, false otherwise
 	 */
 	boolean hasReplay(int matchId);
-	
+
 	/**
 	 * Retrieves replay for specified match.
 	 * 

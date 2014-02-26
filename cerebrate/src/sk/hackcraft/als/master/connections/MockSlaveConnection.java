@@ -12,7 +12,7 @@ public class MockSlaveConnection implements SlaveConnection
 {
 	private Random random = new Random();
 	private int botId;
-	
+
 	private int activeMatchId;
 
 	private final int slaveId;
@@ -58,7 +58,7 @@ public class MockSlaveConnection implements SlaveConnection
 
 	@Override
 	public SlaveMatchReport waitForMatchResult() throws IOException
-	{		
+	{
 		boolean valid = random.nextInt() % 10 != 0;
 
 		Set<Achievement> achievements = new HashSet<>();
@@ -74,7 +74,7 @@ public class MockSlaveConnection implements SlaveConnection
 
 		return new SlaveMatchReport(valid, activeMatchId, botId, achievements);
 	}
-	
+
 	@Override
 	public void retrieveAndSaveReplay() throws IOException
 	{

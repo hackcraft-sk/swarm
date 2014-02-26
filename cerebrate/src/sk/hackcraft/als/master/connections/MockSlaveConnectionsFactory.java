@@ -7,9 +7,9 @@ import sk.hackcraft.als.master.ReplaysStorage;
 public class MockSlaveConnectionsFactory implements SlaveConnectionsFactory
 {
 	private int nextId = 1;
-	
+
 	private final int maximumConnectionsCount;
-	
+
 	public MockSlaveConnectionsFactory(int maximumConnectionsCount)
 	{
 		this.maximumConnectionsCount = maximumConnectionsCount;

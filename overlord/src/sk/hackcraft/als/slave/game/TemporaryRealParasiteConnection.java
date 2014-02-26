@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import sk.hackcraft.als.utils.Achievement;
@@ -95,7 +94,7 @@ public class TemporaryRealParasiteConnection implements ParasiteConnection
 					Set<Achievement> achievements = new HashSet<>();
 
 					JSONObject achievementsJsonSet = jsonMessage.getJSONObject("achievements");
-					
+
 					Set<String> keys = achievementsJsonSet.keySet();
 					for (String key : keys)
 					{
@@ -105,7 +104,7 @@ public class TemporaryRealParasiteConnection implements ParasiteConnection
 					}
 
 					matchEndedEvent.emit(this, achievements);
-					
+
 					run = false;
 				}
 			}

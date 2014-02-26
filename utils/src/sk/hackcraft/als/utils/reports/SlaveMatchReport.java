@@ -39,7 +39,7 @@ public class SlaveMatchReport
 	{
 		return valid;
 	}
-	
+
 	public int getMatchId()
 	{
 		return matchId;

@@ -9,18 +9,18 @@ import java.nio.file.Path;
 public class Replay
 {
 	private Path replayPath;
-	
+
 	public Replay(Path replayPath)
 	{
 		this.replayPath = replayPath;
 	}
-	
+
 	public void writeToStream(OutputStream output) throws IOException
 	{
 		DataOutputStream dataOutput = new DataOutputStream(output);
-		
+
 		byte[] replayContent = Files.readAllBytes(replayPath);
-		
+
 		dataOutput.writeInt(replayContent.length);
 		dataOutput.write(replayContent);
 	}

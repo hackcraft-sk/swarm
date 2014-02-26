@@ -3,13 +3,8 @@ package sk.hackcraft.als.master.connections;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -104,12 +99,12 @@ public class RealSlaveConnection implements SlaveConnection
 
 		return new SlaveMatchReport(valid, activeMatchId, botId, achievements);
 	}
-	
+
 	@Override
 	public void retrieveAndSaveReplay() throws IOException
 	{
 		boolean hasReplay = inputStream.readBoolean();
-		
+
 		if (!hasReplay || replaysStorage.hasReplay(activeMatchId))
 		{
 			return;
@@ -119,7 +114,7 @@ public class RealSlaveConnection implements SlaveConnection
 
 		byte[] replayBytes = new byte[replaySize];
 		inputStream.readFully(replayBytes);
-	
+
 		ByteArrayInputStream replayInput = new ByteArrayInputStream(replayBytes);
 
 		try

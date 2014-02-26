@@ -2,13 +2,7 @@ package sk.hackcraft.als.master.connections;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,8 +16,6 @@ import sk.hackcraft.als.master.MatchReport;
 import sk.hackcraft.als.master.ReplaysStorage;
 import sk.hackcraft.als.utils.Achievement;
 import sk.hackcraft.als.utils.Replay;
-import sk.hackcraft.als.utils.StreamsCopier;
-import sk.hackcraft.als.utils.files.ChecksumCreator;
 import sk.hackcraft.als.utils.files.MD5ChecksumCreator;
 import sk.hackcraft.als.utils.reports.SlaveMatchReport;
 import sk.hackcraft.jwebcomm.http.FormRequestFactory;
@@ -144,12 +136,12 @@ public class RealWebConnection implements WebConnection
 				for (Achievement achievement : reports.getAchievements())
 				{
 					JSONObject achievementObject = new JSONObject();
-					
+
 					achievementsSet.put(achievement.getName(), achievementObject);
 				}
 
 				botResult.put("achievements", achievementsSet);
-				
+
 				botResults.put(botResult);
 			}
 
@@ -158,12 +150,12 @@ public class RealWebConnection implements WebConnection
 			if (replaysStorage.hasReplay(matchId))
 			{
 				Replay replay = replaysStorage.getReplay(matchId);
-				
+
 				ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 				replay.writeToStream(buffer);
-				
+
 				byte[] replayBytes = buffer.toByteArray();
-				
+
 				JSONObject replayJson = new JSONObject();
 
 				// TODO

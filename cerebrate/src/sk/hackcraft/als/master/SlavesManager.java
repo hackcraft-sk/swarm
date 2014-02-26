@@ -1,12 +1,7 @@
 package sk.hackcraft.als.master;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +18,7 @@ public class SlavesManager
 	private final int desiredConnectionsCount;
 	private final SlaveConnectionsFactory connectionsFactory;
 	private final ReplaysStorage replaysStorage;
-	
+
 	private final Set<SlaveConnection> connections;
 
 	public SlavesManager(int desiredConnectionsCount, SlaveConnectionsFactory connectionsFactory, ReplaysStorage replaysStorage)
@@ -31,7 +26,7 @@ public class SlavesManager
 		this.desiredConnectionsCount = desiredConnectionsCount;
 		this.connectionsFactory = connectionsFactory;
 		this.replaysStorage = replaysStorage;
-		
+
 		connections = new HashSet<>();
 	}
 
@@ -149,7 +144,7 @@ public class SlavesManager
 			SlaveMatchReport report = connection.waitForMatchResult();
 
 			slavesMatchReports.add(report);
-			
+
 			if (!report.isValid())
 			{
 				valid = false;

@@ -17,14 +17,14 @@ public class MockWebConnection implements WebConnection
 {
 	private Scanner input;
 	private Random random;
-	
+
 	private int botsCount;
 
 	public MockWebConnection(boolean humanInput, int botsCount)
 	{
 		this.input = (humanInput) ? new Scanner(System.in) : null;
 		this.random = new Random();
-		
+
 		this.botsCount = botsCount;
 	}
 
@@ -47,12 +47,12 @@ public class MockWebConnection implements WebConnection
 			while (botIds.size() < botsCount)
 			{
 				int botId = random.nextInt(8);
-				
+
 				if (botIds.contains(botIds))
 				{
 					continue;
 				}
-				
+
 				botIds.add(botId);
 			}
 		}

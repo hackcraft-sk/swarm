@@ -3,18 +3,13 @@ package sk.hackcraft.als.slave.connections;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import sk.hackcraft.als.slave.MatchInfo;
 import sk.hackcraft.als.utils.Achievement;
 import sk.hackcraft.als.utils.Replay;
-import sk.hackcraft.als.utils.StreamsCopier;
 import sk.hackcraft.als.utils.reports.SlaveMatchReport;
 
 public class RealMasterConnection implements MasterConnection
@@ -108,7 +103,7 @@ public class RealMasterConnection implements MasterConnection
 			output.writeUTF(achievement.getName());
 		}
 	}
-	
+
 	@Override
 	public void postReplay(Replay replay) throws IOException
 	{

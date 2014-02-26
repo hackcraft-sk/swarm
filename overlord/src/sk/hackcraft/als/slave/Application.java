@@ -2,7 +2,6 @@ package sk.hackcraft.als.slave;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -292,7 +291,7 @@ public class Application implements Runnable
 					SlaveMatchReport matchReport = runGame(matchId, bot);
 
 					bwtv.sendEvent(MatchEvent.END);
-					
+
 					log.info("Sending match result");
 
 					masterConnection.postSlaveMatchReport(matchReport);
@@ -300,13 +299,13 @@ public class Application implements Runnable
 					try
 					{
 						Replay replay = replayRetriever.getReplay(matchId, 5000);
-						
+
 						masterConnection.postReplay(replay);
 					}
 					catch (IOException e)
 					{
 						log.info("Can't retrieve replay: " + e.getMessage());
-						
+
 						masterConnection.postReplay(null);
 					}
 
@@ -429,14 +428,14 @@ public class Application implements Runnable
 
 			log.info("Connecting to parasite...");
 			parasiteConnection.open();
-	
+
 			if (!holder.connected)
 			{
 				throw new IOException("Cant connect to Parasite.");
 			}
-	
+
 			parasiteConnection.run();
-	
+
 			parasiteConnection.close();
 		}
 		finally

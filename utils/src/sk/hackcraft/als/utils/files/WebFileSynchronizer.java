@@ -43,7 +43,7 @@ public class WebFileSynchronizer implements FileSynchronizer
 		{
 			ChecksumCreator fileChecksumCreator = new MD5ChecksumCreator(bis);
 			String actualFileChecksum = fileChecksumCreator.create();
-	
+
 			if (!actualFileChecksum.equals(fileChecksum))
 			{
 				downloader.download();

@@ -1,10 +1,7 @@
 package sk.hackcraft.als.slave.game;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -59,7 +56,7 @@ public class ParasiteMessageInterface
 	public String waitForMessage() throws IOException
 	{
 		int size = input.readInt();
-		byte bytes[] = new byte[size]; 
+		byte bytes[] = new byte[size];
 		input.readFully(bytes);
 
 		return new String(bytes);

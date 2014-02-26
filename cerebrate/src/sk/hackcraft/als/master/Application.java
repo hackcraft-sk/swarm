@@ -27,7 +27,7 @@ public class Application implements Runnable
 
 	private final SlaveConnectionsFactory slaveConnectionsFactory;
 	private final SlavesManager slavesManager;
-	
+
 	private final ReplaysStorage replaysStorage;
 
 	private volatile boolean run = true;
@@ -97,7 +97,7 @@ public class Application implements Runnable
 		{
 			slaveConnectionsFactory = new RealSlaveConnectionsFactory();
 		}
-		
+
 		if (mockReplaysStorage)
 		{
 			replaysStorage = new MockReplayStorage();
@@ -122,13 +122,13 @@ public class Application implements Runnable
 			try
 			{
 				log.println("Cleaning replays storage.");
-				
+
 				replaysStorage.clean();
-				
+
 				log.println("Closing all slaves connection.");
-				
+
 				slavesManager.closeAll();
-				
+
 				while (!slavesManager.hasEnoughConnections())
 				{
 					log.println("Not enough slaves, waiting for connection...");
