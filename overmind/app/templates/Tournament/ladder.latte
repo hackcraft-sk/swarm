@@ -35,7 +35,11 @@
 		<td>{if $bot['competitive']}{$position}.{/if}</td>
 		<td>{$bot['username']}
 
-		{includeblock '../components/achievements.latte', achievements => $bot['achievements']}
+		{foreach $bot['achievements'] as $achievement}
+			{if $achievement->isVisible()}
+				{includeblock '../components/achievement.latte', achievement => $achievement}
+			{/if}
+		{/foreach}
 
 		</td>
 		<td>{$bot['matchesWon']}</td>
