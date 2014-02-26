@@ -94,7 +94,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy $(TargetPath) &quot;C:\StarCraft\bwapi-data\AI&quot; /Y"
+				CommandLine="xcopy $(TargetPath) &quot;C:\StarCraft\bwapi-data\AI&quot; /Y&#x0D;&#x0A;xcopy $(TargetPath) &quot;C:\swarm\binaries&quot; /Y"
 			/>
 		</Configuration>
 		<Configuration
@@ -402,11 +402,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Parasite\Watchers\AchievementWatcher.h"
+				RelativePath=".\Source\Watchers\AchievementWatcher.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Watchers\AchievementWatcher.h"
+				RelativePath=".\Source\Parasite\Watchers\AchievementWatcher.h"
 				>
 			</File>
 			<File
@@ -478,11 +478,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Watchers\FastGameWatcher.h"
+				RelativePath=".\Source\Parasite\Watchers\FastGameWatcher.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Parasite\Watchers\FastGameWatcher.h"
+				RelativePath=".\Source\Watchers\FastGameWatcher.h"
 				>
 			</File>
 			<File
@@ -510,11 +510,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Watchers\GameResultWatcher.h"
+				RelativePath=".\Source\Parasite\Watchers\GameResultWatcher.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Parasite\Watchers\GameResultWatcher.h"
+				RelativePath=".\Source\Watchers\GameResultWatcher.h"
 				>
 			</File>
 			<File
@@ -550,19 +550,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Parasite\Json\json_internalarray.inl"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\json\json_internalarray.inl"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\json\json_internalmap.inl"
+				RelativePath=".\Source\Parasite\Json\json_internalarray.inl"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\Parasite\Json\json_internalmap.inl"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\json\json_internalmap.inl"
 				>
 			</File>
 			<File
