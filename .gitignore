@@ -16,6 +16,7 @@
 # bwtv
 bwtv/bwtv.cfg
 bwtv/banners
+bwtv/stream/files
 
 # cerebrate
 cerebrate/cerebrate.cfg

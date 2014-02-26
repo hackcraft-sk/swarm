@@ -149,6 +149,10 @@ public class SlavesManager
 			{
 				valid = false;
 			}
+			else
+			{
+				connection.retrieveAndSaveReplay();
+			}
 		}
 
 		if (valid)

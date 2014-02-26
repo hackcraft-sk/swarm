@@ -120,6 +120,8 @@ public class RealSlaveConnection implements SlaveConnection
 		try
 		{
 			replaysStorage.saveReplay(activeMatchId, replayInput);
+			
+			System.out.println("Saved replay from slave " + slaveId);
 		}
 		catch (IOException e)
 		{

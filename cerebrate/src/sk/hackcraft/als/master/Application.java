@@ -3,6 +3,8 @@ package sk.hackcraft.als.master;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -104,8 +106,8 @@ public class Application implements Runnable
 		}
 		else
 		{
-			// TODO
-			replaysStorage = null;
+			Path replaysDirectory = Paths.get(".", "replays");
+			replaysStorage = new FileReplaysStorage(replaysDirectory);
 		}
 
 		int desiredSlaves = config.getSection("tournament").getPair("playersCount").getIntValue();
