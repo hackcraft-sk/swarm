@@ -22,35 +22,28 @@ public class SlavesManager
 {
 	private final int desiredConnectionsCount;
 	private final SlaveConnectionsFactory connectionsFactory;
-	private Map<Integer, SlaveConnection> connections;
+	private Set<SlaveConnection> connections;
 
 	public SlavesManager(int desiredConnectionsCount, SlaveConnectionsFactory connectionsFactory)
 	{
 		this.desiredConnectionsCount = desiredConnectionsCount;
 
 		this.connectionsFactory = connectionsFactory;
-		connections = new HashMap<>();
+		connections = new HashSet<>();
 	}
 
 	public void waitForConnection(int timeout) throws IOException
 	{
 		SlaveConnection connection = connectionsFactory.create(timeout);
-		
-		int slaveId = connection.getSlaveId();
-		
-		if (connections.containsKey(slaveId))
-		{
-			return;
-		}
-		
-		connections.put(slaveId, connection);
+
+		connections.add(connection);
 	}
 
 	public void closeAll() throws IOException
 	{
 		try
 		{
-			for (SlaveConnection connection : connections.values())
+			for (SlaveConnection connection : connections)
 			{
 				connection.disconnect();
 			}
@@ -71,7 +64,7 @@ public class SlavesManager
 		int matchId = matchInfo.getMatchId();
 		String mapUrl = matchInfo.getMapUrl();
 
-		Set<SlaveConnection> freeSlaveConnections = new HashSet<>(connections.values());
+		Set<SlaveConnection> freeSlaveConnections = new HashSet<>(connections);
 		Set<Integer> freeBotIds = matchInfo.getBotIds();
 		Map<Integer, Integer> botToStreamMapping = matchInfo.getBotToStreamMapping();
 
@@ -107,7 +100,7 @@ public class SlavesManager
 	private SlaveConnection getAssociatedSlaveOfStream(int streamId)
 	{
 		SlaveConnection streamConnection = null;
-		for (SlaveConnection connection : connections.values())
+		for (SlaveConnection connection : connections)
 		{
 			if (connection.getSlaveId() == 1)
 			{
@@ -128,7 +121,7 @@ public class SlavesManager
 
 	public void waitForReadySignals() throws IOException
 	{
-		for (SlaveConnection connection : connections.values())
+		for (SlaveConnection connection : connections)
 		{
 			connection.waitForReadySignal();
 		}
@@ -136,7 +129,7 @@ public class SlavesManager
 
 	public void broadcastGo() throws IOException
 	{
-		for (SlaveConnection connection : connections.values())
+		for (SlaveConnection connection : connections)
 		{
 			connection.sendGo();
 		}
@@ -150,7 +143,7 @@ public class SlavesManager
 
 		boolean valid = true;
 
-		for (SlaveConnection connection : connections.values())
+		for (SlaveConnection connection : connections)
 		{
 			SlaveMatchReport report = connection.waitForMatchResult();
 

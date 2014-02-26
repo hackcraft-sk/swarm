@@ -108,19 +108,20 @@ public class Application implements Runnable
 		{
 			try
 			{
-				log.println("Checking slaves");
+				log.println("Closing all slaves connection.");
 
 				slavesManager.closeAll();
 
 				while (!slavesManager.hasEnoughConnections())
 				{
-					log.println("Not enough slaves, waiting");
+					log.println("Not enough slaves, waiting for connection...");
 
 					slavesManager.waitForConnection(60 * 1000);
 
-					log.println("Slave connected");
+					log.println("Slave connected.");
 				}
 
+				log.println("Enough slaves, lets go.");
 				log.println("Starting new match!");
 
 				log.println("Requesting match from web");
