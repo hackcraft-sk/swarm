@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import sk.hackcraft.als.utils.Replay;
 
@@ -19,15 +18,14 @@ public class FileReplaysStorage implements ReplaysStorage
 	
 	private Path createPath(int matchId)
 	{
-		return Paths.get(replaysDirectory.toString(), matchId + ".rep");
+		return replaysDirectory.resolve(matchId + ".rep");
 	}
 	
 	@Override
 	public void saveReplay(int matchId, InputStream replayInput) throws IOException
 	{
 		Path destination = createPath(matchId);
-		
-		Files.createFile(destination);
+
 		Files.copy(replayInput, destination);
 	}
 

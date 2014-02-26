@@ -32,7 +32,6 @@ public class MockWebConnection implements WebConnection
 	public MatchInfo requestMatch() throws IOException
 	{
 		Set<Integer> botIds = new HashSet<>();
-		Map<Integer, Integer> botStreamMapping = new HashMap<>();
 
 		if (input != null)
 		{
