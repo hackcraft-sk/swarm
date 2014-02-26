@@ -1,6 +1,10 @@
 package sk.hackcraft.als.master;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import sk.hackcraft.als.utils.Replay;
 
 /**
  * Interface for describing replay storage abstraction.
@@ -12,17 +16,17 @@ public interface ReplaysStorage
 	 * 
 	 * @param matchId
 	 *            match id
-	 * @param replayBytes
-	 *            file contents
+	 * @param replayInput
+	 *            input stream containing replay content
 	 * @throws IOException
 	 *             if I/O error occurs during saving
 	 */
-	void saveReplay(int matchId, byte[] replayBytes) throws IOException;
+	void saveReplay(int matchId, InputStream replayInput) throws IOException;
 
 	/**
 	 * Checks if replay for specified match exists.
 	 * @param matchId match id
-	 * @return true if replay exists, flase otherwise
+	 * @return true if replay exists, false otherwise
 	 */
 	boolean hasReplay(int matchId);
 	
@@ -31,11 +35,11 @@ public interface ReplaysStorage
 	 * 
 	 * @param matchId
 	 *            match id
-	 * @return file contents of replay or null if replay doesn't exists
+	 * @return replay object
 	 * @throws IOException
-	 *             if I/O error occurs during getting
+	 *             if I/O error occurs during getting or replay doesn't exists
 	 */
-	byte[] getReplay(int matchId) throws IOException;
+	Replay getReplay(int matchId) throws IOException;
 
 	/**
 	 * Calling this method will notifies storage, that it should clean itself.

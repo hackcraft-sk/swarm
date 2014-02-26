@@ -10,6 +10,7 @@ import java.util.Set;
 
 import sk.hackcraft.als.master.MatchInfo;
 import sk.hackcraft.als.master.MatchReport;
+import sk.hackcraft.als.master.ReplaysStorage;
 import sk.hackcraft.als.utils.reports.SlaveMatchReport;
 
 public class MockWebConnection implements WebConnection
@@ -60,7 +61,7 @@ public class MockWebConnection implements WebConnection
 	}
 
 	@Override
-	public void postMatchResult(MatchReport matchResult) throws IOException
+	public void postMatchResult(MatchReport matchResult, ReplaysStorage replaysStorage) throws IOException
 	{
 		if (matchResult.isMatchValid())
 		{

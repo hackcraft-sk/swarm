@@ -1,6 +1,7 @@
 package sk.hackcraft.als.master.connections;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import sk.hackcraft.als.utils.reports.SlaveMatchReport;
 
@@ -19,4 +20,6 @@ public interface SlaveConnection
 	public void sendGo() throws IOException;
 
 	public SlaveMatchReport waitForMatchResult() throws IOException;
+	
+	public void retrieveAndSaveReplay() throws IOException;
 }

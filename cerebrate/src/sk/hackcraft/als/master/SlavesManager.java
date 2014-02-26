@@ -155,27 +155,14 @@ public class SlavesManager
 				valid = false;
 			}
 		}
-		
-		byte[] replayBytes = null;
-		if (replaysStorage.hasReplay(matchId))
-		{
-			try
-			{
-				replayBytes = replaysStorage.getReplay(matchId);
-			}
-			catch (IOException e)
-			{
-				replayBytes = null;
-			}
-		}
 
 		if (valid)
 		{
-			return new MatchReport(valid, matchId, slavesMatchReports, replayBytes);
+			return new MatchReport(valid, matchId, slavesMatchReports);
 		}
 		else
 		{
-			return new MatchReport(valid, matchId, null, null);
+			return new MatchReport(valid, matchId, null);
 		}
 	}
 }

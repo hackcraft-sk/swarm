@@ -1,5 +1,6 @@
 package sk.hackcraft.als.master.connections;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -101,28 +102,33 @@ public class RealSlaveConnection implements SlaveConnection
 			achievements.add(achievement);
 		}
 
+		return new SlaveMatchReport(valid, activeMatchId, botId, achievements);
+	}
+	
+	@Override
+	public void retrieveAndSaveReplay() throws IOException
+	{
 		boolean hasReplay = inputStream.readBoolean();
-		byte[] replayBytes = null;
-		if (hasReplay)
+		
+		if (!hasReplay || replaysStorage.hasReplay(activeMatchId))
 		{
-			int replaySize = inputStream.readInt();
-
-			replayBytes = new byte[replaySize];
-			inputStream.readFully(replayBytes);
-			
-			if (!replaysStorage.hasReplay(activeMatchId))
-			{
-				try
-				{
-					replaysStorage.saveReplay(activeMatchId, replayBytes);
-				}
-				catch (IOException e)
-				{
-					System.out.println("Can't save replay file from slave " + slaveId + ": " + e.getMessage());
-				}
-			}
+			return;
 		}
 
-		return new SlaveMatchReport(valid, activeMatchId, botId, achievements, replayBytes);
+		int replaySize = inputStream.readInt();
+
+		byte[] replayBytes = new byte[replaySize];
+		inputStream.readFully(replayBytes);
+	
+		ByteArrayInputStream replayInput = new ByteArrayInputStream(replayBytes);
+
+		try
+		{
+			replaysStorage.saveReplay(activeMatchId, replayInput);
+		}
+		catch (IOException e)
+		{
+			System.out.println("Can't save replay file from slave " + slaveId + ": " + e.getMessage());
+		}
 	}
 }

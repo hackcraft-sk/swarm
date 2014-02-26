@@ -1,6 +1,8 @@
 package sk.hackcraft.als.utils.files;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,13 +39,16 @@ public class WebFileSynchronizer implements FileSynchronizer
 			return;
 		}
 
-		FileChecksumCreator fileChecksumCreator = new FileMD5ChecksumCreator(mapFile);
-		String actualFileChecksum = fileChecksumCreator.get();
-
-		if (!actualFileChecksum.equals(fileChecksum))
+		try (FileInputStream fis = new FileInputStream(mapFile); BufferedInputStream bis = new BufferedInputStream(fis))
 		{
-			downloader.download();
-			return;
+			ChecksumCreator fileChecksumCreator = new MD5ChecksumCreator(bis);
+			String actualFileChecksum = fileChecksumCreator.create();
+	
+			if (!actualFileChecksum.equals(fileChecksum))
+			{
+				downloader.download();
+				return;
+			}
 		}
 
 	}

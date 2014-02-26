@@ -13,7 +13,6 @@ public class SlaveMatchReport
 	private final int matchId;
 	private final int botId;
 	private final Set<Achievement> achievements;
-	private final byte[] replayBytes;
 
 	/**
 	 * Constructs new slave match report.
@@ -27,14 +26,13 @@ public class SlaveMatchReport
 	 * @param replayPath
 	 *            path to replay file, or null if replay is not available
 	 */
-	public SlaveMatchReport(boolean valid, int matchId, int botId, Set<Achievement> achievements, byte[] replayBytes)
+	public SlaveMatchReport(boolean valid, int matchId, int botId, Set<Achievement> achievements)
 	{
 		this.valid = valid;
 
 		this.matchId = matchId;
 		this.botId = botId;
 		this.achievements = new HashSet<>(achievements);
-		this.replayBytes = replayBytes;
 	}
 
 	public boolean isValid()
@@ -55,12 +53,6 @@ public class SlaveMatchReport
 	public Set<Achievement> getAchievements()
 	{
 		return Collections.unmodifiableSet(achievements);
-	}
-	
-	// TODO vyhodit a radsej dat nieco ako handle
-	public byte[] getReplay()
-	{
-		return replayBytes;
 	}
 
 	@Override

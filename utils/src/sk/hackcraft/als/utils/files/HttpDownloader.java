@@ -2,6 +2,7 @@ package sk.hackcraft.als.utils.files;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -45,16 +46,19 @@ public class HttpDownloader
 					throw new IOException("Bot file doesn't exists after download.");
 				}
 
-				FileChecksumCreator checksumCreator = new FileMD5ChecksumCreator(downloadedFile);
-				String fileChecksum = checksumCreator.get();
-
-				if (!fileChecksum.equals(checksum))
+				try (FileInputStream fis = new FileInputStream(downloadedFile); BufferedInputStream bis = new BufferedInputStream(fis))
 				{
-					continue;
-				}
+					ChecksumCreator checksumCreator = new MD5ChecksumCreator(bis);
+					String fileChecksum = checksumCreator.create();
 
-				success = true;
-				break;
+					if (!fileChecksum.equals(checksum))
+					{
+						continue;
+					}
+
+					success = true;
+					break;
+				}
 			}
 			catch (IOException e)
 			{

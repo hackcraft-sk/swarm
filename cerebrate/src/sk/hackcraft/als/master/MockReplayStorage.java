@@ -1,11 +1,15 @@
 package sk.hackcraft.als.master;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import sk.hackcraft.als.utils.Replay;
 
 public class MockReplayStorage implements ReplaysStorage
 {
 	@Override
-	public void saveReplay(int matchId, byte[] replayBytes) throws IOException
+	public void saveReplay(int matchId, InputStream replayInput) throws IOException
 	{
 	}
 	
@@ -16,9 +20,9 @@ public class MockReplayStorage implements ReplaysStorage
 	}
 
 	@Override
-	public byte[] getReplay(int matchId) throws IOException
+	public Replay getReplay(int matchId) throws IOException
 	{
-		return null;
+		throw new IOException();
 	}
 
 	@Override

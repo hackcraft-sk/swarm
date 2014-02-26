@@ -72,6 +72,11 @@ public class MockSlaveConnection implements SlaveConnection
 			achievements.add(new Achievement("defeat"));
 		}
 
-		return new SlaveMatchReport(valid, activeMatchId, botId, achievements, null);
+		return new SlaveMatchReport(valid, activeMatchId, botId, achievements);
+	}
+	
+	@Override
+	public void retrieveAndSaveReplay() throws IOException
+	{
 	}
 }

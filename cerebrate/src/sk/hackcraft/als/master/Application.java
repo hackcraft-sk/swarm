@@ -121,10 +121,14 @@ public class Application implements Runnable
 		{
 			try
 			{
+				log.println("Cleaning replays storage.");
+				
+				replaysStorage.clean();
+				
 				log.println("Closing all slaves connection.");
-
+				
 				slavesManager.closeAll();
-
+				
 				while (!slavesManager.hasEnoughConnections())
 				{
 					log.println("Not enough slaves, waiting for connection...");
@@ -166,7 +170,7 @@ public class Application implements Runnable
 				{
 					log.println("Posting result.");
 
-					webConnection.postMatchResult(matchResult);
+					webConnection.postMatchResult(matchResult, replaysStorage);
 				}
 			}
 			catch (Exception e)
@@ -184,15 +188,6 @@ public class Application implements Runnable
 					e.printStackTrace();
 				}
 			}
-		}
-
-		try
-		{
-			slavesManager.closeAll();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
 		}
 	}
 }

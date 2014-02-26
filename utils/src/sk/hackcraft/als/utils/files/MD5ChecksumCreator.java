@@ -7,21 +7,21 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class FileMD5ChecksumCreator implements FileChecksumCreator
+public class MD5ChecksumCreator implements ChecksumCreator
 {
-	private final File file;
+	private final InputStream input;
 
-	public FileMD5ChecksumCreator(File file)
+	public MD5ChecksumCreator(InputStream input)
 	{
-		this.file = file;
+		this.input = input;
 	}
 
 	@Override
-	public String get() throws IOException
+	public String create() throws IOException
 	{
 		try
 		{
-			byte[] digest = createDigest(file);
+			byte[] digest = createDigest(input);
 			String checksum = "";
 
 			for (int i = 0; i < digest.length; i++)
@@ -37,26 +37,23 @@ public class FileMD5ChecksumCreator implements FileChecksumCreator
 		}
 	}
 
-	private static byte[] createDigest(File file) throws IOException, NoSuchAlgorithmException
+	private static byte[] createDigest(InputStream input) throws IOException, NoSuchAlgorithmException
 	{
 		MessageDigest complete = MessageDigest.getInstance("MD5");
 
 		byte[] buffer = new byte[1024];
 		int numRead;
 
-		try (InputStream fis = new FileInputStream(file);)
+		do
 		{
-			do
-			{
-				numRead = fis.read(buffer);
+			numRead = input.read(buffer);
 
-				if (numRead > 0)
-				{
-					complete.update(buffer, 0, numRead);
-				}
+			if (numRead > 0)
+			{
+				complete.update(buffer, 0, numRead);
 			}
-			while (numRead != -1);
 		}
+		while (numRead != -1);
 
 		return complete.digest();
 	}

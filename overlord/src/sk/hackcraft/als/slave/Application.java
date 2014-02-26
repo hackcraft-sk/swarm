@@ -2,6 +2,7 @@ package sk.hackcraft.als.slave;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -41,6 +42,7 @@ import sk.hackcraft.als.utils.ProcessStarter;
 import sk.hackcraft.als.utils.ProcessesKiller;
 import sk.hackcraft.als.utils.ProcessesList;
 import sk.hackcraft.als.utils.ProcessesListFactory;
+import sk.hackcraft.als.utils.Replay;
 import sk.hackcraft.als.utils.WindowsTasklist;
 import sk.hackcraft.als.utils.application.EventListener;
 import sk.hackcraft.als.utils.log.Log;
@@ -229,15 +231,15 @@ public class Application implements Runnable
 		{
 			try
 			{
-				log.info("Preventive environment clean");
+				log.info("Cleaning environment...");
 				environmentCleaner.clean();
 
 				BwapiConfig bwapiConfig = new BwapiConfig(starCraftPath.toString());
 
-				log.info("Connecting to master");
+				log.info("Connecting to master...");
 				masterConnection.open();
 
-				log.info("Waiting for match info");
+				log.info("Waiting for match info...");
 				MatchInfo matchInfo = masterConnection.getMatchInfo();
 				int matchId = matchInfo.getMatchId();
 
@@ -245,15 +247,15 @@ public class Application implements Runnable
 
 				int botId = matchInfo.getBotId();
 
-				log.info("Downloading bot info");
+				log.info("Downloading bot info...");
 				Bot bot = webConnection.getBotInfo(botId);
 
 				log.info("Bot playing here: " + bot.getName());
 
-				log.info("Downloading bot file");
+				log.info("Downloading bot file...");
 				Path botFilePath = webConnection.prepareBotFile(bot);
 
-				log.info("Preparing bot");
+				log.info("Preparing bot...");
 				profile.changeName(bot.getName());
 
 				BwapiConfig.Editor bwapiConfigEditor = bwapiConfig.edit();
@@ -289,11 +291,24 @@ public class Application implements Runnable
 
 					SlaveMatchReport matchReport = runGame(matchId, bot);
 
+					bwtv.sendEvent(MatchEvent.END);
+					
 					log.info("Sending match result");
 
 					masterConnection.postSlaveMatchReport(matchReport);
 
-					bwtv.sendEvent(MatchEvent.END);
+					try
+					{
+						Replay replay = replayRetriever.getReplay(matchId, 5000);
+						
+						masterConnection.postReplay(replay);
+					}
+					catch (IOException e)
+					{
+						log.info("Can't retrieve replay: " + e.getMessage());
+						
+						masterConnection.postReplay(null);
+					}
 
 					if (matchReport.isValid())
 					{
@@ -379,19 +394,7 @@ public class Application implements Runnable
 			{
 				log.info("Match ended. Bot earned :" + achievements);
 
-				byte[] replayBytes;
-				try
-				{
-					replayBytes = replayRetriever.getOfMatch(matchId, 5000);
-				}
-				catch (IOException e)
-				{
-					log.info("Can't retrieve replay: " + e.getMessage());
-					replayBytes = null;
-				}
-
-				log.info("Match report finished.");
-				holder.report = new SlaveMatchReport(true, matchId, bot.getId(), achievements, replayBytes);
+				holder.report = new SlaveMatchReport(true, matchId, bot.getId(), achievements);
 			}
 		};
 
@@ -413,7 +416,7 @@ public class Application implements Runnable
 					achievements.add(new Achievement("crash"));
 				}
 
-				holder.report = new SlaveMatchReport(valid, matchId, bot.getId(), achievements, null);
+				holder.report = new SlaveMatchReport(valid, matchId, bot.getId(), achievements);
 				holder.connected = false;
 			}
 		};
