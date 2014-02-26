@@ -104,16 +104,18 @@ public class RealMasterConnection implements MasterConnection
 			output.writeUTF(achievement.getName());
 		}
 
-		boolean hasReplay = slaveMatchReport.hasReplay();
-		output.writeBoolean(hasReplay);
-		if (hasReplay)
+		byte[] replayBytes = slaveMatchReport.getReplay();
+		if (replayBytes != null)
 		{
-			Path replayPath = slaveMatchReport.getReplayPath();
-			byte content[] = Files.readAllBytes(replayPath);
+			output.writeBoolean(true);
 
-			int size = content.length;
+			int size = replayBytes.length;
 			output.writeInt(size);
-			output.write(content);
+			output.write(replayBytes);
+		}
+		else
+		{
+			output.writeBoolean(false);
 		}
 	}
 }

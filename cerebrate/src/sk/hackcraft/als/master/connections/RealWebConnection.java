@@ -146,20 +146,20 @@ public class RealWebConnection implements WebConnection
 
 			requestData.put("botResults", botResults);
 
-			// replay
-			// disabled for now, until we will solve problems with replay corruption etc
-			/*
-			JSONObject replayJson = new JSONObject();
+			byte[] replayBytes = matchReport.getReplayBytes();
+			if (replayBytes != null)
+			{
+				JSONObject replayJson = new JSONObject();
 
-			Path replayPath = Paths.get(".", "replays", matchReport.getMatchId() + ".rep");
-			FileChecksumCreator checksumCreator = new FileMD5ChecksumCreator(replayPath.toFile());
-			String checksum = checksumCreator.get();
+				// TODO
+				String checksum = "nothing";
 
-			replayJson.put("checksum", checksum);
-			requestData.put("replay", replayJson);
+				replayJson.put("checksum", checksum);
+				requestData.put("replay", replayJson);
 
-			multipartRequestBuilder.addFile("replay", replayPath);
-			*/
+				String fileName = matchId + ".rep";
+				multipartRequestBuilder.addByteArray("replay", replayBytes, fileName);
+			}
 		}
 
 		multipartRequestBuilder.addString("content", requestData.toString());

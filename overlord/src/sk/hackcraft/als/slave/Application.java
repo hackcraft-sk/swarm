@@ -379,19 +379,19 @@ public class Application implements Runnable
 			{
 				log.info("Match ended. Bot earned :" + achievements);
 
-				Path replayPath;
+				byte[] replayBytes;
 				try
 				{
-					replayPath = replayRetriever.getOfMatch(matchId, 5000);
+					replayBytes = replayRetriever.getOfMatch(matchId, 5000);
 				}
 				catch (IOException e)
 				{
 					log.info("Can't retrieve replay: " + e.getMessage());
-					replayPath = null;
+					replayBytes = null;
 				}
 
 				log.info("Match report finished.");
-				holder.report = new SlaveMatchReport(true, bot.getId(), achievements, replayPath);
+				holder.report = new SlaveMatchReport(true, matchId, bot.getId(), achievements, replayBytes);
 			}
 		};
 
@@ -413,7 +413,7 @@ public class Application implements Runnable
 					achievements.add(new Achievement("crash"));
 				}
 
-				holder.report = new SlaveMatchReport(valid, bot.getId(), achievements, null);
+				holder.report = new SlaveMatchReport(valid, matchId, bot.getId(), achievements, null);
 				holder.connected = false;
 			}
 		};

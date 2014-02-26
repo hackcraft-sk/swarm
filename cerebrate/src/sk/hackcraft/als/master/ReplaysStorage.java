@@ -1,19 +1,15 @@
 package sk.hackcraft.als.master;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.List;
 
 /**
  * Interface for describing replay storage abstraction.
  */
-interface ReplaysStorage
+public interface ReplaysStorage
 {
 	/**
-	 * Save replay received from slave.
+	 * Save replay for specified match.
 	 * 
-	 * @param slaveId
-	 *            slave id
 	 * @param matchId
 	 *            match id
 	 * @param replayBytes
@@ -21,30 +17,25 @@ interface ReplaysStorage
 	 * @throws IOException
 	 *             if I/O error occurs during saving
 	 */
-	void saveSlaveReplay(int slaveId, int tournamentId, int matchId, byte[] replayBytes) throws IOException;
+	void saveReplay(int matchId, byte[] replayBytes) throws IOException;
 
 	/**
-	 * Sets final replay for match.
-	 * 
-	 * @param matchId
-	 *            match id
-	 * @param replayPaths
-	 *            final replay location
-	 * @throws IOException
-	 *             if I/O error occurs during setting final replay
+	 * Checks if replay for specified match exists.
+	 * @param matchId match id
+	 * @return true if replay exists, flase otherwise
 	 */
-	void setMatchFinalReplay(int tournamentId, int matchId, Path finalReplayPath) throws IOException;
-
+	boolean hasReplay(int matchId);
+	
 	/**
-	 * Retrieves final replay for match.
+	 * Retrieves replay for specified match.
 	 * 
 	 * @param matchId
 	 *            match id
-	 * @return file contents of final replay or null if replay doesn't exists
+	 * @return file contents of replay or null if replay doesn't exists
 	 * @throws IOException
 	 *             if I/O error occurs during getting
 	 */
-	byte[] getMatchFinalReplay(int matchId) throws IOException;
+	byte[] getReplay(int matchId) throws IOException;
 
 	/**
 	 * Calling this method will notifies storage, that it should clean itself.

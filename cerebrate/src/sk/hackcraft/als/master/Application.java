@@ -27,6 +27,8 @@ public class Application implements Runnable
 
 	private final SlaveConnectionsFactory slaveConnectionsFactory;
 	private final SlavesManager slavesManager;
+	
+	private final ReplaysStorage replaysStorage;
 
 	private volatile boolean run = true;
 
@@ -49,6 +51,7 @@ public class Application implements Runnable
 		Config.Section componentsConfig = config.getSection("mockComponents");
 		boolean mockWebConnection = componentsConfig.getPair("webConnection").getBooleanValue();
 		boolean mockSlaveConnection = componentsConfig.getPair("slaveConnection").getBooleanValue();
+		boolean mockReplaysStorage = componentsConfig.getPair("replaysStorage").getBooleanValue();
 
 		if (mockWebConnection)
 		{
@@ -94,9 +97,19 @@ public class Application implements Runnable
 		{
 			slaveConnectionsFactory = new RealSlaveConnectionsFactory();
 		}
+		
+		if (mockReplaysStorage)
+		{
+			replaysStorage = new MockReplayStorage();
+		}
+		else
+		{
+			// TODO
+			replaysStorage = null;
+		}
 
 		int desiredSlaves = config.getSection("tournament").getPair("playersCount").getIntValue();
-		slavesManager = new SlavesManager(desiredSlaves, slaveConnectionsFactory);
+		slavesManager = new SlavesManager(desiredSlaves, slaveConnectionsFactory, replaysStorage);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package sk.hackcraft.als.slave.launcher;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -14,7 +15,7 @@ public class ReplayRetriever
 		this.starCraftPath = starCraftPath;
 	}
 
-	public Path getOfMatch(int matchId, long timeout) throws IOException
+	public byte[] getOfMatch(int matchId, long timeout) throws IOException
 	{
 		Path path = Paths.get(starCraftPath.toString(), "maps", "replays", matchId + ".rep");
 
@@ -47,6 +48,6 @@ public class ReplayRetriever
 			throw new IOException("Standard replay file of match " + matchId + " doesn't exists");
 		}
 
-		return path;
+		return Files.readAllBytes(path);
 	}
 }

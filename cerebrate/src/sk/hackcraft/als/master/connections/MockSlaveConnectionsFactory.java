@@ -2,6 +2,8 @@ package sk.hackcraft.als.master.connections;
 
 import java.io.IOException;
 
+import sk.hackcraft.als.master.ReplaysStorage;
+
 public class MockSlaveConnectionsFactory implements SlaveConnectionsFactory
 {
 	private int nextId = 1;
@@ -14,7 +16,7 @@ public class MockSlaveConnectionsFactory implements SlaveConnectionsFactory
 	}
 
 	@Override
-	public SlaveConnection create(int timeout) throws IOException
+	public SlaveConnection create(int timeout, ReplaysStorage replaysStorage) throws IOException
 	{
 		int id = nextId;
 

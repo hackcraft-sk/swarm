@@ -22,19 +22,22 @@ public class SlavesManager
 {
 	private final int desiredConnectionsCount;
 	private final SlaveConnectionsFactory connectionsFactory;
-	private Set<SlaveConnection> connections;
+	private final ReplaysStorage replaysStorage;
+	
+	private final Set<SlaveConnection> connections;
 
-	public SlavesManager(int desiredConnectionsCount, SlaveConnectionsFactory connectionsFactory)
+	public SlavesManager(int desiredConnectionsCount, SlaveConnectionsFactory connectionsFactory, ReplaysStorage replaysStorage)
 	{
 		this.desiredConnectionsCount = desiredConnectionsCount;
-
 		this.connectionsFactory = connectionsFactory;
+		this.replaysStorage = replaysStorage;
+		
 		connections = new HashSet<>();
 	}
 
 	public void waitForConnection(int timeout) throws IOException
 	{
-		SlaveConnection connection = connectionsFactory.create(timeout);
+		SlaveConnection connection = connectionsFactory.create(timeout, replaysStorage);
 
 		connections.add(connection);
 	}
@@ -138,8 +141,6 @@ public class SlavesManager
 	public MatchReport waitForMatchResult(int matchId) throws IOException
 	{
 		List<SlaveMatchReport> slavesMatchReports = new ArrayList<>();
-		Path selectedReplayPath = null;
-		Path matchReplayPath = null;
 
 		boolean valid = true;
 
@@ -153,22 +154,24 @@ public class SlavesManager
 			{
 				valid = false;
 			}
-
-			if (report.hasReplay() && selectedReplayPath == null)
-			{
-				selectedReplayPath = report.getReplayPath();
-			}
 		}
-
-		if (selectedReplayPath != null)
+		
+		byte[] replayBytes = null;
+		if (replaysStorage.hasReplay(matchId))
 		{
-			matchReplayPath = Paths.get(".", "replays", matchId + ".rep");
-			Files.copy(selectedReplayPath, matchReplayPath, StandardCopyOption.REPLACE_EXISTING);
+			try
+			{
+				replayBytes = replaysStorage.getReplay(matchId);
+			}
+			catch (IOException e)
+			{
+				replayBytes = null;
+			}
 		}
 
 		if (valid)
 		{
-			return new MatchReport(valid, matchId, slavesMatchReports, matchReplayPath);
+			return new MatchReport(valid, matchId, slavesMatchReports, replayBytes);
 		}
 		else
 		{

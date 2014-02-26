@@ -12,6 +12,8 @@ public class MockSlaveConnection implements SlaveConnection
 {
 	private Random random = new Random();
 	private int botId;
+	
+	private int activeMatchId;
 
 	private final int slaveId;
 
@@ -40,6 +42,7 @@ public class MockSlaveConnection implements SlaveConnection
 	@Override
 	public void sendMatchInfo(int matchId, String mapUrl, int botId) throws IOException
 	{
+		this.activeMatchId = matchId;
 		this.botId = botId;
 	}
 
@@ -69,6 +72,6 @@ public class MockSlaveConnection implements SlaveConnection
 			achievements.add(new Achievement("defeat"));
 		}
 
-		return new SlaveMatchReport(valid, botId, achievements, null);
+		return new SlaveMatchReport(valid, activeMatchId, botId, achievements, null);
 	}
 }

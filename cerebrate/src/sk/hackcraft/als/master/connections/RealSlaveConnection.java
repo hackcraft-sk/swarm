@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
+import sk.hackcraft.als.master.ReplaysStorage;
 import sk.hackcraft.als.utils.Achievement;
 import sk.hackcraft.als.utils.reports.SlaveMatchReport;
 
@@ -26,9 +27,12 @@ public class RealSlaveConnection implements SlaveConnection
 
 	private final int slaveId;
 
-	public RealSlaveConnection(Socket socket) throws IOException
+	private final ReplaysStorage replaysStorage;
+
+	public RealSlaveConnection(Socket socket, ReplaysStorage replaysStorage) throws IOException
 	{
 		this.socket = socket;
+		this.replaysStorage = replaysStorage;
 
 		this.inputStream = new DataInputStream(socket.getInputStream());
 		this.outputStream = new DataOutputStream(socket.getOutputStream());
@@ -97,45 +101,28 @@ public class RealSlaveConnection implements SlaveConnection
 			achievements.add(achievement);
 		}
 
-		Path replayPath = null;
-
 		boolean hasReplay = inputStream.readBoolean();
+		byte[] replayBytes = null;
 		if (hasReplay)
 		{
-			Path slaveReplaysDirectoryPath = Paths.get(".", "replays", Integer.toString(slaveId));
-			File slaveReplaysDirectory = slaveReplaysDirectoryPath.toFile();
-			if (!slaveReplaysDirectory.exists())
-			{
-				slaveReplaysDirectory.mkdirs();
-			}
-
 			int replaySize = inputStream.readInt();
 
-			byte content[] = new byte[replaySize];
-			inputStream.readFully(content);
-
-			replayPath = Paths.get(slaveReplaysDirectoryPath.toString(), activeMatchId + ".rep");
-
-			try
+			replayBytes = new byte[replaySize];
+			inputStream.readFully(replayBytes);
+			
+			if (!replaysStorage.hasReplay(activeMatchId))
 			{
-				File replayFile = replayPath.toFile();
-				if (replayFile.exists())
+				try
 				{
-					Files.delete(replayPath);
+					replaysStorage.saveReplay(activeMatchId, replayBytes);
 				}
-
-				try (FileOutputStream fileOutputStream = new FileOutputStream(replayFile);)
+				catch (IOException e)
 				{
-					fileOutputStream.write(content);
+					System.out.println("Can't save replay file from slave " + slaveId + ": " + e.getMessage());
 				}
-			}
-			catch (IOException e)
-			{
-				System.out.println("Can't save replay file from slave " + slaveId + ": " + e.getMessage());
-				replayPath = null;
 			}
 		}
 
-		return new SlaveMatchReport(valid, botId, achievements, replayPath);
+		return new SlaveMatchReport(valid, activeMatchId, botId, achievements, replayBytes);
 	}
 }
