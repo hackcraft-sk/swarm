@@ -1,6 +1,5 @@
 package sk.hackcraft.als.utils.reports;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,7 +51,7 @@ public class SlaveMatchReport
 
 	public Set<Achievement> getAchievements()
 	{
-		return Collections.unmodifiableSet(achievements);
+		return achievements;
 	}
 
 	@Override

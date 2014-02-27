@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project bwtv with libraries in sub-folder">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="/home/moergil/Projects/swarm/binaries/bwtv.jar">
+            <manifest>
+                <attribute name="Main-Class" value="sk.hackcraft.bwtv.Application"/>
+                <attribute name="Class-Path" value=". bwtv_lib/junit.jar bwtv_lib/org.hamcrest.core_1.3.0.v201303031735.jar bwtv_lib/commons-cli-1.2.jar bwtv_lib/commons-codec-1.6.jar bwtv_lib/commons-logging-1.1.1.jar bwtv_lib/fluent-hc-4.2.5.jar bwtv_lib/httpclient-4.2.5.jar bwtv_lib/httpclient-cache-4.2.5.jar bwtv_lib/httpcore-4.2.4.jar bwtv_lib/httpcore-4.3.jar bwtv_lib/httpcore-ab-4.3.jar bwtv_lib/httpcore-nio-4.3.jar bwtv_lib/httpmime-4.2.5.jar"/>
+            </manifest>
+            <fileset dir="/home/moergil/Projects/swarm/bwtv/bin"/>
+            <fileset dir="/home/moergil/Projects/swarm/json/bin"/>
+            <fileset dir="/home/moergil/Projects/swarm/jwebcomm/bin"/>
+            <fileset dir="/home/moergil/Projects/swarm/utils/bin"/>
+        </jar>
+        <delete dir="/home/moergil/Projects/swarm/binaries/bwtv_lib"/>
+        <mkdir dir="/home/moergil/Projects/swarm/binaries/bwtv_lib"/>
+        <copy file="/opt/eclipse/plugins/org.junit_4.11.0.v201303080030/junit.jar" todir="/home/moergil/Projects/swarm/binaries/bwtv_lib"/>
+        <copy file="/opt/eclipse/plugins/org.hamcrest.core_1.3.0.v201303031735.jar" todir="/home/moergil/Projects/swarm/binaries/bwtv_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/commons-cli-1.2.jar" todir="/home/moergil/Projects/swarm/binaries/bwtv_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/commons-codec-1.6.jar" todir="/home/moergil/Projects/swarm/binaries/bwtv_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/commons-logging-1.1.1.jar" todir="/home/moergil/Projects/swarm/binaries/bwtv_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/fluent-hc-4.2.5.jar" todir="/home/moergil/Projects/swarm/binaries/bwtv_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpclient-4.2.5.jar" todir="/home/moergil/Projects/swarm/binaries/bwtv_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpclient-cache-4.2.5.jar" todir="/home/moergil/Projects/swarm/binaries/bwtv_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpcore-4.2.4.jar" todir="/home/moergil/Projects/swarm/binaries/bwtv_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpcore-4.3.jar" todir="/home/moergil/Projects/swarm/binaries/bwtv_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpcore-ab-4.3.jar" todir="/home/moergil/Projects/swarm/binaries/bwtv_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpcore-nio-4.3.jar" todir="/home/moergil/Projects/swarm/binaries/bwtv_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpmime-4.2.5.jar" todir="/home/moergil/Projects/swarm/binaries/bwtv_lib"/>
+    </target>
+</project>

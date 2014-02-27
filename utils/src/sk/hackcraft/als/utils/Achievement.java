@@ -1,22 +1,6 @@
 package sk.hackcraft.als.utils;
 
-public class Achievement
+public interface Achievement
 {
-	private final String name;
-
-	public Achievement(String name)
-	{
-		this.name = name;
-	}
-
-	public String getName()
-	{
-		return name;
-	}
-
-	@Override
-	public String toString()
-	{
-		return name;
-	}
+	String getName();
 }

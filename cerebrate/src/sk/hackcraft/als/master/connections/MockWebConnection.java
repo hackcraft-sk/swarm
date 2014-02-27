@@ -1,9 +1,7 @@
 package sk.hackcraft.als.master.connections;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;

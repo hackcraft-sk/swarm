@@ -42,6 +42,7 @@ import sk.hackcraft.als.utils.ProcessesKiller;
 import sk.hackcraft.als.utils.ProcessesList;
 import sk.hackcraft.als.utils.ProcessesListFactory;
 import sk.hackcraft.als.utils.Replay;
+import sk.hackcraft.als.utils.StandardAchievement;
 import sk.hackcraft.als.utils.WindowsTasklist;
 import sk.hackcraft.als.utils.application.EventListener;
 import sk.hackcraft.als.utils.log.Log;
@@ -411,8 +412,8 @@ public class Application implements Runnable
 
 				if (valid)
 				{
-					achievements.add(new Achievement("defeat"));
-					achievements.add(new Achievement("crash"));
+					achievements.add(StandardAchievement.DEFEAT);
+					achievements.add(StandardAchievement.CRASH);
 				}
 
 				holder.report = new SlaveMatchReport(valid, matchId, bot.getId(), achievements);

@@ -36,11 +36,6 @@ public class RealWebConnection implements WebConnection
 			throw JsonResponseException.createFromJson(response);
 		}
 
-		// TODO vyhodit ked sa upravi server
-		response.put("state", response.get("result"));
-		response.put("startTime", 0);
-		response.put("duration", 0);
-
 		MatchInfoJsonParser parser = new MatchInfoJsonParser(response);
 		return parser.parse();
 	}
