@@ -94,7 +94,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy $(TargetPath) &quot;C:\StarCraft\bwapi-data\AI&quot; /Y&#x0D;&#x0A;xcopy $(TargetPath) &quot;C:\swarm\binaries&quot; /Y"
+				CommandLine="xcopy $(TargetPath) &quot;C:\StarCraft\bwapi-data\AI&quot; /Y&#x0D;&#x0A;xcopy $(TargetPath) &quot;C:\swarm\binaries&quot; /Y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -280,6 +280,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Parasite\Watchers\KillScoreWatcher.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\BWU\Map\LayerCellStream.cpp"
 				>
 			</File>
@@ -402,11 +406,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Watchers\AchievementWatcher.h"
+				RelativePath=".\Source\Parasite\Watchers\AchievementWatcher.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Parasite\Watchers\AchievementWatcher.h"
+				RelativePath=".\Source\Watchers\AchievementWatcher.h"
 				>
 			</File>
 			<File
@@ -478,11 +482,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Parasite\Watchers\FastGameWatcher.h"
+				RelativePath=".\Source\Watchers\FastGameWatcher.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Watchers\FastGameWatcher.h"
+				RelativePath=".\Source\Parasite\Watchers\FastGameWatcher.h"
 				>
 			</File>
 			<File
@@ -542,19 +546,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Parasite\Json\json_batchallocator.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\json\json_batchallocator.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\json\json_internalarray.inl"
+				RelativePath=".\Source\Parasite\Json\json_batchallocator.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\Parasite\Json\json_internalarray.inl"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\json\json_internalarray.inl"
 				>
 			</File>
 			<File
@@ -566,15 +570,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Parasite\Json\json_valueiterator.inl"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\json\json_valueiterator.inl"
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Parasite\Json\json_valueiterator.inl"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Parasite\JSONValue.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Parasite\Watchers\KillScoreWatcher.h"
 				>
 			</File>
 			<File

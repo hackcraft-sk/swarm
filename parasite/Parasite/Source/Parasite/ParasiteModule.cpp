@@ -18,6 +18,7 @@
 
 #include "Parasite/Watchers/GameResultWatcher.h"
 #include "Parasite/Watchers/FastGameWatcher.h"
+#include "Parasite/Watchers/KillScoreWatcher.h"
 
 using std::set;
 using std::stringstream;
@@ -26,6 +27,7 @@ using namespace BWAPI;
 using BWU::Log;
 using Parasite_Watchers::GameResultWatcher;
 using Parasite_Watchers::FastGameWatcher;
+using Parasite_Watchers::KillScoreWatcher;
 
 namespace Parasite
 {
@@ -39,6 +41,7 @@ namespace Parasite
 		winUnder1MinutesWatcher = new FastGameWatcher(gameWatcher, game, 60, "winUnder1Minute");
 		winUnder3MinutesWatcher = new FastGameWatcher(gameWatcher, game, 60 * 3, "winUnder3Minutes");
 		defetUnder1MinutesWatcher = new FastGameWatcher(gameWatcher, game, 60, "defeatUnder1Minute");
+		killDominanceWatcher = new KillScoreWatcher(gameWatcher, game, 2000, "killScoreDominance");
 	}
 
 	void ParasiteModule::onStart()
@@ -77,6 +80,8 @@ namespace Parasite
 		{
 			defetUnder1MinutesWatcher->checkEndTime();
 		}
+
+		killDominanceWatcher->checkEndScore();
 
 		set<Achievement*> earnedAchievements = gameWatcher.getEarnedAchievements();
 		overlordConnection.sendAchievements(earnedAchievements);

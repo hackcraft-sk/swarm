@@ -16,6 +16,7 @@ namespace Parasite_Watchers
 {
 	class GameResultWatcher;
 	class FastGameWatcher;
+	class KillScoreWatcher;
 }
 
 namespace Parasite
@@ -42,6 +43,7 @@ namespace Parasite
 			Parasite_Watchers::FastGameWatcher *winUnder1MinutesWatcher;
 			Parasite_Watchers::FastGameWatcher *winUnder3MinutesWatcher;
 			Parasite_Watchers::FastGameWatcher *defetUnder1MinutesWatcher;
+			Parasite_Watchers::KillScoreWatcher *killDominanceWatcher;
 		public:
 			ParasiteModule(BWAPI::Game &game, BWU::Log &log, OverlordConnection &overlordConnection);
 			virtual void onStart();

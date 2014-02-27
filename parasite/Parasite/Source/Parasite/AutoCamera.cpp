@@ -227,9 +227,13 @@ namespace Parasite
 			else
 			{
 				// na tomto sa este pracuje
-				//vector = vector.normalise();
-				//vector = vector * 10;
-				vector = vector * (1.0/framesToGo);
+				double length = vector.getLength();
+				vector = vector.normalise();
+
+				if (length > 15)
+				{
+					vector = vector * 10;
+				}
 
 				screenActualPosition = screenActualPosition + vector.toPosition();
 			}
