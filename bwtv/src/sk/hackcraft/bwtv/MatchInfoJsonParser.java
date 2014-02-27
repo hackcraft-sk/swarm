@@ -35,11 +35,9 @@ public class MatchInfoJsonParser
 			JSONObject botData = botsData.getJSONObject(i);
 
 			String botName = botData.getString("name");
-			// TODO
-			System.out.println("TODO bot result setted to false everytime");
-			boolean won = false;
+			int points = botData.getInt("points");
 
-			Player bot = new Player(botName, won);
+			Player bot = new Player(botName, points);
 			bots.add(bot);
 		}
 

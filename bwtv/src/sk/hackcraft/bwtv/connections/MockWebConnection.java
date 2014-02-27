@@ -59,12 +59,12 @@ public class MockWebConnection implements WebConnection
 
 		JSONObject bot1 = new JSONObject();
 		bot1.put("name", "Moe");
-		bot1.put("result", "WIN");
+		bot1.put("points", 1);
 		bots.put(bot1);
 
 		JSONObject bot2 = new JSONObject();
 		bot2.put("name", "Bot2");
-		bot2.put("result", "LOST");
+		bot2.put("points", 1);
 		bots.put(bot2);
 
 		json.put("bots", bots);

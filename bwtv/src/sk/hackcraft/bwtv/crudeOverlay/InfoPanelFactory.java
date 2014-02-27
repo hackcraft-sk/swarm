@@ -9,6 +9,7 @@ import javax.swing.JComponent;
 import sk.hackcraft.als.utils.MatchEvent;
 import sk.hackcraft.bwtv.EventInfo;
 import sk.hackcraft.bwtv.MatchInfo;
+import sk.hackcraft.bwtv.MatchInfo.MatchState;
 import sk.hackcraft.bwtv.MatchInfo.Player;
 import sk.hackcraft.bwtv.connections.WebConnection;
 
@@ -95,42 +96,57 @@ public class InfoPanelFactory
 
 	public Container createDuelMatchFinishedInfoPanel(MatchInfo matchInfo)
 	{
-		/*
-		 * MatchState state = matchInfo.getState();
-		 * 
-		 * if (state == MatchInfo.MatchState.OK) { String winner = null; String
-		 * looser = null; String matchResult = "";
-		 * 
-		 * List<Player> players = matchInfo.getPlayers();
-		 * 
-		 * if (players.size() != 2) { throw new
-		 * RuntimeException("Duel Info Panel accepts only 2 players."); }
-		 * 
-		 * for (int i = 0; i < players.size(); i++) { Player player =
-		 * players.get(i);
-		 * 
-		 * MatchResult result = player.getResult();
-		 * 
-		 * if (result == MatchResult.WIN || result == MatchResult.PARTIAL_WIN) {
-		 * winner = player.getName(); matchResult = result;
-		 * 
-		 * int secondPlayerIndex = (i == 0) ? 1 : 0;
-		 * 
-		 * Player secondPlayer = players.get(secondPlayerIndex); looser =
-		 * secondPlayer.getName(); } else if (result == MatchResult.DRAW) {
-		 * matchResult = MatchResult.DRAW; } }
-		 * 
-		 * switch (matchResult) { case WIN: resultText = winner + " wins!";
-		 * pointsText = winner + " +3pts"; break; case PARTIAL_WIN: resultText =
-		 * winner + " partially wins!"; pointsText = winner + " +1pts, " +
-		 * looser + " -1pts"; break; case DRAW: resultText = "Draw!"; pointsText
-		 * = "-1pts to both"; break; default: throw new
-		 * IllegalArgumentException("Wrong match result: " + matchResult); } }
-		 * else { resultText = "Error!"; pointsText = "An error has occured."; }
-		 */
-
-		String resultText = "Work in progress";
-		String pointsText = "Soon(c)";
+		String resultText;
+		String pointsText;
+		
+		MatchState state = matchInfo.getState();
+		
+		if (state == MatchState.INVALID)
+		{
+			resultText = "Match was invalid!";
+			pointsText = "Technical problem, match will be replayed later.";
+		}
+		else
+		{
+			Player winnerPlayer = null;
+			int highestPoints = 0;
+			
+			pointsText = "";
+			
+			boolean first = true;
+			for (Player player : matchInfo.getPlayers())
+			{
+				if (player.getPoints() == highestPoints)
+				{
+					winnerPlayer = null;
+				}
+				else if (player.getPoints() > highestPoints)
+				{
+					winnerPlayer = player;
+					highestPoints = player.getPoints();
+				}
+				
+				if (!first)
+				{
+					pointsText += ", ";
+				}
+				else
+				{
+					first = false;
+				}
+				
+				pointsText += String.format("%s %dpts", player.getName(), player.getPoints());
+			}
+			
+			if (winnerPlayer != null)
+			{
+				resultText = "Winner: " + winnerPlayer.getName();
+			}
+			else
+			{
+				resultText = "Draw!";
+			}
+		}
 
 		return new DuelMatchFinishedInfoPanel(resultText, pointsText);
 	}

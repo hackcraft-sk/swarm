@@ -64,12 +64,12 @@ public class MatchInfo
 	public static class Player
 	{
 		private final String name;
-		private final boolean won;
+		private final int points;
 
-		public Player(String name, boolean won)
+		public Player(String name, int points)
 		{
 			this.name = name;
-			this.won = won;
+			this.points = points;
 		}
 
 		public String getName()
@@ -77,9 +77,9 @@ public class MatchInfo
 			return name;
 		}
 
-		public boolean hasWon()
+		public int getPoints()
 		{
-			return won;
+			return points;
 		}
 	}
 }

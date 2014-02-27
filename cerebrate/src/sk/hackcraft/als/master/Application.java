@@ -31,6 +31,7 @@ public class Application implements Runnable
 	private final SlavesManager slavesManager;
 
 	private final ReplaysStorage replaysStorage;
+	private final AchievementModifier achievementsModifier;
 
 	private volatile boolean run = true;
 
@@ -58,7 +59,7 @@ public class Application implements Runnable
 		if (mockWebConnection)
 		{
 			int playerCount = config.getSection("tournament").getPair("playersCount").getIntValue();
-			webConnection = new MockWebConnection(false, playerCount);
+			this.webConnection = new MockWebConnection(false, playerCount);
 		}
 		else
 		{
@@ -82,7 +83,7 @@ public class Application implements Runnable
 					streamIds.add(id);
 				}
 
-				webConnection = new RealWebConnection(address, acceptingTournamentIds, streamIds);
+				this.webConnection = new RealWebConnection(address, acceptingTournamentIds, streamIds);
 			}
 			catch (IOException e)
 			{
@@ -93,22 +94,24 @@ public class Application implements Runnable
 		if (mockSlaveConnection)
 		{
 			int playerCount = config.getSection("tournament").getPair("playersCount").getIntValue();
-			slaveConnectionsFactory = new MockSlaveConnectionsFactory(playerCount);
+			this.slaveConnectionsFactory = new MockSlaveConnectionsFactory(playerCount);
 		}
 		else
 		{
-			slaveConnectionsFactory = new RealSlaveConnectionsFactory();
+			this.slaveConnectionsFactory = new RealSlaveConnectionsFactory();
 		}
 
 		if (mockReplaysStorage)
 		{
-			replaysStorage = new MockReplayStorage();
+			this.replaysStorage = new MockReplayStorage();
 		}
 		else
 		{
 			Path replaysDirectory = Paths.get(".", "replays");
-			replaysStorage = new FileReplaysStorage(replaysDirectory);
+			this.replaysStorage = new FileReplaysStorage(replaysDirectory);
 		}
+		
+		this.achievementsModifier = new AchievementModifier();
 
 		int desiredSlaves = config.getSection("tournament").getPair("playersCount").getIntValue();
 		slavesManager = new SlavesManager(desiredSlaves, slaveConnectionsFactory, replaysStorage);
@@ -148,7 +151,7 @@ public class Application implements Runnable
 
 				int matchId = matchInfo.getMatchId();
 				// initial match result is invalid, in case of error
-				MatchReport matchResult = MatchReport.createInvalid(matchId);
+				MatchReport matchReport = MatchReport.createInvalid(matchId);
 
 				try
 				{
@@ -164,15 +167,17 @@ public class Application implements Runnable
 					slavesManager.broadcastGo();
 
 					log.println("Waiting for match result...");
-					matchResult = slavesManager.waitForMatchResult(matchId);
+					matchReport = slavesManager.waitForMatchResult(matchId);
 
 					log.println("Match finished.");
+					
+					achievementsModifier.modifyAchievements(matchReport);
 				}
 				finally
 				{
 					log.println("Posting result.");
 
-					webConnection.postMatchResult(matchResult, replaysStorage);
+					webConnection.postMatchResult(matchReport, replaysStorage);
 				}
 			}
 			catch (Exception e)
