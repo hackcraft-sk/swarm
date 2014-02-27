@@ -81,7 +81,7 @@ public class Application implements Runnable
 
 	public Application(String[] args)
 	{
-		String iniFileName = (args.length > 1) ? args[1] : "overlord.cfg";
+		String iniFileName = (args.length > 0) ? args[0] : "overlord.cfg";
 		File iniFile = new File(iniFileName);
 
 		IniFileConfig configLoader = new IniFileConfig();
