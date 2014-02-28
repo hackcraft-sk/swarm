@@ -36,7 +36,7 @@ namespace Parasite
 	: game(game)
 	, log(log)
 	, overlordConnection(overlordConnection)
-	, autocam(AutoCamera(&game))
+	, autocam(AutoCamera(game))
 	{
 		gameResultWatcher = new GameResultWatcher(gameWatcher);
 		winUnder1MinutesWatcher = new FastGameWatcher(gameWatcher, game, 60, "winUnder1Minute");

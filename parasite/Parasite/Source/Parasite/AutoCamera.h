@@ -1,8 +1,8 @@
 #pragma once
 
-#include <BWAPI.h>
-
 #include <map>
+
+#include <BWAPI.h>
 
 namespace Parasite
 {
@@ -12,16 +12,20 @@ namespace Parasite
 			class Interest
 			{
 				public:
+					virtual ~Interest()
+					{
+					}
+
 					virtual BWAPI::Position getPosition() = 0;
 			};
 
 			class UnitInterest: public Interest
 			{
 				private:
-					BWAPI::Unit *unit;
+					BWAPI::Unit &unit;
 					BWAPI::Position lastValidPosition;
 				public:
-					UnitInterest(BWAPI::Unit *unit);
+					UnitInterest(BWAPI::Unit &unit);
 					BWAPI::Position getPosition();
 			};
 
@@ -37,17 +41,21 @@ namespace Parasite
 			class InterestsTable
 			{
 				private:
+					BWAPI::Game &game;
 					std::map<int, Interest*> interests;
-				public:
-					void addInterest(int score, Interest *interest);
-					Interest *getMostInterestingInterest();
-					bool isEmpty();
+
+					void update();
 					void clear();
+					void createInterestForUnit(BWAPI::Unit &unit);
+				public:
+					InterestsTable(BWAPI::Game &game);
+					Interest *getMostInterestingInterest();
 			};
 
-			BWAPI::Game *game;
+			BWAPI::Game &game;
 
 			const BWAPI::Position screenCenter;
+
 			BWAPI::Position screenActualPosition;
 			Interest *actualInterest;
 
@@ -59,14 +67,10 @@ namespace Parasite
 			bool isSceneOutdated();
 			bool canModifyScreenPosition();
 
-			void updateInterestsTable();
-			void createInterestForUnit(BWAPI::Unit *unit);
-
-			void centerScreenAt(Interest *interest);
 			void updateScreenPosition();
 
 		public:
-			AutoCamera(BWAPI::Game *game);
+			AutoCamera(BWAPI::Game &game);
 			void update();
 	};
 }

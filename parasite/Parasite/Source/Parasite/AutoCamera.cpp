@@ -4,144 +4,85 @@
 
 #include "Parasite/Vector.h"
 
+using namespace BWAPI;
+
+using std::map;
+using std::make_pair;
+using std::set;
+
 namespace Parasite
 {
-	AutoCamera::UnitInterest::UnitInterest(BWAPI::Unit *unit)
-	: unit(unit)
+	AutoCamera::UnitInterest::UnitInterest(Unit &unit)
+			: unit(unit)
 	{
 	}
 
-	BWAPI::Position AutoCamera::UnitInterest::getPosition()
+	Position AutoCamera::UnitInterest::getPosition()
 	{
-		if (unit->getHitPoints() > 0)
+		if (unit.getHitPoints() > 0)
 		{
-			lastValidPosition = unit->getPosition();
+			lastValidPosition = unit.getPosition();
 		}
 
 		return lastValidPosition;
 	}
 
-	AutoCamera::PositionInterest::PositionInterest(BWAPI::Position position)
-	: position(position)
+	AutoCamera::PositionInterest::PositionInterest(Position position)
+			: position(position)
 	{
 	}
 
-	BWAPI::Position AutoCamera::PositionInterest::getPosition()
+	Position AutoCamera::PositionInterest::getPosition()
 	{
 		return position;
 	}
 
-	void AutoCamera::InterestsTable::addInterest(int score, Interest *interest)
+	AutoCamera::InterestsTable::InterestsTable(Game &game)
+			: game(game)
 	{
-		interests.insert(std::pair<int, Interest*>(score, interest));
 	}
 
 	AutoCamera::Interest *AutoCamera::InterestsTable::getMostInterestingInterest()
 	{
-		Interest *interest = (*interests.rbegin()).second;
-		return interest;
-	}
+		update();
 
-	bool AutoCamera::InterestsTable::isEmpty()
-	{
-		return interests.empty();
-	}
-
-	void AutoCamera::InterestsTable::clear()
-	{
-		std::map<int, Interest*>::iterator it;
-		for (it = interests.begin(); it != interests.end(); it++)
+		if (interests.empty())
 		{
-			Interest *interest = (*it).second;
-
-			delete interest;
+			return new PositionInterest(Positions::None);
 		}
-
-		interests.clear();
-	}
-
-	AutoCamera::AutoCamera(BWAPI::Game *game)
-	: game(game)
-	, screenCenter(BWAPI::Position(320, 240))
-	, sceneSetFrame(game->getFrameCount())
-	, sceneTimeoutInFrames(50)
-	{
-		Interest *defaultInterest = new PositionInterest(BWAPI::Positions::None);
-		interestsTable.addInterest(1, defaultInterest);
-
-		centerScreenAt(defaultInterest);
-	}
-
-	void AutoCamera::update()
-	{
-		updateInterestsTable();
-
-		if (!interestsTable.isEmpty())
+		else
 		{
-			Interest *interest = interestsTable.getMostInterestingInterest();
-
-			centerScreenAt(interest);
-		}
-
-		if (canModifyScreenPosition())
-		{
-			updateScreenPosition();
+			return (*interests.rbegin()).second;
 		}
 	}
 
-	bool AutoCamera::isSceneOutdated()
+	void AutoCamera::InterestsTable::update()
 	{
-		int actualFrame = game->getFrameCount();
+		clear();
 
-		return (sceneSetFrame + sceneTimeoutInFrames < actualFrame);
-	}
-
-	bool AutoCamera::canModifyScreenPosition()
-	{
-		// Stlaèené ¾avé tlaèítko sa èasto používa pri ahaní viewportu po minimape,
-		// v takomto prípade je nežiadúce meni viewport
-		if (game->getMouseState(BWAPI::M_LEFT))
-		{
-			return false;
-		}
-
-		// Stlaèené stredné tlaèítko sa používa pre pan poh¾adu,
-		// v takomto prípade je nežiadúce meni viewport
-		if (game->getMouseState(BWAPI::M_MIDDLE))
-		{
-			return false;
-		}
-
-		return true;
-	}
-
-	void AutoCamera::updateInterestsTable()
-	{
-		interestsTable.clear();
-
-		std::set<BWAPI::Unit*> allUnits = game->getAllUnits();
-		std::set<BWAPI::Unit*>::iterator it;
+		set<Unit*> allUnits = game.getAllUnits();
+		set<Unit*>::iterator it;
 
 		for (it = allUnits.begin(); it != allUnits.end(); it++)
 		{
-			BWAPI::Unit *unit = (*it);
+			Unit &unit = *(*it);
 
-			if (!unit->isVisible())
+			if (!unit.isVisible())
 			{
 				continue;
 			}
-			
+
 			createInterestForUnit(unit);
 		}
 	}
 
-	void AutoCamera::createInterestForUnit(BWAPI::Unit *unit)
+	void AutoCamera::InterestsTable::createInterestForUnit(Unit &unit)
 	{
-		BWAPI::UnitType unitType = unit->getType();
+		UnitType unitType = unit.getType();
 
 		int score = 0;
 
-		if (unitType == BWAPI::UnitTypes::Zerg_Larva)
+		if (unitType == UnitTypes::Zerg_Larva)
 		{
 			score -= 15;
 		}
@@ -156,30 +97,30 @@ namespace Parasite
 			score -= 20;
 		}
 
-		if (unit->isMoving())
+		if (unit.isMoving())
 		{
 			score += 10;
 		}
 
-		if (unit->isAttacking())
+		if (unit.isAttacking())
 		{
 			score += 30;
 		}
 
-		if (unit->isUnderAttack())
+		if (unit.isUnderAttack())
 		{
 			score += 30;
 		}
 
-		std::set<BWAPI::Unit*> nearbyUnits = unit->getUnitsInRadius(200);
-		std::set<BWAPI::Unit*> enemyUnits;
-		std::set<BWAPI::Unit*>::iterator it;
+		set<Unit*> nearbyUnits = unit.getUnitsInRadius(200);
+		set<Unit*> enemyUnits;
+		set<Unit*>::iterator it;
 		for (it = nearbyUnits.begin(); it != nearbyUnits.end(); it++)
 		{
-			BWAPI::Unit *nearbyUnit = (*it);
-			
-			BWAPI::Player *nearbyUnitPlayer = nearbyUnit->getPlayer();
-			BWAPI::Player *self = game->self();
+			Unit *nearbyUnit = (*it);
+
+			Player *nearbyUnitPlayer = nearbyUnit->getPlayer();
+			Player *self = game.self();
 
 			if (self->isEnemy(nearbyUnitPlayer))
 			{
@@ -189,8 +130,8 @@ namespace Parasite
 
 		score += enemyUnits.size() * 10;
 
-		BWAPI::Player *self = game->self();
-		BWAPI::Player *unitPlayer = unit->getPlayer();
+		Player *self = game.self();
+		Player *unitPlayer = unit.getPlayer();
 		if (self == unitPlayer)
 		{
 			score += 50;
@@ -198,52 +139,85 @@ namespace Parasite
 
 		Interest *interest = new UnitInterest(unit);
 
-		interestsTable.addInterest(score, interest);
+		interests.insert(make_pair(score, interest));
 	}
 
-	void AutoCamera::centerScreenAt(Interest *interest)
+	void AutoCamera::InterestsTable::clear()
 	{
-		actualInterest = interest;
+		map<int, Interest*>::iterator it;
+		for (it = interests.begin(); it != interests.end(); it++)
+		{
+			Interest *interest = (*it).second;
+			delete interest;
+		}
 
-		sceneSetFrame = game->getFrameCount();
+		interests.clear();
+	}
+
+	AutoCamera::AutoCamera(Game &game)
+			: game(game), screenCenter(Position(320, 200)), sceneSetFrame(game.getFrameCount()), sceneTimeoutInFrames(100), interestsTable(InterestsTable(game))
+	{
+		actualInterest = interestsTable.getMostInterestingInterest();
+	}
+
+	/**
+	 * How this works? Every time, when scene is outdated,
+	 * code will ask for new interest. Interest is either
+	 * unit or position interest. If there is no interest,
+	 * position interest with Positions::None will be returned.
+	 *
+	 * Deallocation is happening in interestsTable; in calling
+	 * getMostInterestingInterest, actualInterest is deleted, so
+	 * dont keep it.
+	 *
+	 * Then camera will just follow interests position, or mouse,
+	 * depends on canModifyScreenPosition value.
+	 */
+	void AutoCamera::update()
+	{
+		if (isSceneOutdated())
+		{
+			actualInterest = interestsTable.getMostInterestingInterest();
+			sceneSetFrame = game.getFrameCount();
+		}
+
+		if (canModifyScreenPosition())
+		{
+			updateScreenPosition();
+		}
+	}
+
+	bool AutoCamera::isSceneOutdated()
+	{
+		int actualFrame = game.getFrameCount();
+
+		return (sceneSetFrame + sceneTimeoutInFrames < actualFrame);
+	}
+
+	bool AutoCamera::canModifyScreenPosition()
+	{
+		// manual view control with pressed left or middle mouse button
+		if (game.getMouseState(M_LEFT) || game.getMouseState(M_MIDDLE))
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	void AutoCamera::updateScreenPosition()
 	{
-		BWAPI::Position screenTargetPosition = actualInterest->getPosition();
-
-		int framesToGo = (sceneSetFrame + sceneTimeoutInFrames) - game->getFrameCount();
-
-		if (framesToGo > 0)
+		if (actualInterest->getPosition() == Positions::None)
 		{
-			Vector vector = Vector::fromPositions(screenActualPosition, screenTargetPosition);
-
-			double distance = vector.getLength();
-			// ciel je moc daleko, spravime "prestrih"
-			if (distance > 1000 || BWAPI::Broodwar->getFrameCount() < 5)
-			{
-				screenActualPosition = screenTargetPosition;
-			}
-			else
-			{
-				// na tomto sa este pracuje
-				double length = vector.getLength();
-				vector = vector.normalise();
-
-				if (length > 15)
-				{
-					vector = vector * 10;
-				}
-
-				screenActualPosition = screenActualPosition + vector.toPosition();
-			}
+			return;
 		}
 
-		// offset, keïže setScreenPosition nastavuje pozíciu ¾avého horného rohu obrazovky
-		int x, y;
-		x = screenActualPosition.x() - screenCenter.x();
-		y = screenActualPosition.y() - screenCenter.y();
+		Position interestPosition = actualInterest->getPosition();
 
-		BWAPI::Broodwar->setScreenPosition(x, y);
+		int x, y;
+		x = interestPosition.x() - 320;
+		y = interestPosition.y() - 200;
+
+		game.setScreenPosition(x, y);
 	}
 }
