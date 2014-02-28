@@ -1,6 +1,7 @@
 #include "Parasite/ParasiteModule.h"
 
 #include <set>
+#include <map>
 #include <sstream>
 
 #include <cstdlib>
@@ -18,16 +19,16 @@
 
 #include "Parasite/Watchers/GameResultWatcher.h"
 #include "Parasite/Watchers/FastGameWatcher.h"
-#include "Parasite/Watchers/KillScoreWatcher.h"
 
 using std::set;
+using std::map;
 using std::stringstream;
 using std::string;
+using std::make_pair;
 using namespace BWAPI;
 using BWU::Log;
 using Parasite_Watchers::GameResultWatcher;
 using Parasite_Watchers::FastGameWatcher;
-using Parasite_Watchers::KillScoreWatcher;
 
 namespace Parasite
 {
@@ -41,7 +42,6 @@ namespace Parasite
 		winUnder1MinutesWatcher = new FastGameWatcher(gameWatcher, game, 60, "winUnder1Minute");
 		winUnder3MinutesWatcher = new FastGameWatcher(gameWatcher, game, 60 * 3, "winUnder3Minutes");
 		defetUnder1MinutesWatcher = new FastGameWatcher(gameWatcher, game, 60, "defeatUnder1Minute");
-		killDominanceWatcher = new KillScoreWatcher(gameWatcher, game, 2000, "killScoreDominance");
 	}
 
 	void ParasiteModule::onStart()
@@ -81,10 +81,13 @@ namespace Parasite
 			defetUnder1MinutesWatcher->checkEndTime();
 		}
 
-		killDominanceWatcher->checkEndScore();
-
 		set<Achievement*> earnedAchievements = gameWatcher.getEarnedAchievements();
 		overlordConnection.sendAchievements(earnedAchievements);
+
+		Player &self = *game.self();
+		map<string, int> scores;
+		scores.insert(make_pair("kill", self.getKillScore()));
+		overlordConnection.sendScores(scores);
 
 		overlordConnection.close();
 	}
@@ -99,6 +102,18 @@ namespace Parasite
 		}
 
 		drawPlayers();
+
+		int y = 50;
+		set<Player*> players = game.getPlayers();
+		set<Player*>::iterator it;
+		for (it = players.begin(); it != players.end(); it++)
+		{
+			Player *player = *it;
+
+			game.drawTextScreen(10, y, "%d", player->getKillScore());
+
+			y += 20;
+		}
 	}
 
 	void ParasiteModule::drawPlayers()

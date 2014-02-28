@@ -39,6 +39,38 @@ namespace Parasite
 		messageInterface.sendMessage(jsonMessage);
 	}
 
+	void MessageOverlordConnection::sendScores(std::map<std::string, int> scores)
+	{
+		stringstream s;
+		s << "{\"scores\":";
+
+			s << "{";
+			bool first = true;
+			std::map<std::string, int>::const_iterator it;
+			for (it = scores.begin(); it != scores.end(); it++)
+			{
+				if (!first)
+				{
+					s << ",";
+				}
+				else
+				{
+					first = false;
+				}
+
+				string scoreName = it->first;
+				int scoreValue = it->second;
+
+				s << "\"" << scoreName << "\": \"" << scoreValue << "\"";
+			}
+			s << "}";
+
+		s << "}";
+
+		string jsonMessage = s.str();
+		messageInterface.sendMessage(jsonMessage);
+	}
+
 	void MessageOverlordConnection::sendAchievements(set<Achievement*> achievements)
 	{
 		stringstream s;

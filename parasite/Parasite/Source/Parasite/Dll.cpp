@@ -56,10 +56,10 @@ extern "C" __declspec(dllexport)     AIModule* newTournamentAI(Game* game)
 	MessageInterface *messageInterface;
 
 	// real interface
-	messageInterface = new SocketMessageInterface("localhost");
+	//messageInterface = new SocketMessageInterface("localhost");
 
 	// debug interface
-	//messageInterface = new LogMessageInterface(*log);
+	messageInterface = new LogMessageInterface(*log);
 
 	MessageOverlordConnection *overlordConnection = new MessageOverlordConnection(*messageInterface);
 

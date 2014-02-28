@@ -18,6 +18,7 @@ namespace Parasite
 
 			virtual void sendPlayerColor(PlayerColor playerColor);
 			virtual void sendAlivePing();
+			virtual void sendScores(std::map<std::string, int> scores);
 			virtual void sendAchievements(std::set<Achievement*> achievements);
 	};
 }
