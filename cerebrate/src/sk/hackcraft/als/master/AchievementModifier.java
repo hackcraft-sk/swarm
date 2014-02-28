@@ -1,7 +1,7 @@
 package sk.hackcraft.als.master;
 
 import sk.hackcraft.als.utils.Achievement;
-import sk.hackcraft.als.utils.StandardAchievement;
+import sk.hackcraft.als.utils.StandardAchievements;
 
 import java.util.Set;
 
@@ -17,7 +17,7 @@ public class AchievementModifier
 		{
 			Set<Achievement> achievements = slaveReport.getAchievements();
 			
-			if (achievements.contains(StandardAchievement.VICTORY))
+			if (achievements.contains(StandardAchievements.VICTORY))
 			{
 				onlyDefeat = false;
 			}
@@ -29,8 +29,8 @@ public class AchievementModifier
 			
 			if (onlyDefeat)
 			{
-				achievements.remove(StandardAchievement.DEFEAT);
-				achievements.add(StandardAchievement.DRAW);
+				achievements.remove(StandardAchievements.DEFEAT);
+				achievements.add(StandardAchievements.DRAW);
 			}
 		}
 	}
