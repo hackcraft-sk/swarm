@@ -10,7 +10,7 @@ import java.util.Set;
 
 import sk.hackcraft.als.master.ReplaysStorage;
 import sk.hackcraft.als.utils.Achievement;
-import sk.hackcraft.als.utils.StandardAchievement;
+import sk.hackcraft.als.utils.CustomAchievement;
 import sk.hackcraft.als.utils.reports.SlaveMatchReport;
 
 public class RealSlaveConnection implements SlaveConnection
@@ -94,7 +94,7 @@ public class RealSlaveConnection implements SlaveConnection
 		{
 			String name = inputStream.readUTF();
 
-			Achievement achievement = StandardAchievement.fromName(name);
+			Achievement achievement = new CustomAchievement(name);
 			achievements.add(achievement);
 		}
 

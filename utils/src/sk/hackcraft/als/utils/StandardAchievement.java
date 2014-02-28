@@ -5,11 +5,7 @@ public enum StandardAchievement implements Achievement
 	VICTORY("victory"),
 	DEFEAT("defeat"),
 	DRAW("draw"),
-	CRASH("crash"),
-	WIN_UNDER_1_MINUTE("winUnder1Minute"),
-	WIN_UNDER_3_MINUTES("winUnder3Minutes"),
-	DEFEAT_UNDER_1_MINUTE("defeatUnder1Minute"),
-	KILL_SCORE_DOMINANCE("killScoreDominance");
+	CRASH("crash");
 
 	public static StandardAchievement fromName(String name)
 	{
@@ -21,7 +17,7 @@ public enum StandardAchievement implements Achievement
 			}
 		}
 		
-		return null;
+		throw new IllegalArgumentException("Standard achievement with name " + name + " doesn't exists.");
 	}
 	
 	private final String name;
@@ -34,6 +30,12 @@ public enum StandardAchievement implements Achievement
 	public String getName()
 	{
 		return name;
+	}
+	
+	@Override
+	public boolean equals(Achievement achievement)
+	{
+		return achievement.getName().equals(name);
 	}
 
 	@Override

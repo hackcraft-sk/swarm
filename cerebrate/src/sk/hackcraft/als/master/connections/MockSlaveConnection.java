@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.Set;
 
 import sk.hackcraft.als.utils.Achievement;
+import sk.hackcraft.als.utils.CustomAchievement;
 import sk.hackcraft.als.utils.StandardAchievement;
 import sk.hackcraft.als.utils.reports.SlaveMatchReport;
 
@@ -72,6 +73,8 @@ public class MockSlaveConnection implements SlaveConnection
 		{
 			achievements.add(StandardAchievement.DEFEAT);
 		}*/
+		
+		achievements.add(new CustomAchievement("doubleKillEfficiency"));
 		
 		achievements.add(StandardAchievement.DEFEAT);
 

@@ -7,6 +7,7 @@ import java.util.Set;
 import org.json.JSONObject;
 
 import sk.hackcraft.als.utils.Achievement;
+import sk.hackcraft.als.utils.CustomAchievement;
 import sk.hackcraft.als.utils.PlayerColor;
 import sk.hackcraft.als.utils.StandardAchievement;
 import sk.hackcraft.als.utils.application.Event;
@@ -101,7 +102,7 @@ public class TemporaryRealParasiteConnection implements ParasiteConnection
 					{
 						String achievementName = key;
 
-						achievements.add(StandardAchievement.fromName(achievementName));
+						achievements.add(new CustomAchievement(achievementName));
 					}
 
 					matchEndedEvent.emit(this, achievements);

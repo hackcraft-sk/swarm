@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project overlord with libraries in sub-folder">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="/home/moergil/Projects/swarm/binaries/overlord.jar">
+            <manifest>
+                <attribute name="Main-Class" value="sk.hackcraft.als.slave.Application"/>
+                <attribute name="Class-Path" value=". overlord_lib/junit.jar overlord_lib/org.hamcrest.core_1.3.0.v201303031735.jar overlord_lib/commons-cli-1.2.jar overlord_lib/commons-codec-1.6.jar overlord_lib/commons-logging-1.1.1.jar overlord_lib/fluent-hc-4.2.5.jar overlord_lib/httpclient-4.2.5.jar overlord_lib/httpclient-cache-4.2.5.jar overlord_lib/httpcore-4.2.4.jar overlord_lib/httpcore-4.3.jar overlord_lib/httpcore-ab-4.3.jar overlord_lib/httpcore-nio-4.3.jar overlord_lib/httpmime-4.2.5.jar"/>
+            </manifest>
+            <fileset dir="/home/moergil/Projects/swarm/overlord/bin"/>
+            <fileset dir="/home/moergil/Projects/swarm/json/bin"/>
+            <fileset dir="/home/moergil/Projects/swarm/jwebcomm/bin"/>
+            <fileset dir="/home/moergil/Projects/swarm/utils/bin"/>
+        </jar>
+        <delete dir="/home/moergil/Projects/swarm/binaries/overlord_lib"/>
+        <mkdir dir="/home/moergil/Projects/swarm/binaries/overlord_lib"/>
+        <copy file="/opt/eclipse/plugins/org.junit_4.11.0.v201303080030/junit.jar" todir="/home/moergil/Projects/swarm/binaries/overlord_lib"/>
+        <copy file="/opt/eclipse/plugins/org.hamcrest.core_1.3.0.v201303031735.jar" todir="/home/moergil/Projects/swarm/binaries/overlord_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/commons-cli-1.2.jar" todir="/home/moergil/Projects/swarm/binaries/overlord_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/commons-codec-1.6.jar" todir="/home/moergil/Projects/swarm/binaries/overlord_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/commons-logging-1.1.1.jar" todir="/home/moergil/Projects/swarm/binaries/overlord_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/fluent-hc-4.2.5.jar" todir="/home/moergil/Projects/swarm/binaries/overlord_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpclient-4.2.5.jar" todir="/home/moergil/Projects/swarm/binaries/overlord_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpclient-cache-4.2.5.jar" todir="/home/moergil/Projects/swarm/binaries/overlord_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpcore-4.2.4.jar" todir="/home/moergil/Projects/swarm/binaries/overlord_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpcore-4.3.jar" todir="/home/moergil/Projects/swarm/binaries/overlord_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpcore-ab-4.3.jar" todir="/home/moergil/Projects/swarm/binaries/overlord_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpcore-nio-4.3.jar" todir="/home/moergil/Projects/swarm/binaries/overlord_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpmime-4.2.5.jar" todir="/home/moergil/Projects/swarm/binaries/overlord_lib"/>
+    </target>
+</project>
