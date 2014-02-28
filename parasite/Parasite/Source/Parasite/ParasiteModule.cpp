@@ -19,6 +19,7 @@
 
 #include "Parasite/Watchers/GameResultWatcher.h"
 #include "Parasite/Watchers/FastGameWatcher.h"
+#include "Parasite/Watchers/KillDeadUnitsRatioWatcher.h"
 
 using std::set;
 using std::map;
@@ -29,6 +30,7 @@ using namespace BWAPI;
 using BWU::Log;
 using Parasite_Watchers::GameResultWatcher;
 using Parasite_Watchers::FastGameWatcher;
+using Parasite_Watchers::KillDeadUnitsRatioWatcher;
 
 namespace Parasite
 {
@@ -41,7 +43,9 @@ namespace Parasite
 		gameResultWatcher = new GameResultWatcher(gameWatcher);
 		winUnder1MinutesWatcher = new FastGameWatcher(gameWatcher, game, 60, "winUnder1Minute");
 		winUnder3MinutesWatcher = new FastGameWatcher(gameWatcher, game, 60 * 3, "winUnder3Minutes");
-		defetUnder1MinutesWatcher = new FastGameWatcher(gameWatcher, game, 60, "defeatUnder1Minute");
+		defeatUnder1MinutesWatcher = new FastGameWatcher(gameWatcher, game, 60, "defeatUnder1Minute");
+		doubleKillEfficiencyWatcher = new KillDeadUnitsRatioWatcher(gameWatcher, *game.self(), 2, 1, "doubleKillEfficiency");
+		slightlyKillEfficiencyWatcher = new KillDeadUnitsRatioWatcher(gameWatcher, *game.self(), 10, 8, "slightlyKillEfficiency");
 	}
 
 	void ParasiteModule::onStart()
@@ -78,8 +82,11 @@ namespace Parasite
 		}
 		else
 		{
-			defetUnder1MinutesWatcher->checkEndTime();
+			defeatUnder1MinutesWatcher->checkEndTime();
 		}
+
+		doubleKillEfficiencyWatcher->checkKillDeadUnitsRatio();
+		slightlyKillEfficiencyWatcher->checkKillDeadUnitsRatio();
 
 		set<Achievement*> earnedAchievements = gameWatcher.getEarnedAchievements();
 		overlordConnection.sendAchievements(earnedAchievements);
