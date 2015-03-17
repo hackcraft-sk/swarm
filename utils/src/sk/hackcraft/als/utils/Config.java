@@ -110,6 +110,8 @@ public interface Config
 		 *             if it's not possible to convert value to int
 		 */
 		int getIntValue();
+		
+		int[] getIntValueAsArray();
 
 		/**
 		 * Gets pair value as boolean

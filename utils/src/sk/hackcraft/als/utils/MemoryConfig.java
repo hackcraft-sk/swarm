@@ -255,6 +255,24 @@ public class MemoryConfig implements Config
 		{
 			this.value = Integer.toString(value);
 		}
+		
+		public int[] getIntValueAsArray()
+		{
+			if (value.length() == 0)
+			{
+				return new int[0];
+			}
+
+			String parts[] = value.split(",");
+			int[] items = new int[parts.length];
+
+			for (int i = 0; i < items.length; i++)
+			{
+				items[i] = Integer.parseInt(parts[i].trim());
+			}
+
+			return items;
+		}
 
 		@Override
 		public boolean getBooleanValue()
