@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
+import sk.hackcraft.als.slave.connections.AutomaticWebConnection;
 import sk.hackcraft.als.slave.connections.MasterConnection;
 import sk.hackcraft.als.slave.connections.MockMasterConnection;
 import sk.hackcraft.als.slave.connections.MockWebConnection;
@@ -106,30 +107,47 @@ public class Application implements Runnable
 		id = programSection.getPair("id").getIntValue();
 		host = programSection.getPair("host").getBooleanValue();
 
-		String webAddress = config.getSection("web").getPair("address").getStringValue();
-
+		String connectionType = config.getSection("connection").getPair("type").getStringValue();
+		
 		Config.Section componentsSection = config.getSection("mockComponents");
 		boolean mockWeb = componentsSection.getPair("web").getBooleanValue();
 		boolean mockMaster = componentsSection.getPair("master").getBooleanValue();
 		boolean mockGameEnvironment = componentsSection.getPair("gameEnvironment").getBooleanValue();
 		boolean mockGameConnection = componentsSection.getPair("gameConnection").getBooleanValue();
 		boolean mockBotLauncherFactory = componentsSection.getPair("botLauncherFactory").getBooleanValue();
-
+		
+		
 		if (mockWeb)
 		{
 			webConnection = new MockWebConnection();
 		}
 		else
 		{
-			try
-			{
-				MapFilePreparer mapFilePreparer = new MapFilePreparer(starCraftPath);
-				webConnection = new RealWebConnection(webAddress, mapFilePreparer);
+			MapFilePreparer mapFilePreparer = new MapFilePreparer(starCraftPath);
+			if (connectionType.equals("web")) {
+				try
+				{
+					String webAddress = config.getSection("web").getPair("address").getStringValue();
+					
+					webConnection = new RealWebConnection(webAddress, mapFilePreparer);
+				}
+				catch (IOException e)
+				{
+					throw new RuntimeException("Can't create connection to web.", e);
+				}
+			} else {
+				Config.Section automaticConnectionConfig = config.getSection("automaticConnection");
+				
+				Bot [] botInfos = AutomaticWebConnection.createBotInfosFrom(
+						automaticConnectionConfig.getPair("botNames").getStringValueAsArray(), 
+						automaticConnectionConfig.getPair("botUrls").getStringValueAsArray(), 
+						automaticConnectionConfig.getPair("botTypes").getStringValueAsArray()
+				);
+				
+				webConnection = new AutomaticWebConnection(botInfos, mapFilePreparer);
 			}
-			catch (IOException e)
-			{
-				throw new RuntimeException("Can't create connection to web.", e);
-			}
+			
+			
 		}
 
 		if (mockMaster)

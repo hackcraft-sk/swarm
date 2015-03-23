@@ -44,7 +44,7 @@ public class WebFileSynchronizer implements FileSynchronizer
 			ChecksumCreator fileChecksumCreator = new MD5ChecksumCreator(bis);
 			String actualFileChecksum = fileChecksumCreator.create();
 
-			if (!actualFileChecksum.equals(fileChecksum))
+			if (fileChecksum != null && !actualFileChecksum.equals(fileChecksum))
 			{
 				downloader.download();
 				return;
