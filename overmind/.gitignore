@@ -1,0 +1,8 @@
+#overmind
+/nbproject/
+/app/config/config.hackcraft_sk.local.neon
+/app/config/config.local.neon
+/www/files/
+/temp/
+/log/
+/.idea/

@@ -1,0 +1,5 @@
+nette:
+	database:
+			dsn: 'mysql:unix_socket=/tmp/mysql51.sock;dbname=DATABASE_NAME'
+			user: 'USERNAME'
+			password: 'PASSWORD'
