@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Base presenter for all application presenters.
  */
@@ -52,6 +51,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 		$this->template->registerHelper("printf", "sprintf");
 		
 		$this->template->username = $this->getUser()->isLoggedIn() ? $this->getUser()->getIdentity()->username : "anonymous";
+
+		$this->template->parsedown = new Parsedown();
 	}
 	
 	public function setLanguage($language) {
@@ -92,12 +93,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 		
 		$this->template->loggedIn = $this->getUser()->isLoggedIn();
 		$this->template->user = $this->getUser()->getIdentity();
-		
-		$this->template->liveTime = $this->context->model->getLiveTime();
-		$this->template->isLive = time() >= $this->template->liveTime;
-		
+
 		$this->template->tournament = $this->getSelectedTournament();
 		$this->template->tournaments = $this->context->model->getTournaments();
+
+		$this->template->liveTime = $this->template->tournament->getTestStartTime();
+		$this->template->isLive = time() >= $this->template->liveTime;
 
 		$this->template->activeTournaments = $this->context->model->getActiveTournaments();
 	}

@@ -1,9 +1,15 @@
 {block content}
+<section>
+    <div class="row">
+        <div class="box">
+            <h2>Plánovanie zápasov</h2>
 
-<h2>Plánovanie zápasov</h2>
+            {control scheduleForm}
 
-{control scheduleForm}
+            {control scheduleCombinationsForm}
 
-{control scheduleCombinationsForm}
+            <a n:href="Admin:clearAllMatches" onclick="return confirm('Ste si istý?');">Vymazať naplánované zápasy</a>  (odohrané a tie, ktoré sa hrajú, ostanú)
 
-<a n:href="Admin:clearAllMatches" onclick="return confirm('Ste si istý?');">Vymazať naplánované zápasy</a>  (odohrané a tie, ktoré sa hrajú, ostanú)
+        </div>
+    </div>
+</section>

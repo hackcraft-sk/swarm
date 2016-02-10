@@ -146,7 +146,7 @@ class Achievement {
 	}
 
 	public function getImageURL() {
-		return "http://scmai.hackcraft.sk/achievements/{$this->id}.png";
+		return "http://mylifeforai.com/achievements/{$this->id}.png";
 	}
 
 	public function isGood() {

@@ -158,7 +158,8 @@ class AdminPresenter extends BasePresenter {
 		$form->addTextArea("extrasJson", "Extra JSON dáta");
 		
 		foreach($this->context->translator->getLanguages() as $lang => $langName) {
-			$form->addTextArea("info_{$lang}", "Pravidlá tournamentu ({$langName})");
+			$form->addTextArea("rules_{$lang}", "Pravidlá tournamentu ({$langName})");
+			$form->addTextArea("info_{$lang}", "Informacie o tournamente ({$langName})");
 		}
 		
 		$form->addSubmit("submit", "Uložiť detaily tournamentu");
@@ -175,11 +176,15 @@ class AdminPresenter extends BasePresenter {
 			$values['competitionStartTime'] = strtotime($values['competitionStartTime']);
 			
 			$info = array();
+			$rules = array();
 			foreach($this->context->translator->getLanguages() as $lang => $langName) {
 				$info[$lang] = $values["info_{$lang}"];
 				unset($values["info_{$lang}"]);
+				$rules[$lang] = $values["rules_{$lang}"];
+				unset($values["rules_{$lang}"]);
 			}
 			$values['info'] = $info;
+			$values['rules'] = $rules;
 			
 			$this->getSelectedTournament()->update($values);
 			$this->flashMessage("Detaily tournamentu boli uložené");

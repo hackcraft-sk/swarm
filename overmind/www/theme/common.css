@@ -1,0 +1,264 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+@font-face {
+    font-family: starcraft;
+    src: url("starcraft.ttf");
+}
+
+body {
+    background-image: url("background.big.jpg");
+    background-size: 100% auto;
+    background-attachment: fixed;
+    color: #eee;
+    font-family: Helvetica;
+    line-height: 150%;
+}
+
+a {
+    color: rgb(150, 200, 255);
+}
+
+section {
+    width: 1000px;
+    margin: auto;
+}
+
+#panel {
+    background-color: black;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    box-shadow: 0px 0px 10px black;
+}
+
+#panel section {
+    vertical-align: middle;
+}
+
+#panel select {
+    border: none;
+    background: black;
+    font-size: 1.2em;
+    color: white;
+    -webkit-appearance: none;
+    padding-right: 2em;
+    background-image: url("nav-down.white.png");
+    background-repeat: no-repeat;
+    background-position: 95% 50%;
+    background-size: 15px auto;
+    margin-top: 0.55em;
+    float: left;
+}
+
+#panel select:focus, #panel select:active {
+    border: none;
+}
+
+#panel ul.menu {
+    list-style-type: none;
+    margin-left: 2em;
+    float: right;
+}
+
+#panel ul.menu li {
+    display: inline-block;
+}
+
+#panel ul.menu li a {
+    display: block;
+    padding: 1.0em;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+    color: white;
+    font-size: 0.8em;
+    font-family: starcraft;
+    text-decoration: none;
+}
+
+#panel ul.menu li a.private {
+    background-color: rgba(0, 255, 0, 0.5);
+}
+
+#panel ul.menu li a.admin {
+    background-color: rgba(255, 255, 0, 0.5);
+}
+
+#panel ul.menu li a.logout {
+    background-color: rgba(255, 0, 0, 0.5);
+}
+
+#panel ul.menu li a:hover {
+    background-color: rgba(255, 255, 255, 0.75);
+    color: black;
+}
+
+#panel-separator {
+    margin-top: 65px;
+}
+
+.box {
+    background-color: rgba(0, 0, 0, 0.85);
+    box-shadow: 0px 0px 10px black;
+    padding: 2.5em;
+}
+
+.box.tight {
+    padding: 1em;
+}
+
+.left-column .box {
+    margin-right: 1em;
+}
+
+.right-column .box {
+    margin-left: 1em;
+}
+
+.row {
+    clear: both;
+    padding-bottom: 0.75em;
+    padding-top: 0.75em;
+}
+
+#tv {
+    min-height: 400px;
+    background-color: black;
+    box-shadow: 0px 0px 10px black;
+}
+
+.start-time {
+    font-family: starcraft;
+    text-align: center;
+    padding: 1em;
+}
+
+.start-time strong {
+    padding-left: 0.33em;
+    font-size: 1.66em;
+}
+
+.left-column {
+    width: 500px;
+    float: left;
+}
+
+.right-column {
+    width: 500px;
+    float: right;
+}
+
+.new-row {
+    clear: both;
+}
+
+p {
+    margin: 0;
+    padding: 0;
+    padding-top: 0.25em;
+    padding-bottom: 0.75em;
+}
+
+h1, h2, h3 {
+    margin: 0;
+    padding: 0;
+    font-family: starcraft;
+    color: #fff;
+    display: block;
+    text-shadow: 0px 1px 1px white;
+}
+
+h1 {
+    font-size: 1.5em;
+    padding-bottom: 0.5em;
+    margin-bottom: 0.5em;
+    border-bottom: 1px solid silver;
+}
+
+h2 {
+    font-size: 1.25em;
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+}
+
+h3 {
+    font-size: 1.125em;
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+}
+
+ul, ol {
+    padding-left: 1.5em;
+}
+
+pre {
+    padding: 1em;
+    border: 1px dashed gray;
+    background-color: #333;
+    border-radius: 5px;
+    margin-bottom: 0.25em;
+    margin-top: 0.75em;
+    overflow: auto;
+}
+
+table.list {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.list th, table.list td {
+    padding: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    text-align: left;
+}
+
+table.list th {
+    background-color: rgba(50, 50, 50, 0.75);
+    text-shadow: 0px 2px 2px black;
+}
+
+table.list td {
+
+}
+
+table.matches td.winner {
+    background-color: rgba(0, 255, 0, 0.5);
+}
+
+table.matches td.looser {
+    background-color: rgba(255, 0, 0, 0.5);
+}
+
+table.matches td.draw {
+    background-color: rgba(0, 0, 255, 0.5);
+}
+
+table.matches td, table.matches th {
+    text-align: center;
+}
+
+.showcase {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    margin-top: -1em;
+    margin-bottom: -1em;
+}
+
+.showcase li {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.showcase img {
+    max-width: 130px;
+    max-height: 80px;
+    margin-left: 1em;
+    margin-right: 1em;
+}

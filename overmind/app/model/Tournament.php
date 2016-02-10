@@ -38,6 +38,7 @@ class Tournament {
 		}
 		
 		$this->data['info'] = json_decode($this->data['info'], true);
+		$this->data['rules'] = json_decode($this->data['rules'], true);
 		$this->data['extras'] = json_decode($this->data['extrasJson'], true);
 		
 		$systemClass = $this->data['system'];
@@ -72,6 +73,10 @@ class Tournament {
 	
 	public function getInfo() {
 		return $this->data['info'];
+	}
+
+	public function getRules() {
+		return $this->data['rules'];
 	}
 	
 	public function getExtras() {
@@ -121,18 +126,20 @@ class Tournament {
 		}
 
 		$info = json_encode($this->data['info'], true);
+		$rules = json_encode($this->data['rules'], true);
 		
-		$stmt = $this->database->prepare("UPDATE `tournaments` SET `name`=?, `testStartTime`=?, `competitionStartTime`=?, `info`=?, `hostStreamCode`=?, `guestStreamCode`=?, `extrasJson`=?, `mapUrl`=?, `archived`=? WHERE `id`=?");
+		$stmt = $this->database->prepare("UPDATE `tournaments` SET `name`=?, `testStartTime`=?, `competitionStartTime`=?, `info`=?, `rules`=?, `hostStreamCode`=?, `guestStreamCode`=?, `extrasJson`=?, `mapUrl`=?, `archived`=? WHERE `id`=?");
 		$stmt->bindParam(1, $this->data['name']);
 		$stmt->bindParam(2, $this->data['testStartTime']);
 		$stmt->bindParam(3, $this->data['competitionStartTime']);
 		$stmt->bindParam(4, $info);
-		$stmt->bindParam(5, $this->data['hostStreamCode']);
-		$stmt->bindParam(6, $this->data['guestStreamCode']);
-		$stmt->bindParam(7, $this->data['extrasJson']);
-		$stmt->bindParam(8, $this->data['mapUrl']);
-		$stmt->bindParam(9, $this->data['archived']);
-		$stmt->bindParam(10, $this->data['id']);
+		$stmt->bindParam(5, $rules);
+		$stmt->bindParam(6, $this->data['hostStreamCode']);
+		$stmt->bindParam(7, $this->data['guestStreamCode']);
+		$stmt->bindParam(8, $this->data['extrasJson']);
+		$stmt->bindParam(9, $this->data['mapUrl']);
+		$stmt->bindParam(10, $this->data['archived']);
+		$stmt->bindParam(11, $this->data['id']);
 
 		if(!$stmt->execute()) {
 			throw new Exception("DB: Query error");

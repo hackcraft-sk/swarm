@@ -1,14 +1,20 @@
 {block content}
+<section>
+    <div class="row">
+        <div class="box">
+            <h1>{$tournament->getName()}</h1>
+            <h2>Základné informácie</h2>
 
-<h1>{$tournament->getName()}</h1>
-<h2>Základné informácie</h2>
+            {control tournamentDetailsForm}
 
-{control tournamentDetailsForm}
+            <h2>Archivácia tournamentu</h2>
 
-<h2>Archivácia tournamentu</h2>
+            {if $tournament->isArchived()}
+                Tournament je už označený ako archívovaný.
+            {else}
+                {control archiveTournamentForm}
+            {/if}
 
-{if $tournament->isArchived()}
-	Tournament je už označený ako archívovaný.
-{else}
-	{control archiveTournamentForm}
-{/if}
+        </div>
+    </div>
+</section>

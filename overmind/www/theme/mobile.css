@@ -1,0 +1,49 @@
+body {
+    background-image: none;
+    background-color: #333;
+}
+
+section {
+    width: auto;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+#panel {
+    position: inherit;
+}
+
+#panel select {
+    float: none;
+    width: 100%;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+#panel ul.menu {
+    float: none;
+    margin: 0;
+}
+
+#panel ul.menu li {
+    display: block;
+}
+
+#panel-separator {
+    margin-top: 0;
+}
+
+.left-column, .right-column {
+    float: none;
+    width: auto;
+}
+
+#tv {
+    width: auto;
+    margin: auto;
+}
+
+.left-column .box, .right-column .box {
+    margin: 0;
+    margin-top: 1em;
+}

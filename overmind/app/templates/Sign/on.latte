@@ -1,9 +1,15 @@
 {var $robots = noindex}
 
 {block #content}
+<section>
+    <div class="row">
+        <div class="box">
 
-<h1>{_}account_creation{/_}</h1>
+            <h1>{_}account_creation{/_}</h1>
 
-{control signOnForm}
+            {control signOnForm}
 
+        </div>
+    </div>
+</section>
 {* or use {include '../components/form.latte', form => $presenter[signInForm]} *}

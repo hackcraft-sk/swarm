@@ -16,42 +16,48 @@
 {/block}
 
 {block content}
-<h1>{_}ladder_of_bots{/_}</h1>
+<section>
+    <div class="row">
+        <div class="box">
+            <h1>{_}ladder_of_bots{/_}</h1>
 
-<p>{_}ladder_info{/_}</p>
+            <p>{_}ladder_info{/_}</p>
 
-<table class="list">
-	<tr>
-		<th>{_}position{/_}</th>
-		<th>{_}bot{/_}</th>
-		<th>{_}wins{/_}</th>
-		<th>{_}draws{/_}</th>
-		<th>{_}matches{/_}</th>
-		<th>{_}points{/_}</th>
-	</tr>
-{var $position = 1}
-{foreach $ladder as $bot}
-	<tr>
-		<td>{if $bot['competitive']}{$position}.{/if}</td>
-		<td>{$bot['username']}
+            <table class="list">
+                <tr>
+                    <th>{_}position{/_}</th>
+                    <th>{_}bot{/_}</th>
+                    <th>{_}wins{/_}</th>
+                    <th>{_}draws{/_}</th>
+                    <th>{_}matches{/_}</th>
+                    <th>{_}points{/_}</th>
+                </tr>
+            {var $position = 1}
+            {foreach $ladder as $bot}
+                <tr>
+                    <td>{if $bot['competitive']}{$position}.{/if}</td>
+                    <td>{$bot['username']}
 
-		{foreach $bot['achievements'] as $achievement}
-			{if $achievement->isVisible()}
-				{includeblock '../components/achievement.latte', achievement => $achievement}
-			{/if}
-		{/foreach}
+                    {foreach $bot['achievements'] as $achievement}
+                        {if $achievement->isVisible()}
+                            {includeblock '../components/achievement.latte', achievement => $achievement}
+                        {/if}
+                    {/foreach}
 
-		</td>
-		<td>{$bot['matchesWon']}</td>
-		<td>{$bot['matchesDraw']}</td>
-		<td>{$bot['matchesTotal']}</td>
-		<td><strong>{$bot['points']}</strong></td>
-	</tr>
-	{if $bot['competitive']}{var $position = $position + 1;}{/if}
-{/foreach}
-</table>
+                    </td>
+                    <td>{$bot['matchesWon']}</td>
+                    <td>{$bot['matchesDraw']}</td>
+                    <td>{$bot['matchesTotal']}</td>
+                    <td><strong>{$bot['points']}</strong></td>
+                </tr>
+                {if $bot['competitive']}{var $position = $position + 1;}{/if}
+            {/foreach}
+            </table>
 
-<div id="visualization"></div>
+            <div id="visualization"></div>
+        </div>
+    </div>
+</section>
 
 <script type="text/javascript">
 	function drawVisualization() {

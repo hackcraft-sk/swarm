@@ -1,10 +1,10 @@
 <?php
 class Model {
 	const SERVER_LOCATION = "../www/uploaded_bots";
-	const URL_LOCATION = "http://scmai.hackcraft.sk/uploaded_bots";
+	const URL_LOCATION = "http://mylifeforai.com/uploaded_bots";
 
 	const REPLAY_SERVER_LOCATION = "../www/replays";
-	const REPLAY_URL_LOCATION = "http://scmai.hackcraft.sk/replays";
+	const REPLAY_URL_LOCATION = "http://mylifeforai.com/replays";
 
 	public static $extensions = array("exe", "dll", "jar");
 	
@@ -53,7 +53,7 @@ class Model {
 	}
 	
 	public function createNewTournament(&$data) {
-		$stmt = $this->database->prepare("INSERT INTO `tournaments` (`name`, `testStartTime`, `competitionStartTime`, `info`, `mapUrl`, `extrasJson`) VALUES(?, ?, ?, '{}', '', '{}')");
+		$stmt = $this->database->prepare("INSERT INTO `tournaments` (`name`, `testStartTime`, `competitionStartTime`, `info`, `rules`, `mapUrl`, `extrasJson`) VALUES(?, ?, ?, '{}', '{}', '', '{}')");
 		$stmt->bindParam(1, $data['name']);
 		$stmt->bindParam(2, $data['testStartTime']);
 		$stmt->bindParam(3, $data['competitionStartTime']);

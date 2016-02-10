@@ -54,6 +54,7 @@ class BotPresenter extends BasePresenter {
 			return;
 		
 		$this->template->bots = $this->getSelectedTournament()->getMyBots($this->getUser()->getIdentity());
+		$this->template->matches = $this->getSelectedTournament()->getMatches($this->getUser()->getIdentity()->getId());
 	}
 	
 	public function renderDetails($botId) {
@@ -74,14 +75,6 @@ class BotPresenter extends BasePresenter {
 		);
 		
 		$this->redirect("my");
-	}
-	
-	public function renderMatches() {
-		if(!$this->requireLogin()) {
-			return;
-		}
-
-		$this->template->matches = $this->getSelectedTournament()->getMatches($this->getUser()->getIdentity()->getId());
 	}
 }
 ?>

@@ -1,18 +1,24 @@
 {block content}
+<section>
+    <div class="row">
+        <div class="box">
+            <h1>Sprava linkov</h1>
 
-<h1>Sprava linkov</h1>
+            {control newLinkForm}
 
-{control newLinkForm}
+            <table class="list">
+                <tr>
+                    <th>Názov</th>
+                    <th>Popis</th>
+                    <th></th>
+                </tr>
+                <tr n:foreach="$links as $linkId => $link">
+                    <td>{$link['names'][$lang]}</td>
+                    <td><small>{$link['descriptions'][$lang]}</small></td>
+                    <td><a n:href="deleteLink, $linkId" onclick="return confirm('Ste si istý?');">Zmazať</a></td>
+                </tr>
+            </table>
 
-<table class="list">
-	<tr>
-		<th>Názov</th>
-		<th>Popis</th>
-		<th></th>
-	</tr>
-	<tr n:foreach="$links as $linkId => $link">
-		<td>{$link['names'][$lang]}</td>
-		<td><small>{$link['descriptions'][$lang]}</small></td>
-		<td><a n:href="deleteLink, $linkId" onclick="return confirm('Ste si istý?');">Zmazať</a></td>
-	</tr>
-</table>
+        </div>
+    </div>
+</section>

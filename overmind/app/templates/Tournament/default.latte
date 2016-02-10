@@ -14,28 +14,42 @@ $(document).ready(function() {
 {/block}
 
 {block content}
-{if !$isLive}
-	<div id="eta"><span>Hell, It's about time: {date("j. M H:i", $liveTime)}</span></div>
-{/if}
-<div class="column">
-{snippet liveMatches}
-	{if !!$playing}<h1 style="font-size: 20px;">{$playing['hostName']} vs {$playing['guestName']}</h1>{else}<h1>Matches</h1>{/if}
+<section>
+    {if !$isLive}
+        <div class="row">
+            <div class="box start-time">Hell, It's about time: <strong>{date("j. M H:i", $liveTime)}</strong></div>
+        </div>
 
-	{includeblock '../components/matches.latte', matches => $matches, matchesCount => 6, futureMatches => 3, displayStartTime => true, displayPoints => true}
-{/snippet}
-</div>
+        {var $info = $tournament->getInfo()}
+        {ifset $info[$lang]}
+            <div class="row">
+                <div class="box">{!$parsedown->text($info[$lang])}</div>
+            </div>
+        {/ifset}
+    {else}
+        <div class="row">
+                <div class="left-column">
+                    <div id="tv">
+                        {if $isLive}{!$tournament->getHostStreamCode()}{/if}
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="box tight">
+                    {snippet liveMatches}
+                        {if !!$playing}<h1 style="font-size: 20px;">{$playing['hostName']} vs {$playing['guestName']}</h1>{else}<h1>Matches</h1>{/if}
 
-<div class="left">
-	<div class="stream">
-	{if $isLive}
-	{!$tournament->getHostStreamCode()}
-	{else}
-	<span>Live SC stream</span>
-	{/if}
-	</div>
-</div>
-	
+                        {includeblock '../components/matches.latte', matches => $matches, matchesCount => 6, futureMatches => 3, displayStartTime => true, displayPoints => true}
+                    {/snippet}
+                    </div>
+                </div>
+            </div>
+    {/if}
 
-<div style="clear: both;"></div>
+    <div class="row">
+        <div class="box">
+            {includeblock '../components/showcase.latte'}
+        </div>
+    </div>
+</section>
 {/block}
 

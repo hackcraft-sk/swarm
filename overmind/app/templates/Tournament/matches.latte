@@ -8,19 +8,25 @@
 {/block}
 
 {block content}
-<h1>{_}planned_and_played_matches{/_}</h1>
+<section>
+    <div class="row">
+        <div class="box">
+            <h1>{_}planned_and_played_matches{/_}</h1>
 
-<p>{_}planned_and_played_matches_info{/_}</p>
+            <p>{_}planned_and_played_matches_info{/_}</p>
 
-<div id="matches_scrollable">
-{includeblock '../components/matches.latte', 
-	matches => $matches, 
-	displayStartTime => true, 
-	displayDuration => true, 
-	displayPoints => true, 
-	displayDetails => true,
-	displayAchievements => true
-}
-</div>
+            <div id="matches_scrollable">
+            {includeblock '../components/matches.latte',
+                matches => $matches,
+                displayStartTime => true,
+                displayDuration => true,
+                displayPoints => true,
+                displayDetails => true,
+                displayAchievements => true
+            }
+            </div>
+        </div>
+    </div>
+</section>
 
 {/block}

@@ -1,4 +1,5 @@
 {block content}
+<section>
 {if !$isLive}
 	<div id="eta"><span>Hell, It's about time: {date("j. M H:i", $liveTime)}</span></div>
 {/if}
@@ -16,6 +17,6 @@
 {/if}
 </div>
 
-<div style="clear: both;"></div>
+</section>
 {/block}
 
