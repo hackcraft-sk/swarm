@@ -9,9 +9,11 @@
 }
 
 body {
-    background-image: url("background.big.jpg");
-    background-size: 100% auto;
-    background-attachment: fixed;
+    background: url(background.big.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
     color: #eee;
     font-family: Helvetica;
     line-height: 150%;
@@ -59,24 +61,28 @@ section {
 }
 
 #panel ul.menu {
+    padding: 0;
+    margin: 0;
     list-style-type: none;
-    margin-left: 2em;
     float: right;
 }
 
 #panel ul.menu li {
     display: inline-block;
+    margin: 0;
+    padding: 0;
 }
 
 #panel ul.menu li a {
     display: block;
     padding: 1.0em;
-    padding-left: 0.3em;
-    padding-right: 0.3em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
     color: white;
     font-size: 0.8em;
     font-family: starcraft;
     text-decoration: none;
+    margin: 0;
 }
 
 #panel ul.menu li a.private {
@@ -238,6 +244,47 @@ table.matches td.draw {
 
 table.matches td, table.matches th {
     text-align: center;
+}
+
+form table td, form table th {
+    padding: 0.3em;
+    padding-left: 0.4em;
+    padding-right: 0.4em;
+}
+
+form table label {
+    font-weight: normal !important;
+}
+
+form input, form textarea {
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 0.2em;
+    font-size: 1em;
+    margin: 0;
+    background: #333;
+    color: white;
+}
+
+form input[type=checkbox] {
+    vertical-align: middle;
+    margin-right: 0.5em;
+}
+
+form input[type=submit], form button {
+    padding: 0.5em;
+    padding-left: 1em;
+    padding-right: 1em;
+    background-color: black;
+    box-shadow: 0px 0px 5px black;
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-family: starcraft;
+}
+
+form input[type=submit]:hover, form button:hover {
+    background-color: #ccc;
+    color: black;
 }
 
 .showcase {

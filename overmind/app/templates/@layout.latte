@@ -8,8 +8,9 @@
 
 	<title>FRI SC Micro AI Tournament</title>
 
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
 	<script type="text/javascript" src="{$basePath}/js/jquery.nette.js"></script>
+	<script type="text/javascript" src="{$basePath}/js/jquery.backstretch.min.js"></script>
 	
 	<link rel="stylesheet" media="screen" href="{$basePath}/theme/screen.css">
 	<link rel="stylesheet" media="screen" href="{$basePath}/theme/common.css">
@@ -38,8 +39,17 @@
 	    $("select[name=tournamentId]").change(function(){
 	        $("form[method=get]").submit();
 	    });
+
+	    $(".flashes").delay(2500).slideUp(1000);
+
+	    $.backstretch("/images/background.jpg");
 	});
 	</script>
+
+    <script type="text/javascript">
+        window.cookieconsent_options = {"message":"This website uses cookies to ensure you get the best experience on our website","dismiss":"Got it!","learnMore":"More info","link":null,"theme":"dark-bottom"};
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/1.0.9/cookieconsent.min.js"></script>
 	
 	{block head}{/block}
 </head>
@@ -59,65 +69,33 @@
                 <li><a n:href="Tournament:info">{_}info{/_}</a></li>
                 <li><a n:href="Tournament:ladder">{_}ladder{/_}</a></li>
                 <li><a n:href="Tournament:matches">{_}matches{/_}</a></li>
-                {if $loggedIn}
-                <li><a class="private" n:href="Bot:my">{_}my_bot{/_}</a></li>
-                <li><a class="logout" n:href="Sign:out">{_}sign_out{/_}</a></li>
-                {else}
-                <li><a class="private" n:href="Sign:in">{_}sign_in{/_}</a></li>
-                {/if}
-                {if $user->isAdmin}
-                <li><a class="admin" n:href="Admin:console">{_}administration{/_}</a></li>
-                {/if}
+                    {if $loggedIn}
+                        <li><a class="private" n:href="Bot:my">{_}my_bot{/_}</a></li>
+                            {if $user->isAdmin}
+                                <li><a class="admin" n:href="Admin:console">{_}administration{/_}</a></li>
+                            {/if}
+                        <li><a class="logout" n:href="Sign:out">{_}sign_out{/_}</a></li>
+                        {else}
+                        <li><a class="private" n:href="Sign:in">{_}sign_in{/_}</a></li>
+                    {/if}
             </ul>
         </section>
     </div>
 
     <div id="panel-separator"></div>
-
-	<!--<div id="tournamentSelector">
-		<span>{_}you_are_in{/_} <b>{$tournament->getName()}</b></span>
-		<ul>
-			<li n:foreach="$activeTournaments as $t" n:if="$t != $tournament"><a n:href="Homepage:setTournament, $t->getId()">{_}go_to{/_} <b>{$t->getName()}</b></a></li>
-			<li><a n:href="Tournament:archived">{_}go_to{/_} <b>Archived tournaments</b></a></li>
-		</ul>
-	</div>
-	
-	<div id="languageSelector">
-		<span>{$languages[$lang]}</span>
-		<ul>
-			<li n:foreach="$languages as $languageKey => $languageName" n:if="$languageKey != $lang"><a n:href="Homepage:setLanguage, $languageKey">{$languageName}</a></li>
-		</ul>
-	</div>-->
 	
 	<script> document.body.className+=' js' </script>
 
-	<!--<div id="banner">
-		<h1>SC Micro AI Tournament</h1>
-		<h3>{_}hackcraft_at_uniza{/_}</h3>
-	</div>
-	
-	<div id="container">-->
-		
-	<div n:foreach="$flashes as $flash" class="flash {$flash->type}">{_}{$flash->message}{/_}</div>
+    {if count($flashes)>0}
+    <section class="flashes">
+        <div class="row">
+	        <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{_}{$flash->message}{/_}</div>
+	    </div>
+    </section>
+    {/if}
 		
 	{include #content}
 
-	
-	<!--<div id="advertisment">
-		<div class="ads">
-		<a target="_blank" href="http://www.fri.uniza.sk/"><img title="Fakulta Riadenia a Informatiky - Žilinská Univerzita" src="{$basePath}/images/logo_fri2.png" /></a>
-		<a target="_blank" href="http://robime.it"><img title="Portál pre IT ľudí od IT ľudí | robime.it" src="{$basePath}/images/robime-it-banner-124-white.png" /></a>
-		<a target="_blank" href="http://sscaitournament.com"><img title="Student StarCraft AI Tournament 2013" src="http://www.sscaitournament.com/images/banner1.png" /></a>
-		<a target="_blank" href="http://websupport.sk"><img title="Webhosting, hosting a registrácia domén | Websupport.sk" src="http://provizie.websupport.sk/accounts/default1/banners/125x125_transparent_black-1.png" /></a>
-		</div>
-	</div>
-	
-	</div>
-
-	<div id="footer">
-	{_}startcraft_broodwar_are_registered_trademarks_of_blizzard{/_}
-	</div>
--->
 	{block scripts}
 	<script src="{$basePath}/js/jquery.js"></script>
 	<script src="{$basePath}/js/netteForms.js"></script>

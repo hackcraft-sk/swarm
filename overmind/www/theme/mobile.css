@@ -1,12 +1,5 @@
-body {
-    background-image: none;
-    background-color: #333;
-}
-
 section {
     width: auto;
-    margin-left: 1em;
-    margin-right: 1em;
 }
 
 #panel {
@@ -16,8 +9,7 @@ section {
 #panel select {
     float: none;
     width: 100%;
-    padding-top: 1em;
-    padding-bottom: 1em;
+    padding: 1em;
 }
 
 #panel ul.menu {
@@ -27,6 +19,11 @@ section {
 
 #panel ul.menu li {
     display: block;
+}
+
+#panel ul.menu li a {
+    padding-left: 1.5em;
+    padding-right: 1.5em;
 }
 
 #panel-separator {
