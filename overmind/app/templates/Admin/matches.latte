@@ -2,13 +2,13 @@
 <section>
     <div class="row">
         <div class="box">
-            <h2>Plánovanie zápasov</h2>
+            <h2>Match scheduling</h2>
 
             {control scheduleForm}
 
             {control scheduleCombinationsForm}
 
-            <a n:href="Admin:clearAllMatches" onclick="return confirm('Ste si istý?');">Vymazať naplánované zápasy</a>  (odohrané a tie, ktoré sa hrajú, ostanú)
+            <a n:href="Admin:clearAllMatches" onclick="return confirm('Are you sure?');">Remove planned matches</a>  (both played and those undergoing will not be removed)
 
         </div>
     </div>

@@ -88,14 +88,14 @@ class SignPresenter extends BasePresenter
 			return;
 		}
 
-		$this->flashMessage("Vitaj {$values->username}!");
+		$this->flashMessage("Welcome {$values->username}!");
 		$this->redirect('Tournament:');
 	}
 
 	public function actionOut()
 	{
 		$this->getUser()->logout(true);
-		$this->flashMessage('Signed out.');
+		$this->flashMessage('You have been signed out');
 		$this->redirect('in');
 	}
 

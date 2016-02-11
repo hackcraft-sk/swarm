@@ -2,7 +2,7 @@ hackcraft_at_uniza = "HackCraft @ UNIZA - Faculty of Management Sciences and In
 
 live_sc = "Live"
 rules = "Rules"
-ladder = "Laddeer"
+ladder = "Ladder"
 matches = "Matches"
 my_bot = "My bot"
 chat = "Chat"
@@ -20,7 +20,7 @@ password = "Password"
 password_repeat = "Password again"
 stay_signed_in = "Stay signed in"
 sign_in_form = "Sign in"
-dont_have_account_yet = "If you don't have an account, you can sign up!"
+dont_have_account_yet = "Not yet registered?"
 account_creation = "Sign up"
 
 you_have_to_enter_username = "Username is required"

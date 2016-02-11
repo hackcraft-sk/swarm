@@ -3,14 +3,14 @@
     <div class="row">
         <div class="box">
             <h1>{$tournament->getName()}</h1>
-            <h2>Základné informácie</h2>
+            <h2>Basic information</h2>
 
             {control tournamentDetailsForm}
 
-            <h2>Archivácia tournamentu</h2>
+            <h2>Archiving of tournament</h2>
 
             {if $tournament->isArchived()}
-                Tournament je už označený ako archívovaný.
+                Tournament is already archived.
             {else}
                 {control archiveTournamentForm}
             {/if}

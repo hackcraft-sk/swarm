@@ -10,7 +10,7 @@ class AdminPresenter extends BasePresenter {
 			$passed = false;
 		}
 		if(!$passed) {
-			$this->flashMessage("Musíš byť admin");
+			$this->flashMessage("You have to be an administrator");
 			$this->redirect("Sign:in");
 		}
 		return $passed;
@@ -22,12 +22,12 @@ class AdminPresenter extends BasePresenter {
 		
 		$form = new BaseForm;
 		
-		$form->addSelect("host", "1. Hráč", $bots)
-				->setRequired("Musíte zadať hosta");
-		$form->addSelect("guest", "2. Hráč", $bots)
-				->setRequired("Musíte zadať guesta");
+		$form->addSelect("host", "1st player", $bots)
+				->setRequired("You have to choose the host player");
+		$form->addSelect("guest", "2nd player", $bots)
+				->setRequired("You have to choose the guest plyaer");
 				
-		$form->addSubmit('send', 'Zaraď do rozvrhu');
+		$form->addSubmit('send', 'Assign to schedule');
 
 		// call method signInFormSucceeded() on success
 		$form->onSuccess[] = $this->scheduleFormSucceeded;
@@ -41,23 +41,23 @@ class AdminPresenter extends BasePresenter {
 		$values = $form->getValues();
 		
 		if($values->guest == $values->host) {
-			$form->addError("Musia to byť dvaja rôzni hráči.");
+			$form->addError("They have to be different players");
 			return;
 		}
 		
 		$this->getSelectedTournament()->scheduleMatch($values->host, $values->guest);
 		
-		$this->flashMessage("Zápas bol zaradený do rozvrhu.");
+		$this->flashMessage("Match was assigned to schedule");
 	}
 	
 	protected function createComponentScheduleCombinationsForm() {
 		$form = new BaseForm;
 		
-		$form->addText("times", "Počet zápasov na dvojicu")
-				->setRequired("Hm...")
+		$form->addText("times", "Number of matches per pair of players")
+				->setRequired("You have to choose how many matches per pair")
 				->setDefaultValue("1");
 		
-		$form->addSubmit("send", "Vygeneruj");
+		$form->addSubmit("send", "Generate");
 		
 		$form->onSuccess[] = $this->scheduleCombinationsFormSuccess;
 		
@@ -70,7 +70,7 @@ class AdminPresenter extends BasePresenter {
 		
 		$this->getSelectedTournament()->scheduleAllCombinations($form->getValues()->times);
 		
-		$this->flashMessage("Zápasy boli naplánované");
+		$this->flashMessage("Matches were planned");
 	}
 	
 	protected function createComponentConfigForm() {
@@ -82,7 +82,7 @@ class AdminPresenter extends BasePresenter {
 					->setDefaultValue($value);
 		}
 		
-		$form->addSubmit("send", "Ulož konfiguráciu");
+		$form->addSubmit("send", "Save configuration");
 
 		$form->onSuccess[] = $this->configFormSuccess;
 		
@@ -99,16 +99,16 @@ class AdminPresenter extends BasePresenter {
 			$this->context->model->setConfig($key, $values->{$key});
 		}
 		
-		$this->flashMessage("Konfigurácia bola uložená.");
+		$this->flashMessage("Configuration saved");
 	}
 	
 	protected function createComponentNewTournamentForm() {
 		$form = new BaseForm;
 		
-		$form->addText("name", "Názov tournamentu")->setRequired("Vyžaduje sa, aby ste zadali názov tournamentu");
-		$form->addText("testStartTime", "Čas začiatku testovacej etapy (YYYY-MM-DD H:I:S)")->setRequired("Vyžaduje sa, aby ste zadali čas začiatku testovacej etapy");
-		$form->addText("competitionStartTime", "Čas začiatku súťažnej etapy (YYYY-MM-DD H:I:S)")->setRequired("Vyžaduje sa, aby ste zadali čas začiatku súťažnej etapy");
-		$form->addSubmit("submit", "Vytvor nový tournament");
+		$form->addText("name", "Tournament name")->setRequired("Tournament name is required");
+		$form->addText("testStartTime", "Start time of testing part (YYYY-MM-DD H:I:S)")->setRequired("Start time of testing part is required");
+		$form->addText("competitionStartTime", "Start time of competition part (YYYY-MM-DD H:I:S)")->setRequired("Start time of competition part is required");
+		$form->addSubmit("submit", "Create new tournament");
 	
 		$form->onSuccess[] = $this->onNewTournamentFormSuccess;
 		
@@ -145,24 +145,24 @@ class AdminPresenter extends BasePresenter {
 	protected function createComponentTournamentDetailsForm() {
 		$form = new BaseForm;
 		
-		$form->addText("name", "Názov tournamentu")
-				->setRequired("Vyžaduje sa, aby ste zadali názov tournamentu");
-		$form->addCheckbox("archived", "Archívovaný");
-		$form->addText("testStartTime", "Čas začiatku testovacej etapy (YYYY-MM-DD H:I:S)")
-				->setRequired("Vyžaduje sa, aby ste zadali čas začiatku testovacej etapy");
-		$form->addText("competitionStartTime", "Čas začiatku súťažnej etapy (YYYY-MM-DD H:I:S)")
-				->setRequired("Vyžaduje sa, aby ste zadali čas začiatku súťažnej etapy");
-		$form->addText("mapUrl", "URL SC Mapy (s http://)");
-		$form->addTextArea("hostStreamCode", "Kód streamu hosťujúceho stroja");
-		$form->addTextArea("guestStreamCode", "Kód streamu hosťovského stroja");
-		$form->addTextArea("extrasJson", "Extra JSON dáta");
+		$form->addText("name", "Tournament name")
+				->setRequired("Tournament name is required");
+		$form->addCheckbox("archived", "Archived");
+		$form->addText("testStartTime", "Start time of testing part (YYYY-MM-DD H:I:S)")
+				->setRequired("Start time of testing part is required");
+		$form->addText("competitionStartTime", "Start time of competition part (YYYY-MM-DD H:I:S)")
+				->setRequired("Start time of competition part is required");
+		$form->addText("mapUrl", "URL of StarCraft map (including http://)");
+		$form->addTextArea("hostStreamCode", "Embed code of host stream");
+		$form->addTextArea("guestStreamCode", "Embed code of guest stream");
+		$form->addTextArea("extrasJson", "Extra JSON data");
 		
 		foreach($this->context->translator->getLanguages() as $lang => $langName) {
-			$form->addTextArea("rules_{$lang}", "Pravidlá tournamentu ({$langName})");
-			$form->addTextArea("info_{$lang}", "Informacie o tournamente ({$langName})");
+			$form->addTextArea("rules_{$lang}", "Tournament rules ({$langName}, markdown)");
+			$form->addTextArea("info_{$lang}", "Information about tournament ({$langName}, markdown)");
 		}
 		
-		$form->addSubmit("submit", "Uložiť detaily tournamentu");
+		$form->addSubmit("submit", "Save tournament details");
 	
 		$form->onSuccess[] = $this->onTournamentDetailsFormSuccess;
 		
@@ -187,7 +187,7 @@ class AdminPresenter extends BasePresenter {
 			$values['rules'] = $rules;
 			
 			$this->getSelectedTournament()->update($values);
-			$this->flashMessage("Detaily tournamentu boli uložené");
+			$this->flashMessage("Tournament details were saved");
 		} catch(Exception $e) {
 			$form->addError($e->getMessage());
 		}
@@ -196,15 +196,15 @@ class AdminPresenter extends BasePresenter {
 	protected function createComponentNewLinkForm() {
 		$form = new BaseForm;
 		
-		$form->addCheckbox("tournamentWide", "Naviazať na tournament");
-		$form->addText("url", "URL (s http://)")->setRequired("URL sa vyžaduje");
+		$form->addCheckbox("tournamentWide", "Link to current tournament");
+		$form->addText("url", "URL (including http://)")->setRequired("URL is required");
 		
 		foreach($this->context->translator->getLanguages() as $lang => $langName) {
-			$form->addText("name_{$lang}", "Názov ({$langName})")->setRequired("Názov sa vyžaduje");
-			$form->addText("description_{$lang}", "Popis ({$langName})");
+			$form->addText("name_{$lang}", "Title ({$langName})")->setRequired("Title is required");
+			$form->addText("description_{$lang}", "Description ({$langName})");
 		}
 
-		$form->addSubmit("submit", "Pridaj");
+		$form->addSubmit("submit", "Add");
 		
 		$form->onSuccess[] = $this->onNewLinkFormSuccess;
 		
@@ -233,9 +233,9 @@ class AdminPresenter extends BasePresenter {
 		$form = new BaseForm;
 
 		$form->addHidden("tournamentId");
-		$form->addText("newName", "Archívovať ako");
-		$form->addCheckbox("shouldDeleteBots", "Vyčistiť botov (v archíve ostanú)");
-		$form->addSubmit("submit", "Archívovať");
+		$form->addText("newName", "Archive as");
+		$form->addCheckbox("shouldDeleteBots", "Dump bots (they stay in archive)");
+		$form->addSubmit("submit", "Archive");
 
 		$form->onSuccess[] = $this->onArchiveTournamentFormSuccess;
 
@@ -247,7 +247,7 @@ class AdminPresenter extends BasePresenter {
 
 		//try {
 			$this->context->model->archiveTournamentAs($values['tournamentId'], $values['newName'], $values['shouldDeleteBots']);
-			$this->flashMessage("Tournament bol úspešne archívovaný");
+			$this->flashMessage("Tournament was archived");
 		//} catch(\Exception $e) {
 		//	$form->addError($e->getMessage());
 		//}
@@ -263,7 +263,7 @@ class AdminPresenter extends BasePresenter {
 			return;
 		
 		$this->getSelectedTournament()->clearSchedule();		
-		$this->flashMessage("Všetky zápasy boli vymazané.");
+		$this->flashMessage("All matches were removed");
 	
 		$this->redirect("console");
 	}
@@ -321,7 +321,7 @@ class AdminPresenter extends BasePresenter {
 		
 		$this->context->model->deleteTournament($tournamentId);
 		
-		$this->flashMessage("Tournament bol úspešne odstránený");
+		$this->flashMessage("Tournament was deleted");
 		
 		$this->redirectUrl($this->getHttpRequest()->getReferer());
 	}

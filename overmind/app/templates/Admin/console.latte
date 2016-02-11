@@ -1,25 +1,53 @@
+{block head}
+<style type="text/css">
+.row > * > a {
+    color: white;
+    text-decoration: none !important;
+}
+</style>
+{/block}
+
 {block content}
 <section>
     <div class="row">
-        <div class="box">
-            <h1>Administracia</h1>
+        <div class="left-column">
+            <a n:href="tournament">
+                <div class="box">
+                    <h2>Tournaments</h2>
 
-            <h2><a n:href="tournaments">Správa tournamentov</a></h2>
+                    <p>Overview and managment of all tournaments. Possibility to archive.</p>
+                </div>
+            </a>
+        </div>
+        <div class="right-column">
+            <a n:href="tournament">
+                <div class="box">
+                    <h2>Current tournament</h2>
 
-            <p>Prehľad a pridávanie tournamentov, prípadne presmerovanie na ich jednotlivé spravovania.</p>
+                    <p>Managment of currently selected tournament.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="left-column">
+            <a n:href="matches">
+                <div class="box">
+                    <h2>Matches</h2>
 
-            <h2><a n:href="tournament">Detaily tournamentu</a></h2>
+                    <p>Scheduling new matches, removal of matches. Everything inside of currently selected tournament.</p>
+                </div>
+            </a>
+        </div>
+        <div class="right-column">
+            <a n:href="links">
+                <div class="box">
+                    <h2>Links</h2>
 
-            <p>Správa detailov momentálne aktívneho tournamentu.</p>
+                    <p>Managment of links, both global links and links specific for currently selected tournament.</p>
 
-            <h2><a n:href="matches">Zápasy</a></h2>
-
-            <p>Plánovanie nových zápasov, zadanie konkrétneho zápasu, mazanie naplánovaných zápasov. Všetko v rámci konkrétne vybraného tournamentu.</p>
-
-            <h2><a n:href="links">Linky</a></h2>
-
-            <p>Správa odkazov, globálnych, aj viazaných na tournament.</p>
-
+                </div>
+            </a>
         </div>
     </div>
 </section>

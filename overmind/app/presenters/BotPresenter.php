@@ -22,7 +22,7 @@ class BotPresenter extends BasePresenter {
 		
 		$this->getSelectedTournament()->handleUpload($this->getUser()->getIdentity(), $form->getValues()->file);
 		
-		$this->flashMessage("Bot bol úspešne nahraný.");
+		$this->flashMessage("Bot was uploaded");
 	}
 
 	public function createComponentBotDetailsForm() {
@@ -71,7 +71,7 @@ class BotPresenter extends BasePresenter {
 		$this->context->model->setBotActive($this->getUser()->getIdentity(), $botId, $value);
 		
 		$this->flashMessage(
-			$value ? "Bot bol aktivovaný" : "Bot bol deaktivovaný"
+			$value ? "Bot was activated" : "Bot was deactivated"
 		);
 		
 		$this->redirect("my");
