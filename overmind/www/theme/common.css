@@ -15,7 +15,7 @@ body {
     -o-background-size: cover;
     background-size: cover;
     color: #eee;
-    font-family: Helvetica;
+    font-family: 'Open Sans';
     line-height: 150%;
 }
 
@@ -186,13 +186,13 @@ h1 {
 
 h2 {
     font-size: 1.25em;
-    margin-top: 0.25em;
+    margin-top: 0.5em;
     margin-bottom: 0.25em;
 }
 
 h3 {
     font-size: 1.125em;
-    margin-top: 0.25em;
+    margin-top: 0.5em;
     margin-bottom: 0.25em;
 }
 
