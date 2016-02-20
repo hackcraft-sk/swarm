@@ -242,9 +242,11 @@ class Model {
 	 * @throws Exception
 	 */
 	public function handleMatchResult($data, Nette\Http\Request $request) {
-		foreach($data['botResults'] as &$bot) {
-			$details = $this->getBotDetails($bot['botId']);
-			$bot['userId'] = $details['userId'];
+		if (isset($data['botResults']) && is_array($data['botResults'])) {
+			foreach ($data['botResults'] as &$bot) {
+				$details = $this->getBotDetails($bot['botId']);
+				$bot['userId'] = $details['userId'];
+			}
 		}
 		
 		$stmt = $this->database->prepare("SELECT * FROM `matches` WHERE `id`=?");
