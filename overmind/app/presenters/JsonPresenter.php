@@ -5,6 +5,49 @@
  * @author nixone
  */
 class JsonPresenter extends BasePresenter {
+
+	public function run(Nette\Application\Request $request) {
+		$response = parent::run($request);
+
+		if ($response instanceof \Nette\Application\Responses\JsonResponse) {
+
+			$loggingDirectory = dirname(dirname(__DIR__))."/log/api";
+
+			if ($request->isPost()) {
+				$requestPayload = $request->getPost()["content"];
+			} else {
+				$requestPayload = $request->getParameters()["content"];
+			}
+			$responsePayload = $response->getPayload();
+
+			$now = time();
+
+			$files = array(
+				$loggingDirectory."/by-time/".date("Y/Y-m/Y-m-d/Y-m-d-H/Y-m-d-H-i-s", $now)."-".$this->getView().".txt",
+				$loggingDirectory."/by-type/".$this->getView()."/".date("Y/Y-m/Y-m-d/Y-m-d-H/Y-m-d-H-i-s", $now)."-".$this->getView().".txt",
+			);
+
+			$log = "";
+
+			$log .= "Request payload:\n";
+			$log .= json_encode(json_decode($requestPayload, true), JSON_PRETTY_PRINT)."\n\n";
+			$log .= "Response:\n";
+			$log .= json_encode($responsePayload, JSON_PRETTY_PRINT);
+
+			foreach ($files as $file) {
+				$dir = dirname($file);
+				if (!file_exists($dir)) {
+					mkdir($dir, 0777, true);
+				}
+				$fp = fopen($file, "w");
+				fwrite($fp, $log);
+				fclose($fp);
+			}
+		}
+		return $response;
+	}
+
+
 	public function renderBotInfo($content) {
 		try {
 			$payload = json_decode($content, true);
