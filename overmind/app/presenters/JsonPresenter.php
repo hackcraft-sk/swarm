@@ -107,9 +107,12 @@ class JsonPresenter extends BasePresenter {
 				"matchId" => "NONE"
 			)));
 		} else {
+			$md5 = md5_file($match['mapUrl']);
+
 			$payload = array(
 				"matchId" => $match['id'],
 				"mapUrl" => $match['mapUrl'],
+				"mapMd5" => $md5,
 				"botIds" => array($match['hostBotId'], $match['guestBotId'])
 			);
 			
