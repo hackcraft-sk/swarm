@@ -150,7 +150,7 @@ class JsonPresenter extends BasePresenter {
 			$resultPayload = array(
 				"tournamentId" => $match['tournamentId'],
 				"tournamentName" => $this->context->model->getTournament($match['tournamentId'])->getName(),
-				"result" => "NONE",
+				"state" => "NONE",
 				"bots" => array(
 					array("name" => $match['hostName']),
 					array("name" => $match['guestName'])
@@ -158,11 +158,10 @@ class JsonPresenter extends BasePresenter {
 			);
 			
 			if($match['state'] == 'FINISHED') {
-				$resultPayload['result'] = "OK";
+				$resultPayload['state'] = "OK";
 				$resultPayload['bots'][0]['result'] = $match['hostResult'];
 				$resultPayload['bots'][1]['result'] = $match['guestResult'];
 			}
-			
 			
 		} catch(Exception $e) {
 			$this->sendException($e);
