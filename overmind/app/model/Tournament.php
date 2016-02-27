@@ -761,20 +761,6 @@ SQL;
 		}
 		return $result;
 	}
-/*
-	public function handleEarnedAchievement($userId, $achievement) {
-		$achievementName = $achievement['name'];
-		unset($achievement['name']);
-		$currentAchievementData = $achievement;
-
-		try {
-			$oldAchievementData = $this->getAchievementData($userId, $achievementName);
-			$currentAchievementData = $this->mergeAchievements($oldAchievementData, $currentAchievementData);
-			$this->updateAchievementData($userId, $achievementName, $currentAchievementData);
-		} catch(Exception $e) {
-			$this->createAchievementData($userId, $achievementName, $currentAchievementData);
-		}
-	}*/
 
 	public function getAchievements() {
 		return $this->achievements;

@@ -72,24 +72,28 @@ class JsonPresenter extends BasePresenter {
 				default:
 					throw new Exception("Unknown bot file extension '{$extension}'");
 			}
+
+			$displayName = $bot['name'] == $bot['username'] ? $bot['name'] : $bot['name']." (".$bot['username'].")";
+			$displayName = iconv("utf-8", "ASCII//TRANSLIT", $displayName);
+
+			$response = array(
+				"name" => $displayName,
+				"type" => $type,
+				"botFileUrl" => $bot['url'],
+				"botFileHash" => $bot['hash']
+			);
 		} catch(Exception $e) {
 			$this->sendException($e);
 		}
 
-		$displayName = $bot['name'] == $bot['username'] ? $bot['name'] : $bot['name']." (".$bot['username'].")";
-		$displayName = iconv("utf-8", "ASCII//TRANSLIT", $displayName);
-
-		$this->sendResponse(new Nette\Application\Responses\JsonResponse(array(
-			"name" => $displayName,
-			"type" => $type,
-			"botFileUrl" => $bot['url'],
-			"botFileHash" => $bot['hash']
-		)));
+		if (isset($response)) {
+			$this->sendResponse(new Nette\Application\Responses\JsonResponse($response));
+		}
 	}
 	
 	public function renderAssignMatch($content) {
 		$payload = json_decode($content, true);
-		
+
 		try {
 			$tournamentIds = $payload['tournamentIds'];
 			
@@ -98,39 +102,37 @@ class JsonPresenter extends BasePresenter {
 			}
 			
 			$match = $this->context->model->pollMatch($tournamentIds);
+
+			if($match == null) {
+				$response = array(
+					"matchId" => "NONE"
+				);
+			} else {
+				$md5 = md5_file($match['mapUrl']);
+
+				$response = array(
+					"matchId" => $match['id'],
+					"mapUrl" => $match['mapUrl'],
+					"mapMd5" => $md5,
+					"botIds" => array($match['hostBotId'], $match['guestBotId']),
+					"videoStreamTargetBotId" => $match['hostBotId']
+				);
+			}
 		} catch(Exception $e) {
 			$this->sendException($e);
 		}
-			
-		if($match == null) {
-			$this->sendResponse(new Nette\Application\Responses\JsonResponse(array(
-				"matchId" => "NONE"
-			)));
-		} else {
-			$md5 = md5_file($match['mapUrl']);
 
-			$payload = array(
-				"matchId" => $match['id'],
-				"mapUrl" => $match['mapUrl'],
-				"mapMd5" => $md5,
-				"botIds" => array($match['hostBotId'], $match['guestBotId'])
-			);
-			
-			if(count($match['extras']) > 0) {
-				$payload['extras'] = $match['extras'];
-			}
-			
-			$this->sendResponse(new Nette\Application\Responses\JsonResponse($payload));
+		if (isset($response)) {
+			$this->sendResponse(new Nette\Application\Responses\JsonResponse($response));
 		}
 	}
 	
-	public function renderPostMatchResult($content) {
+	public function renderPostMatchResult() {
 		$payload = json_decode($this->getHttpRequest()->getPost("content"), true);
 		
 		$success = false;
 		try {
 			$this->context->model->handleMatchResult($payload, $this->getHttpRequest());
-
 			$success = true;
 		} catch(Exception $e) {
 			$this->sendException($e);
@@ -146,29 +148,41 @@ class JsonPresenter extends BasePresenter {
 		
 		try {
 			$match = $this->context->model->getMatchDetails($payload['matchId']);
-			
-			$resultPayload = array(
+			$tournament = $this->context->model->getTournament($match['tournamentId']);
+
+			// common attributes
+			$response = array(
 				"tournamentId" => $match['tournamentId'],
-				"tournamentName" => $this->context->model->getTournament($match['tournamentId'])->getName(),
-				"state" => "NONE",
+				"tournamentName" => $tournament->getName(),
 				"bots" => array(
 					array("name" => $match['hostName']),
 					array("name" => $match['guestName'])
 				)
 			);
-			
-			if($match['state'] == 'FINISHED') {
-				$resultPayload['state'] = "OK";
-				$resultPayload['bots'][0]['result'] = $match['hostResult'];
-				$resultPayload['bots'][1]['result'] = $match['guestResult'];
+
+			if ($match['state'] == 'PLAYING' || $match['state'] == 'FINISHED') {
+				$response['startTime'] = $match['startTime'];
 			}
-			
+
+			if ($match['state'] == 'PLAYING') {
+				$response['duration'] = 0;
+				$response['state'] = 'NONE';
+
+			} else if ($match['state'] == 'FINISHED') {
+				$response['state'] = 'OK';
+				$response['duration'] = $match['endTime'] - $match['startTime'];
+				$response['bots'][0]['points'] = $match['hostResult'];
+				$response['bots'][1]['points'] = $match['guestResult'];
+
+			} else {
+				$response['state'] = 'INVALID';
+			}
 		} catch(Exception $e) {
 			$this->sendException($e);
 		}
-		
-		if(isset($resultPayload)) {
-			$this->sendResponse(new Nette\Application\Responses\JsonResponse($resultPayload));
+
+		if (isset($response)) {
+			$this->sendResponse(new Nette\Application\Responses\JsonResponse($response));
 		}
 	}
 	
