@@ -111,6 +111,10 @@ SQL;
 			throw new Exception("DB: Query error");
 		}
 	}
+
+	public function getAll() {
+		return $this->achievements;
+	}
 }
 
 class Achievement {

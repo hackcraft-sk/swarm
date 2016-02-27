@@ -106,7 +106,10 @@ class Tournament {
 		} else if(isset($hostAchievements['defeat']) && isset($guestAchievements['victory'])) { // LOST WIN
 			list($guestPoints, $hostPoints) = $this->getSystem()->getWinPoints();
 			$result = -1;
-		} else if(isset($hostAchievements['defeat']) && isset($guestAchievements['defeat'])) { // LOST LOST = DRAW
+		} else if(
+			(isset($hostAchievements['defeat']) && isset($guestAchievements['defeat'])) ||
+			(isset($hostAchievements['draw']) && isset($guestAchievements['draw']))
+		) {
 			$hostPoints = $guestPoints = $this->getSystem()->getDrawPoints();
 			$result = 0;
 		} else {

@@ -8,6 +8,24 @@
     src: url("starcraft.ttf");
 }
 
+.achievement {
+    height: 1.5em;
+    border: 1px solid white;
+    border-radius: 3px;
+    padding: 0.25em;
+    background-color: rgba(0, 0, 0, 0.33);
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.achievement.good {
+    background-color: rgba(0, 255, 0, 0.33);
+}
+
+.achievement.bad {
+    background-color: rgba(255, 0, 0, 0.33);
+}
+
 body {
     background: url(background.big.jpg) no-repeat center center fixed;
     -webkit-background-size: cover;
