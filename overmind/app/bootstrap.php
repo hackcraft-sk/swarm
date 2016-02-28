@@ -4,8 +4,6 @@
 require __DIR__ . '/Parsedown.php';
 require __DIR__ . '/../libs/autoload.php';
 
-error_reporting(E_ERROR | E_WARNING | E_PARSE);
-
 $configurator = new Nette\Config\Configurator;
 
 // Enable Nette Debugger for error visualisation & logging

@@ -31,6 +31,25 @@
                 <li>{!_'partial_win_points_description'|printf: $partialWinPoints[0], $partialWinPoints[1]}</li>
                 <li>{!_'draw_points_description'|printf: $drawPoints}</li>
             </ul>
+
+            <h2>Achievements</h2>
+
+            <table class="list">
+                <tr>
+                    <th>Icon</th>
+                    <th>Name</th>
+                </tr>
+                <tr n:foreach="$tournament->getAchievements()->getAll() as $achievement" n:if="$achievement->isVisible()">
+                    <td style="text-align: center;">
+                        {includeblock '../components/achievement.latte', achievement => $achievement}
+                    </td>
+                    <td>{$achievement->getName()}
+                        {if $achievement->getDescription()}
+                            <br /><small>{$achievement->getDescription()}</small>
+                        {/if}
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 </section>

@@ -2,8 +2,10 @@
 {var $goodClass=($achievement->isGood() ? "good " : "")}
 {var $badClass=($achievement->isBad() ? "bad " : "")}
 
-{if file_exists($achievement->getImageLocalFile())}
-	<img class="{$badClass}{$goodClass}{$imgClass}achievement" src="{$achievement->getImageURL()}" />
-{else}
-	<div class="{$badClass}{$goodClass}{$imgClass}achievement"><span>{$achievement->getAbbr()}</span></div>
+{if $achievement->isVisible()}
+    {if file_exists($achievement->getImageLocalFile())}
+        <img class="{$badClass}{$goodClass}{$imgClass}achievement" src="{$achievement->getImageURL()}" />
+    {else}
+        <div class="{$badClass}{$goodClass}{$imgClass}achievement"><span>{$achievement->getAbbr()}</span></div>
+    {/if}
 {/if}
