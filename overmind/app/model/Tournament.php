@@ -46,6 +46,10 @@ class Tournament {
 
 		$this->achievements = new Achievements($database, $this->data['id']);
 	}
+
+	public function getPriority() {
+		return $this->data['priority'];
+	}
 	
 	public function getId() {
 		return $this->data['id'];
@@ -131,7 +135,7 @@ class Tournament {
 		$info = json_encode($this->data['info'], true);
 		$rules = json_encode($this->data['rules'], true);
 		
-		$stmt = $this->database->prepare("UPDATE `tournaments` SET `name`=?, `testStartTime`=?, `competitionStartTime`=?, `info`=?, `rules`=?, `hostStreamCode`=?, `guestStreamCode`=?, `extrasJson`=?, `mapUrl`=?, `archived`=? WHERE `id`=?");
+		$stmt = $this->database->prepare("UPDATE `tournaments` SET `name`=?, `testStartTime`=?, `competitionStartTime`=?, `info`=?, `rules`=?, `hostStreamCode`=?, `guestStreamCode`=?, `extrasJson`=?, `mapUrl`=?, `archived`=?, `priority`=? WHERE `id`=?");
 		$stmt->bindParam(1, $this->data['name']);
 		$stmt->bindParam(2, $this->data['testStartTime']);
 		$stmt->bindParam(3, $this->data['competitionStartTime']);
@@ -142,7 +146,8 @@ class Tournament {
 		$stmt->bindParam(8, $this->data['extrasJson']);
 		$stmt->bindParam(9, $this->data['mapUrl']);
 		$stmt->bindParam(10, $this->data['archived']);
-		$stmt->bindParam(11, $this->data['id']);
+		$stmt->bindParam(11, $this->data['priority']);
+		$stmt->bindParam(12, $this->data['id']);
 
 		if(!$stmt->execute()) {
 			throw new Exception("DB: Query error");
@@ -171,7 +176,7 @@ class Tournament {
 		
 		$fileName = $data['username']."_".date("Ymd_His", $now).".".$extension;
 		
-		$path = Model::SERVER_LOCATION."/".$fileName;
+		$path = BOTS_PATH."/".$fileName;
 		
 		$upload->move($path);
 		
@@ -300,8 +305,8 @@ SQL;
 		$matches = array();
 
 		while($row = $stmt->fetch()) {
-			$realFile = Model::REPLAY_SERVER_LOCATION."/".$row['id'].".rep";
-			$urlFile = Model::REPLAY_URL_LOCATION."/".$row['id'].".rep";
+			$realFile = REPLAYS_PATH."/".$row['id'].".rep";
+			$urlFile = REPLAYS_URL."/".$row['id'].".rep";
 
 			if(file_exists($realFile)) {
 				$row['replayUrl'] = $urlFile;

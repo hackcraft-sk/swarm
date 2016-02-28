@@ -171,8 +171,8 @@ class JsonPresenter extends BasePresenter {
 			} else if ($match['state'] == 'FINISHED') {
 				$response['state'] = 'OK';
 				$response['duration'] = $match['endTime'] - $match['startTime'];
-				$response['bots'][0]['points'] = $match['hostResult'];
-				$response['bots'][1]['points'] = $match['guestResult'];
+				$response['bots'][0]['points'] = $match['hostPoints'];
+				$response['bots'][1]['points'] = $match['guestPoints'];
 
 			} else {
 				$response['state'] = 'INVALID';
