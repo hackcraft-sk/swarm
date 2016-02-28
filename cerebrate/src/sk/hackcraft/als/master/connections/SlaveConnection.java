@@ -12,7 +12,7 @@ public interface SlaveConnection
 
 	public int getSlaveId();
 
-	public void sendMatchInfo(int matchId, String mapUrl, int botId) throws IOException;
+	public void sendMatchInfo(int matchId, String mapUrl, String mapFileHash, int botId) throws IOException;
 
 	public void waitForReadySignal() throws IOException;
 

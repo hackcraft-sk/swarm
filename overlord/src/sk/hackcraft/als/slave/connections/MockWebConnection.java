@@ -62,7 +62,7 @@ public class MockWebConnection implements WebConnection
 	}
 
 	@Override
-	public String prepareMapFile(String mapUrl) throws IOException
+	public String prepareMapFile(String mapUrl, String mapFileHash) throws IOException
 	{
 		return "maps\\scmai\\arena3-exp-comp1.scx";
 	}

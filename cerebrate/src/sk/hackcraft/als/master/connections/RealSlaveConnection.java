@@ -61,11 +61,12 @@ public class RealSlaveConnection implements SlaveConnection
 	}
 
 	@Override
-	public void sendMatchInfo(int matchId, String mapUrl, int botId) throws IOException
+	public void sendMatchInfo(int matchId, String mapUrl, String mapFileHash, int botId) throws IOException
 	{
 		outputStream.writeInt(matchId);
 		outputStream.writeInt(botId);
 		outputStream.writeUTF(mapUrl);
+		outputStream.writeUTF(mapFileHash);
 
 		this.activeMatchId = matchId;
 	}

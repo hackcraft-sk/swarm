@@ -1,12 +1,6 @@
 package sk.hackcraft.bwtv.fancyOverlay;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
@@ -15,6 +9,8 @@ import javax.swing.JFrame;
 
 import sk.hackcraft.als.utils.MatchEvent;
 import sk.hackcraft.bwtv.EventInfo;
+import sk.hackcraft.bwtv.MatchEventListener;
+import sk.hackcraft.bwtv.MatchInfo;
 import sk.hackcraft.bwtv.Overlay;
 import sk.hackcraft.bwtv.connections.WebConnection;
 import sk.hackcraft.bwtv.swing.ScreenPainter;
@@ -27,49 +23,51 @@ public class JFrameOverlay extends JFrame implements Overlay
 	private Map<MatchEvent, ScreenPainter> painters;
 	private ScreenPainter activePainter;
 
+	private final WebConnection webConnection;
+
 	public JFrameOverlay(WebConnection webConnection)
 	{
 		super("StarCraft Overlay Info Panel");
 
+		this.webConnection = webConnection;
+
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
-		setUndecorated(true);
 		setAlwaysOnTop(true);
-		setBackground(new Color(0, 0, 0, 0));
 
 		setLocationRelativeTo(null);
 
 		painters = new EnumMap<>(MatchEvent.class);
-		activePainter = new ScreenPainter()
-		{
+		activePainter = new ScreenPainter() {
+			@Override
+			public void setMatchInfo(MatchInfo matchInfo)
+			{
+			}
+
 			@Override
 			public void paint(Component component, Graphics2D g2d)
 			{
 			}
 		};
 
-		Dimension size = new Dimension(640, 480);
-		setSize(size);
-		setResizable(false);
+		Container contentPane = getContentPane();
 
-		setBackground(new Color(0, 0, 0, 0));
+		Dimension size = new Dimension(640, 480);
+		contentPane.setSize(size);
+		contentPane.setMinimumSize(size);
+		contentPane.setPreferredSize(size);
+
+		setBackground(new Color(0, 255, 0));
+
+		setResizable(false);
 
 		BannerPicker bannerPicker = new BannerPicker();
 
-		try
-		{
-			bannerPicker.addBanner("robime-it");
-			bannerPicker.addBanner("sscai");
-			bannerPicker.addBanner("fri");
-		}
-		catch (IOException e)
-		{
-			throw new RuntimeException(e);
-		}
-
-		addStatePainter(MatchEvent.PREPARE, new MatchRunStatePainter());
+		addStatePainter(MatchEvent.PREPARE, new MatchPrepareStatePainter());
 		addStatePainter(MatchEvent.RUN, new MatchRunStatePainter());
-		addStatePainter(MatchEvent.END, new MatchEndStatePainter(webConnection, bannerPicker));
+		addStatePainter(MatchEvent.END, new MatchEndStatePainter());
+
+		pack();
 	}
 
 	public void addStatePainter(MatchEvent state, ScreenPainter statePainter)
@@ -79,18 +77,19 @@ public class JFrameOverlay extends JFrame implements Overlay
 
 	public void setState(EventInfo stateInfo)
 	{
-		activePainter = painters.get(stateInfo.getEvent());
+		MatchEvent event = stateInfo.getEvent();
+		activePainter = painters.get(event);
 
-		/*
-		 * try { //activePainter.reload(stateInfo.getMatchId()); } catch
-		 * (IOException e) { // TODO spravit painter pre error
-		 * e.printStackTrace(); activePainter = new ScreenPainter() {
-		 * 
-		 * @Override public void paint(Component component, Graphics2D g2d) { }
-		 * }; }
-		 */
-
-		repaint();
+		int matchId = stateInfo.getMatchId();
+		try {
+			MatchInfo matchInfo = webConnection.getMatchInfo(matchId);
+			activePainter.setMatchInfo(matchInfo);
+			repaint();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -108,7 +107,8 @@ public class JFrameOverlay extends JFrame implements Overlay
 
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-		g2d.clearRect(0, 0, 640, 480);
+		Dimension size = getSize();
+		g2d.clearRect(0, 0, size.width, size.height);
 
 		activePainter.paint(this, g2d);
 

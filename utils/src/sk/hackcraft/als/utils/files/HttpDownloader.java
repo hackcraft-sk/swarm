@@ -22,7 +22,7 @@ public class HttpDownloader
 		this.destinationPath = destinationPath;
 	}
 
-	public void download() throws MalformedURLException, IOException
+	public void download() throws IOException
 	{
 		boolean success = false;
 
@@ -40,7 +40,6 @@ public class HttpDownloader
 
 				File downloadedFile = destinationPath.toFile();
 
-				// TODO asi zbytočné
 				if (!downloadedFile.exists())
 				{
 					throw new IOException("Bot file doesn't exists after download.");
@@ -53,6 +52,8 @@ public class HttpDownloader
 
 					if (!fileChecksum.equals(checksum))
 					{
+						System.out.println("Calculated checksum doesn't match " + fileChecksum);
+						System.out.println("Received checksum: " + checksum);
 						continue;
 					}
 
@@ -62,7 +63,6 @@ public class HttpDownloader
 			}
 			catch (IOException e)
 			{
-				// TODO elegantnejsie
 				e.printStackTrace();
 			}
 		}

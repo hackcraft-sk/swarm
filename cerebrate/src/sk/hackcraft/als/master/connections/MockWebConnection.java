@@ -30,11 +30,14 @@ public class MockWebConnection implements WebConnection
 	public MatchInfo requestMatch() throws IOException
 	{
 		Set<Integer> botIds = new HashSet<>();
+		int videoStreamBotId = 1;
 
 		if (input != null)
 		{
 			System.out.print("Bot 1:");
-			botIds.add(input.nextInt());
+			int bot1Id = input.nextInt();
+			botIds.add(bot1Id);
+			videoStreamBotId = bot1Id;
 
 			System.out.print("Bot 2:");
 			botIds.add(input.nextInt());
@@ -51,10 +54,14 @@ public class MockWebConnection implements WebConnection
 				}
 
 				botIds.add(botId);
+
+				if (botIds.size() == 1) {
+					videoStreamBotId = botId;
+				}
 			}
 		}
 
-		return new MatchInfo(1, "maps/scmai/scmai2-arena-beginners.scx", botIds);
+		return new MatchInfo(1, "maps/scmai/scmai2-arena-beginners.scx", "xxx", botIds, videoStreamBotId);
 	}
 
 	@Override

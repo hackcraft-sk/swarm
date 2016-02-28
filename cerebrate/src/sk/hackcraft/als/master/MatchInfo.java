@@ -10,21 +10,18 @@ public class MatchInfo
 {
 	private final int matchId;
 	private final String mapUrl;
+	private final String mapFileHash;
 	private final Set<Integer> botIds;
-	private final Map<Integer, Integer> videoViews;
+	private final int videoStreamTargetBotId;
 
-	public MatchInfo(int matchId, String mapUrl, Set<Integer> botIds)
-	{
-		this(matchId, mapUrl, botIds, new HashMap<Integer, Integer>());
-	}
-
-	public MatchInfo(int matchId, String mapUrl, Set<Integer> botIds, Map<Integer, Integer> botToStreamMapping)
+	public MatchInfo(int matchId, String mapUrl, String mapFileHash, Set<Integer> botIds, int videoStreamTargetBotId)
 	{
 		this.matchId = matchId;
 		this.mapUrl = mapUrl;
+		this.mapFileHash = mapFileHash;
 
 		this.botIds = Collections.unmodifiableSet(new HashSet<>(botIds));
-		this.videoViews = Collections.unmodifiableMap(new HashMap<>(botToStreamMapping));
+		this.videoStreamTargetBotId = videoStreamTargetBotId;
 	}
 
 	public int getMatchId()
@@ -37,14 +34,18 @@ public class MatchInfo
 		return mapUrl;
 	}
 
+	public String getMapFileHash() {
+		return mapFileHash;
+	}
+
 	public Set<Integer> getBotIds()
 	{
 		return new HashSet<>(botIds);
 	}
 
-	public Map<Integer, Integer> getBotToStreamMapping()
+	public int getVideoStreamTargetBotId()
 	{
-		return new HashMap<>(videoViews);
+		return videoStreamTargetBotId;
 	}
 
 	@Override

@@ -46,12 +46,8 @@ public class RealWebConnection implements WebConnection
 	@Override
 	public MatchInfo requestMatch() throws IOException
 	{
-		JSONObject extras = new JSONObject();
-		extras.put("videoStreamS", videoStreams);
-
 		JSONObject requestData = new JSONObject();
 		requestData.put("tournamentIds", acceptingTournamentIds);
-		requestData.put("extras", extras);
 
 		SimpleJsonRequest request = jsonRequestFactory.createGetRequest("json/assign-match", requestData);
 
@@ -69,6 +65,7 @@ public class RealWebConnection implements WebConnection
 
 		int matchId = response.getInt("matchId");
 		String mapUrl = response.getString("mapUrl");
+		String mapFileHash = response.getString("mapMd5");
 
 		JSONArray botIdsArray = response.getJSONArray("botIds");
 
@@ -86,27 +83,9 @@ public class RealWebConnection implements WebConnection
 		// TODO hack kym to nieje na servru implementovane
 		response.put("extras", new JSONObject());
 
-		JSONObject responseExtras = response.getJSONObject("extras");
+		int videoStreamTargetBotId = response.getInt("videoStreamTargetBotId");
 
-		Map<Integer, Integer> botToStreamMapping = new HashMap<>();
-		if (extras.has("videoViews"))
-		{
-			JSONArray jsonVideoViews = responseExtras.getJSONArray("videoViews");
-			for (int i = 0; i < jsonVideoViews.length(); i++)
-			{
-				JSONObject videoView = jsonVideoViews.getJSONObject(i);
-
-				int botId = videoView.getInt("botId");
-				int streamId = videoView.getInt("streamId");
-
-				botToStreamMapping.put(botId, streamId);
-			}
-		}
-
-		// TODO hack kym to nieje na servru implementovane
-		botToStreamMapping.put(botIdsArray.getInt(0), 1);
-
-		return new MatchInfo(matchId, mapUrl, botIds, botToStreamMapping);
+		return new MatchInfo(matchId, mapUrl, mapFileHash, botIds, videoStreamTargetBotId);
 	}
 
 	@Override

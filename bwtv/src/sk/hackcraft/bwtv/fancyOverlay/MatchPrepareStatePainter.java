@@ -5,19 +5,18 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.util.List;
 
+import sk.hackcraft.bwtv.MatchInfo;
 import sk.hackcraft.bwtv.swing.ScreenPainterBase;
 
 public class MatchPrepareStatePainter extends ScreenPainterBase
 {
-	private final String player1, player2;
-	private final String tournamentName;
+	private MatchInfo matchInfo;
 
-	public MatchPrepareStatePainter(String player1, String player2, String tournamentName)
-	{
-		this.player1 = player1;
-		this.player2 = player2;
-		this.tournamentName = tournamentName;
+	@Override
+	public void setMatchInfo(MatchInfo matchInfo) {
+		this.matchInfo = matchInfo;
 	}
 
 	@Override
@@ -34,6 +33,12 @@ public class MatchPrepareStatePainter extends ScreenPainterBase
 
 		g2d.setColor(Color.BLACK);
 		g2d.fillRect(x - 200, y - 40, 400, 90);
+
+		List<MatchInfo.Player> players = matchInfo.getPlayers();
+		String player1 = players.get(0).getName();
+		String player2 = players.get(1).getName();
+
+		String tournamentName = matchInfo.getTournamentName();
 
 		g2d.setColor(Color.WHITE);
 		paintCenteredText(g2d, player1 + " VS " + player2, y, 30);

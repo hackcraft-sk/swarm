@@ -262,10 +262,11 @@ public class Application implements Runnable
 				if (host)
 				{
 					String mapUrl = matchInfo.getMapUrl();
+					String mapFileHash = matchInfo.getMapFileHash();
 
 					log.info("Setting map: " + mapUrl);
 
-					String mapGamePath = webConnection.prepareMapFile(mapUrl);
+					String mapGamePath = webConnection.prepareMapFile(mapUrl, mapFileHash);
 
 					bwapiConfigEditor.setMap(mapGamePath);
 				}

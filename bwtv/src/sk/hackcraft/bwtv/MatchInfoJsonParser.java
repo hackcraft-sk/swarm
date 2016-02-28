@@ -35,7 +35,16 @@ public class MatchInfoJsonParser
 			JSONObject botData = botsData.getJSONObject(i);
 
 			String botName = botData.getString("name");
-			int points = botData.getInt("points");
+			int points;
+
+			if (botData.has("points"))
+			{
+				points = botData.getInt("points");
+			}
+			else
+			{
+				points = -1;
+			}
 
 			Player bot = new Player(botName, points);
 			bots.add(bot);

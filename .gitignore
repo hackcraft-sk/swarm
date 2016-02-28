@@ -4,6 +4,15 @@
 .metadata
 */bin
 
+# idea files
+.idea
+*iml
+out
+
+cerebrate.cfg
+bwtv.cfg
+scmai-rules.txt
+
 # bwtv
 bwtv/bwtv.cfg
 bwtv/banners

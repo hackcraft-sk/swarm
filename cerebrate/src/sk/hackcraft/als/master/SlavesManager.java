@@ -61,41 +61,34 @@ public class SlavesManager
 	{
 		int matchId = matchInfo.getMatchId();
 		String mapUrl = matchInfo.getMapUrl();
+		String mapFileHash = matchInfo.getMapFileHash();
 
 		Set<SlaveConnection> freeSlaveConnections = new HashSet<>(connections);
 		Set<Integer> freeBotIds = matchInfo.getBotIds();
-		Map<Integer, Integer> botToStreamMapping = matchInfo.getBotToStreamMapping();
+		int videoStreamTargetBotId = matchInfo.getVideoStreamTargetBotId();
 
 		if (freeBotIds.size() > connections.size())
 		{
 			throw new RuntimeException("Not enough slaves for all bots");
 		}
 
-		// TODO adhoc riesenie, neskor by to chcelo spravit krajsie
-		// Priradenie bota, ktory ma byt na streame, ku spravnemu slavovi
-		for (Map.Entry<Integer, Integer> botStreamMapping : botToStreamMapping.entrySet())
-		{
-			int botId = botStreamMapping.getKey();
-			int streamId = botStreamMapping.getValue();
+		SlaveConnection connection;
 
-			SlaveConnection connection = getAssociatedSlaveOfStream(streamId);
-			connection.sendMatchInfo(matchId, mapUrl, botId);
+		connection = getAssociatedSlaveOfStream();
+		connection.sendMatchInfo(matchId, mapUrl, mapFileHash, videoStreamTargetBotId);
 
-			freeBotIds.remove(botId);
-			freeSlaveConnections.remove(connection);
-		}
+		freeBotIds.remove(videoStreamTargetBotId);
+		freeSlaveConnections.remove(connection);
 
-		// rozdelenie zvysnych botov a slavov
 		Queue<SlaveConnection> freeConnectionsQueue = new LinkedList<>(freeSlaveConnections);
 		for (Integer botId : freeBotIds)
 		{
-			SlaveConnection connection = freeConnectionsQueue.remove();
-
-			connection.sendMatchInfo(matchId, mapUrl, botId);
+			connection = freeConnectionsQueue.remove();
+			connection.sendMatchInfo(matchId, mapUrl, mapFileHash, botId);
 		}
 	}
 
-	private SlaveConnection getAssociatedSlaveOfStream(int streamId)
+	private SlaveConnection getAssociatedSlaveOfStream()
 	{
 		SlaveConnection streamConnection = null;
 		for (SlaveConnection connection : connections)
@@ -107,14 +100,7 @@ public class SlavesManager
 			}
 		}
 
-		if (streamId == 1 && streamConnection != null)
-		{
-			return streamConnection;
-		}
-		else
-		{
-			throw new RuntimeException("Mappign of streams is not finished yet; only stream 1 and slaveId 1 is supported.");
-		}
+		return streamConnection;
 	}
 
 	public void waitForReadySignals() throws IOException

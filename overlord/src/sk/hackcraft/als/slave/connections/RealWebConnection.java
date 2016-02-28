@@ -59,8 +59,8 @@ public class RealWebConnection implements WebConnection
 	}
 
 	@Override
-	public String prepareMapFile(String mapUrl) throws IOException
+	public String prepareMapFile(String mapUrl, String mapFileHash) throws IOException
 	{
-		return mapFilePreparer.prepareMap(mapUrl);
+		return mapFilePreparer.prepareMap(mapUrl, mapFileHash);
 	}
 }

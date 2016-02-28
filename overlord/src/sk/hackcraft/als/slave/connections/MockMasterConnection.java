@@ -24,8 +24,9 @@ public class MockMasterConnection implements MasterConnection
 		int matchId = 22;
 		int botId = 0;
 		String mapPath = "maps/scmai/scmai3-exp.scx";
+		String mapFileHash = "xxx";
 
-		return new MatchInfo(matchId, botId, mapPath);
+		return new MatchInfo(matchId, botId, mapPath, mapFileHash);
 	}
 
 	@Override

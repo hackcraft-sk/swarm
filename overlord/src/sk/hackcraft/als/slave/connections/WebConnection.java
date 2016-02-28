@@ -11,5 +11,5 @@ public interface WebConnection
 
 	public Path prepareBotFile(Bot bot) throws IOException;
 
-	public String prepareMapFile(String mapUrl) throws IOException;
+	public String prepareMapFile(String mapUrl, String mapFileHash) throws IOException;
 }

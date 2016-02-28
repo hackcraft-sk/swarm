@@ -41,7 +41,7 @@ public class MockSlaveConnection implements SlaveConnection
 	}
 
 	@Override
-	public void sendMatchInfo(int matchId, String mapUrl, int botId) throws IOException
+	public void sendMatchInfo(int matchId, String mapUrl, String mapFileHash, int botId) throws IOException
 	{
 		this.activeMatchId = matchId;
 		this.botId = botId;

@@ -73,8 +73,9 @@ public class RealMasterConnection implements MasterConnection
 		int matchId = input.readInt();
 		int botId = input.readInt();
 		String mapPath = input.readUTF();
+		String mapFileHash = input.readUTF();
 
-		return new MatchInfo(matchId, botId, mapPath);
+		return new MatchInfo(matchId, botId, mapPath, mapFileHash);
 	}
 
 	@Override

@@ -37,7 +37,7 @@ public class Application implements Runnable
 
 	public Application(String[] args)
 	{
-		File iniFile = new File("cerebrate.cfg");
+		File iniFile = new File(System.getProperty("user.dir") + "/cerebrate.cfg");
 
 		IniFileConfig configLoader = new IniFileConfig();
 
