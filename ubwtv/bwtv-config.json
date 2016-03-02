@@ -1,0 +1,7 @@
+{
+	"address": "192.168.1.25",
+	"port": 12987,
+	"web": "http://mylifeforai.com",
+    "mock": true,
+    "mockMatchId": 242
+}

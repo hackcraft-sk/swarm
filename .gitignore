@@ -9,6 +9,7 @@
 *iml
 out
 
+# modules configs
 cerebrate.cfg
 bwtv.cfg
 scmai-rules.txt
@@ -35,3 +36,14 @@ Release
 Parasite.vcproj.*
 SCMAI.ncb
 SCMAI.suo
+
+# ubwtv
+*.csproj
+BWTV.app
+BWTV.sln
+BWTV.userprefs
+Library
+bwtv-win.exe
+bwtv-win
+player_win_x64.pdb
+player_win_x64_s.pdb
