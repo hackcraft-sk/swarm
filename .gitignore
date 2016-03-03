@@ -14,11 +14,6 @@ cerebrate.cfg
 bwtv.cfg
 scmai-rules.txt
 
-# bwtv
-bwtv/bwtv.cfg
-bwtv/banners
-bwtv/stream/files
-
 # cerebrate
 cerebrate/cerebrate.cfg
 cerebrate/replays/
@@ -40,10 +35,12 @@ SCMAI.suo
 # ubwtv
 *.csproj
 BWTV.app
-BWTV.sln
-BWTV.userprefs
+ubwtv.sln
+ubwtv.userprefs
 Library
 bwtv-win.exe
 bwtv-win
+ubwtv/Temp/
 player_win_x64.pdb
 player_win_x64_s.pdb
+*.meta
