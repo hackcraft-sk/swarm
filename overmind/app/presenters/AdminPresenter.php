@@ -300,6 +300,9 @@ class AdminPresenter extends BasePresenter {
 		foreach($tournament->getInfo() as $lang => $info) {
 			$values["info_{$lang}"] = $info;
 		}
+		foreach($tournament->getRules() as $lang => $rules) {
+			$values['rules_'.$lang] = $rules;
+		}
 		$this['tournamentDetailsForm']->setValues($values);
 
 		$this['archiveTournamentForm']->setValues(

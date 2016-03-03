@@ -146,11 +146,11 @@ class Achievement {
 	}
 
 	public function getImageLocalFile() {
-		return dirname(dirname(dirname(__FILE__)))."/www/achievements/{$this->id}.png";
+		return ACHIEVEMENTS_PATH."/{$this->id}.png";
 	}
 
 	public function getImageURL() {
-		return "http://mylifeforai.com/achievements/{$this->id}.png";
+		return ACHIEVEMENTS_URL."/{$this->id}.png";
 	}
 
 	public function isGood() {

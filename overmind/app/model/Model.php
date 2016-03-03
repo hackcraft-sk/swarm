@@ -1,10 +1,6 @@
 <?php
-class Model {
-	const SERVER_LOCATION = "../www/uploaded_bots";
-	const URL_LOCATION = "http://mylifeforai.com/uploaded_bots";
 
-	const REPLAY_SERVER_LOCATION = "../www/replays";
-	const REPLAY_URL_LOCATION = "http://mylifeforai.com/replays";
+class Model {
 
 	public static $extensions = array("exe", "dll", "jar");
 	
@@ -66,7 +62,7 @@ class Model {
 	}
 	
 	public function getTournaments() {
-		$stmt = $this->database->prepare("SELECT * FROM `tournaments` WHERE 1");
+		$stmt = $this->database->prepare("SELECT * FROM `tournaments` WHERE 1 ORDER BY `priority` ASC");
 		if(!$stmt->execute()) {
 			throw new Exception("DB error");
 		}
@@ -192,8 +188,8 @@ class Model {
 		$bot = $stmt->fetch();
 		
 		// additional info
-		$bot['url'] = self::URL_LOCATION."/".$bot['fileName'];
-		$bot['hash'] = md5_file(self::SERVER_LOCATION."/".$bot['fileName']);
+		$bot['url'] = BOTS_URL."/".$bot['fileName'];
+		$bot['hash'] = md5_file(BOTS_PATH."/".$bot['fileName']);
 		
 		return $bot;
 	}

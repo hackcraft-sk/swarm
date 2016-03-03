@@ -2,12 +2,12 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<meta name="description" content="UNIZA FRI StarCraft Micro AI Tournament">
+	<meta name="description" content="StarCraft Micro AI Tournament">
 	<meta name="robots" content="{$robots}" n:ifset="$robots">
 	<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
 	<meta name="author" content="nixone">
 
-	<title>FRI SC Micro AI Tournament</title>
+	<title>{$tournament->getName()}</title>
 
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
 	<script type="text/javascript" src="{$basePath}/js/jquery.nette.js"></script>
@@ -22,7 +22,7 @@
 
 	<link href="/favicon.ico" rel="icon" />
 	
-	<meta property="og:title" content="StarCraft Micro AI Tournament 4"/>
+	<meta property="og:title" content="{$tournament->getName()}"/>
 	<meta property="og:site_name" content="Artificial Intelligence Tournament"/>
 	<meta property="og:description" content="Artificial Intelligence Tournament in the game StarCraft: Broodwar focused on the micro component in the game. Feel free to join and fight!" />
 	<script type="text/javascript">
