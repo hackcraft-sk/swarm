@@ -12,10 +12,10 @@ public abstract class ScreenController : MonoBehaviour {
 	public void MatchStateChanged(EventInfo eventInfo) {
 		EventType receivedEventType = eventInfo.eventType;
 		if (gameObject.activeInHierarchy && receivedEventType != eventType) {
-			gameObject.SetActive (false);
+			OnDeactivation ();
 		} else if (!gameObject.activeInHierarchy && receivedEventType == eventType) {
 			this.eventInfo = eventInfo;
-			gameObject.SetActive (true);
+			OnActivation ();
 		}
 	}
 
@@ -42,5 +42,9 @@ public abstract class ScreenController : MonoBehaviour {
 
 	protected virtual void OnMatchInfoDownloaded (MatchInfo matchInfo) {
 	}
+
+	protected abstract void OnActivation ();
+
+	protected abstract void OnDeactivation ();
 
 }

@@ -7,12 +7,14 @@ public class EndScreenController : ScreenController {
 	public UnityEngine.UI.Text player1Text;
 	public UnityEngine.UI.Text player2Text;
 
-	void OnEnable() {
+	protected override void OnActivation() {
+		gameObject.SetActive (true);
 		int matchId = eventInfo.matchId;
 		StartCoroutine (DownloadMatchInfo (matchId));
 	}
 
-	void OnDisable() {
+	protected override void OnDeactivation() {
+		gameObject.SetActive (false);
 		winnerText.text = "";
 		player1Text.text = "";
 		player2Text.text = "";
