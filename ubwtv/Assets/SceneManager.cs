@@ -91,13 +91,15 @@ public class SceneManager : MonoBehaviour {
 		this.receivedEventInfo = eventInfo;
 	}
 
+    private int iterator = 0;
 	private IEnumerator Test() {
 		
 		while (true) {
-			EventType eventType = (EventType)UnityEngine.Random.Range (1, 4);
+			EventType eventType = (EventType) (iterator + 1);
+            iterator = (iterator + 1) % 3;
 			int matchId = config.mockMatchId;
 			receivedEventInfo = new EventInfo (eventType, matchId);
-			yield return new WaitForSeconds (3);
+			yield return new WaitForSeconds (5);
 		}
 	}
 

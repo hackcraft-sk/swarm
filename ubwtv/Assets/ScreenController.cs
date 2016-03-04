@@ -7,16 +7,28 @@ public abstract class ScreenController : MonoBehaviour {
 
 	public EventType eventType;
 
+    public GraphicalEffect deactivationEffect;
+
+    public GraphicalEffect activationEffect;
+
 	protected EventInfo eventInfo;
 
 	public void MatchStateChanged(EventInfo eventInfo) {
 		EventType receivedEventType = eventInfo.eventType;
 		if (gameObject.activeInHierarchy && receivedEventType != eventType) {
-			OnDeactivation ();
+            if (deactivationEffect != null)
+            {
+                deactivationEffect.EnqueueToScheduler();
+            }
+            OnDeactivation ();
 		} else if (!gameObject.activeInHierarchy && receivedEventType == eventType) {
 			this.eventInfo = eventInfo;
-			OnActivation ();
-		}
+            if (activationEffect != null)
+            {
+                activationEffect.EnqueueToScheduler();
+            }
+            OnActivation ();
+        }
 	}
 
 	protected IEnumerator DownloadMatchInfo(int matchId) {
