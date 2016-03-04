@@ -15,7 +15,7 @@ import sk.hackcraft.als.utils.reports.SlaveMatchReport;
 public class RealMasterConnection implements MasterConnection
 {
 	private static final int DEFAULT_PORT = 11997;
-	private static final int timeout = (int) TimeUnit.SECONDS.toMillis(10);
+	private static final int timeout = (int) TimeUnit.SECONDS.toMillis(30);
 
 	private final String address;
 	private final int port;

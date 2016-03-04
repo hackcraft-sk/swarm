@@ -33,6 +33,8 @@ public class Application implements Runnable
 	private final ReplaysStorage replaysStorage;
 	private final AchievementModifier achievementsModifier;
 
+	private final BotPersistentDataStorage botPersistentDataStorage;
+
 	private volatile boolean run = true;
 
 	public Application(String[] args)
@@ -110,11 +112,30 @@ public class Application implements Runnable
 			Path replaysDirectory = Paths.get(".", "replays");
 			this.replaysStorage = new FileReplaysStorage(replaysDirectory);
 		}
+
+		Config.Section storageSection = config.getSection("storage");
+		String[] entryPoints = storageSection.getPair("entryPoints").getStringValueAsArray();
+		String[] slavesIds = storageSection.getPair("slaves").getStringValueAsArray();
+
+		if (entryPoints.length != slavesIds.length) {
+			throw new IllegalStateException("Storage invalid config; different count of entry points and slaves.");
+		}
+
+		String storagePathString = storageSection.getPair("storagePath").getStringValue();
+		Path storagePath = Paths.get(storagePathString);
+		botPersistentDataStorage = new BotPersistentDataStorage(storagePath);
+
+		for (int i = 0; i < entryPoints.length; i++) {
+			int slaveId = Integer.parseInt(slavesIds[i]);
+			Path entryPointPath = Paths.get(entryPoints[i]);
+
+			botPersistentDataStorage.setSlaveEntryPointMapping(slaveId, entryPointPath);
+		}
 		
 		this.achievementsModifier = new AchievementModifier();
 
 		int desiredSlaves = config.getSection("tournament").getPair("playersCount").getIntValue();
-		slavesManager = new SlavesManager(desiredSlaves, slaveConnectionsFactory, replaysStorage);
+		slavesManager = new SlavesManager(desiredSlaves, slaveConnectionsFactory, replaysStorage, botPersistentDataStorage);
 	}
 
 	@Override
@@ -159,6 +180,10 @@ public class Application implements Runnable
 
 					log.println("Sending bot ids to slaves.");
 					slavesManager.broadcastMatchInfo(matchInfo);
+
+					log.println("Preparing bots persistent data storages.");
+					int tournamentId = matchInfo.getTournamentId();
+					slavesManager.preparePersistentStorages(tournamentId);
 
 					log.println("Waiting for ready signals...");
 					slavesManager.waitForReadySignals();

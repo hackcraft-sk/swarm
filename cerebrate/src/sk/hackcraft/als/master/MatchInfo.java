@@ -8,20 +8,26 @@ import java.util.Set;
 
 public class MatchInfo
 {
+	private final int tournamentId;
 	private final int matchId;
 	private final String mapUrl;
 	private final String mapFileHash;
 	private final Set<Integer> botIds;
 	private final int videoStreamTargetBotId;
 
-	public MatchInfo(int matchId, String mapUrl, String mapFileHash, Set<Integer> botIds, int videoStreamTargetBotId)
+	public MatchInfo(int tournamentId, int matchId, String mapUrl, String mapFileHash, Set<Integer> botIds, int videoStreamTargetBotId)
 	{
+		this.tournamentId = tournamentId;
 		this.matchId = matchId;
 		this.mapUrl = mapUrl;
 		this.mapFileHash = mapFileHash;
 
 		this.botIds = Collections.unmodifiableSet(new HashSet<>(botIds));
 		this.videoStreamTargetBotId = videoStreamTargetBotId;
+	}
+
+	public int getTournamentId() {
+		return tournamentId;
 	}
 
 	public int getMatchId()

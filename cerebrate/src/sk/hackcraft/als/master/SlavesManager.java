@@ -1,13 +1,7 @@
 package sk.hackcraft.als.master;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 import sk.hackcraft.als.master.connections.SlaveConnection;
 import sk.hackcraft.als.master.connections.SlaveConnectionsFactory;
@@ -18,16 +12,18 @@ public class SlavesManager
 	private final int desiredConnectionsCount;
 	private final SlaveConnectionsFactory connectionsFactory;
 	private final ReplaysStorage replaysStorage;
+	private final BotPersistentDataStorage botPersistentDataStorage;
 
-	private final Set<SlaveConnection> connections;
+	private final Set<SlaveConnection> connections = new HashSet<>();
 
-	public SlavesManager(int desiredConnectionsCount, SlaveConnectionsFactory connectionsFactory, ReplaysStorage replaysStorage)
+	private final Map<Integer, Integer> slaveBotMatchMapper = new HashMap<>();
+
+	public SlavesManager(int desiredConnectionsCount, SlaveConnectionsFactory connectionsFactory, ReplaysStorage replaysStorage, BotPersistentDataStorage botPersistentDataStorage)
 	{
 		this.desiredConnectionsCount = desiredConnectionsCount;
 		this.connectionsFactory = connectionsFactory;
 		this.replaysStorage = replaysStorage;
-
-		connections = new HashSet<>();
+		this.botPersistentDataStorage = botPersistentDataStorage;
 	}
 
 	public void waitForConnection(int timeout) throws IOException
@@ -79,12 +75,17 @@ public class SlavesManager
 
 		freeBotIds.remove(videoStreamTargetBotId);
 		freeSlaveConnections.remove(connection);
+		int streamSlaveId = connection.getSlaveId();
+		slaveBotMatchMapper.put(streamSlaveId, videoStreamTargetBotId);
 
 		Queue<SlaveConnection> freeConnectionsQueue = new LinkedList<>(freeSlaveConnections);
 		for (Integer botId : freeBotIds)
 		{
 			connection = freeConnectionsQueue.remove();
 			connection.sendMatchInfo(matchId, mapUrl, mapFileHash, botId);
+
+			int slaveId = connection.getSlaveId();
+			slaveBotMatchMapper.put(slaveId, botId);
 		}
 	}
 
@@ -101,6 +102,14 @@ public class SlavesManager
 		}
 
 		return streamConnection;
+	}
+
+	public void preparePersistentStorages(int tournamentId) throws IOException {
+		for (Map.Entry<Integer, Integer> entry : slaveBotMatchMapper.entrySet()) {
+			int slaveId = entry.getKey();
+			int botId = entry.getValue();
+			botPersistentDataStorage.prepareStorage(tournamentId, botId, slaveId);
+		}
 	}
 
 	public void waitForReadySignals() throws IOException
@@ -140,6 +149,8 @@ public class SlavesManager
 				connection.retrieveAndSaveReplay();
 			}
 		}
+
+		slaveBotMatchMapper.clear();
 
 		if (valid)
 		{

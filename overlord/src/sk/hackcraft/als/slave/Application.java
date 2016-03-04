@@ -336,16 +336,6 @@ public class Application implements Runnable
 				log.error("Error: " + e.getMessage());
 
 				e.printStackTrace();
-
-				try
-				{
-					log.error("Waiting 10 seconds before next attempt");
-					Thread.sleep(10000);
-				}
-				catch (InterruptedException ie)
-				{
-					Thread.currentThread().interrupt();
-				}
 			}
 			finally
 			{

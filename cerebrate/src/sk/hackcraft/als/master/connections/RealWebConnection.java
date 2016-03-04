@@ -63,6 +63,10 @@ public class RealWebConnection implements WebConnection
 			throw new IOException("No matches are scheduled.");
 		}
 
+		// TODO mock
+		response.put("tournamentId", 2);
+
+		int tournamentId = response.getInt("tournamentId");
 		int matchId = response.getInt("matchId");
 		String mapUrl = response.getString("mapUrl");
 		String mapFileHash = response.getString("mapMd5");
@@ -85,7 +89,7 @@ public class RealWebConnection implements WebConnection
 
 		int videoStreamTargetBotId = response.getInt("videoStreamTargetBotId");
 
-		return new MatchInfo(matchId, mapUrl, mapFileHash, botIds, videoStreamTargetBotId);
+		return new MatchInfo(tournamentId, matchId, mapUrl, mapFileHash, botIds, videoStreamTargetBotId);
 	}
 
 	@Override

@@ -61,7 +61,7 @@ public class MockWebConnection implements WebConnection
 			}
 		}
 
-		return new MatchInfo(1, "maps/scmai/scmai2-arena-beginners.scx", "xxx", botIds, videoStreamBotId);
+		return new MatchInfo(1, 1, "maps/scmai/scmai2-arena-beginners.scx", "xxx", botIds, videoStreamBotId);
 	}
 
 	@Override
