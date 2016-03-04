@@ -63,9 +63,6 @@ public class RealWebConnection implements WebConnection
 			throw new IOException("No matches are scheduled.");
 		}
 
-		// TODO mock
-		response.put("tournamentId", 2);
-
 		int tournamentId = response.getInt("tournamentId");
 		int matchId = response.getInt("matchId");
 		String mapUrl = response.getString("mapUrl");
@@ -83,9 +80,6 @@ public class RealWebConnection implements WebConnection
 		{
 			botIds.add(botIdsArray.getInt(i));
 		}
-
-		// TODO hack kym to nieje na servru implementovane
-		response.put("extras", new JSONObject());
 
 		int videoStreamTargetBotId = response.getInt("videoStreamTargetBotId");
 
