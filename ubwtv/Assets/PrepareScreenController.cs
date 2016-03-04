@@ -7,13 +7,12 @@ public class PrepareScreenController : ScreenController {
 	public UnityEngine.UI.Text player2Text;
 
 	protected override void OnActivation() {
-		gameObject.SetActive (true);
-		int matchId = eventInfo.matchId;
+        gameObject.SetActive(true);
+        int matchId = eventInfo.matchId;
 		StartCoroutine (DownloadMatchInfo (matchId));
 	}
 
 	protected override void OnDeactivation() {
-		gameObject.SetActive (false);
 		player1Text.text = "";
 		player2Text.text = "";
 	}
