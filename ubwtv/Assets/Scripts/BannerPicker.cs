@@ -4,9 +4,11 @@ using UnityEngine.UI;
 
 public class BannerPicker : MonoBehaviour
 {
-	public Texture[] banners;
+	public Banner[] banners;
 
-	public RawImage bannerRenderer;
+	public Text bannerText;
+	public RawImage bannerImage;
+	public Text bannerUrlText;
 
 	int bannerIndex = -1;
 
@@ -14,7 +16,11 @@ public class BannerPicker : MonoBehaviour
 		bannerIndex = bannerIndex + 1;
 		bannerIndex %= banners.Length;
 
-		Texture banner = banners [bannerIndex];
-		bannerRenderer.texture = banner;
+		Banner banner = banners [bannerIndex];
+		bannerText.text = banner.text;
+		bannerImage.texture = banner.texture;
+		if (bannerUrlText != null) {
+			bannerUrlText.text = banner.url;
+		}
 	}
 }

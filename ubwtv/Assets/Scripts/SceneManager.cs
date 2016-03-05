@@ -11,6 +11,8 @@ public class SceneManager : MonoBehaviour {
 
 	public Config config;
 
+	public int screenWait;
+
 	private Thread workerThread;
 
 	private EventInfo receivedEventInfo;
@@ -99,7 +101,7 @@ public class SceneManager : MonoBehaviour {
             iterator = (iterator + 1) % 3;
 			int matchId = config.mockMatchId;
 			receivedEventInfo = new EventInfo (eventType, matchId);
-			yield return new WaitForSeconds (4);
+			yield return new WaitForSeconds (screenWait);
 		}
 	}
 

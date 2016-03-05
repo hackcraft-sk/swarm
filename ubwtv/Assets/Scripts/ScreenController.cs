@@ -52,7 +52,31 @@ public abstract class ScreenController : MonoBehaviour {
 		}
 	}
 
+	protected IEnumerator DownloadUpcomingMatches(int tournamentId) {
+		string json = "{\"tournamentId\": " + tournamentId + "}";
+		json = WWW.EscapeURL (json);
+
+		Config config = sceneManager.config;
+		string url = config.web + "/json/get-upcoming-matches?content=" + json;
+		WWW www = new WWW(url);
+
+		yield return www;
+
+		if (www.error != null) {
+			Debug.Log ("Web error: " + www.error);
+		} else {
+			UpcomingMatches upcomingMatches = JsonUtility.FromJson<UpcomingMatches>(www.text);
+
+			Debug.Log ("Downloaded upcoming matches.");
+
+			OnUpcomingMatchesDownloaded (upcomingMatches);
+		}
+	}
+
 	protected virtual void OnMatchInfoDownloaded (MatchInfo matchInfo) {
+	}
+
+	protected virtual void OnUpcomingMatchesDownloaded(UpcomingMatches upcomingMatches) {
 	}
 
 	protected abstract void OnActivation ();
