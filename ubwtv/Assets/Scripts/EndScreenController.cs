@@ -14,9 +14,6 @@ public class EndScreenController : ScreenController {
 	}
 
 	protected override void OnDeactivation() {
-		winnerText.text = "";
-		player1Text.text = "";
-		player2Text.text = "";
 	}
 
 	protected override void OnMatchInfoDownloaded (MatchInfo matchInfo) {

@@ -13,8 +13,6 @@ public class PrepareScreenController : ScreenController {
 	}
 
 	protected override void OnDeactivation() {
-		player1Text.text = "";
-		player2Text.text = "";
 	}
 
 	protected override void OnMatchInfoDownloaded(MatchInfo matchInfo) {
