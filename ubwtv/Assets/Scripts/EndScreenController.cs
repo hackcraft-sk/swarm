@@ -9,6 +9,11 @@ public class EndScreenController : ScreenController {
 
 	protected override void OnActivation() {
         gameObject.SetActive(true);
+
+		winnerText.text = "";
+		player1Text.text = "";
+		player2Text.text = "";
+
 		int matchId = eventInfo.matchId;
 		StartCoroutine (DownloadMatchInfo (matchId));
 	}

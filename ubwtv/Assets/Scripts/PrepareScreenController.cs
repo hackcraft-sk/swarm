@@ -8,6 +8,10 @@ public class PrepareScreenController : ScreenController {
 
 	protected override void OnActivation() {
         gameObject.SetActive(true);
+
+		player1Text.text = "";
+		player2Text.text = "";
+
         int matchId = eventInfo.matchId;
 		StartCoroutine (DownloadMatchInfo (matchId));
 	}
