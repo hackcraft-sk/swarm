@@ -1,11 +1,12 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BannerPicker : MonoBehaviour
 {
-	public Sprite[] banners;
+	public Texture[] banners;
 
-	public SpriteRenderer bannerRenderer;
+	public RawImage bannerRenderer;
 
 	int bannerIndex = -1;
 
@@ -13,7 +14,7 @@ public class BannerPicker : MonoBehaviour
 		bannerIndex = bannerIndex + 1;
 		bannerIndex %= banners.Length;
 
-		Sprite banner = banners [bannerIndex];
-		bannerRenderer.sprite = banner;
+		Texture banner = banners [bannerIndex];
+		bannerRenderer.texture = banner;
 	}
 }

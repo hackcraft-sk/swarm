@@ -99,7 +99,7 @@ public class SceneManager : MonoBehaviour {
             iterator = (iterator + 1) % 3;
 			int matchId = config.mockMatchId;
 			receivedEventInfo = new EventInfo (eventType, matchId);
-			yield return new WaitForSeconds (5);
+			yield return new WaitForSeconds (4);
 		}
 	}
 
