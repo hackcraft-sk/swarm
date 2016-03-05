@@ -113,6 +113,7 @@ class JsonPresenter extends BasePresenter {
 				$response = array(
 					"matchId" => $match['id'],
 					"mapUrl" => $match['mapUrl'],
+					"tournamentId" => $match['tournamentId'],
 					"mapMd5" => $md5,
 					"botIds" => array($match['hostBotId'], $match['guestBotId']),
 					"videoStreamTargetBotId" => $match['hostBotId']
