@@ -16,7 +16,7 @@ public class SlavesManager
 
 	private final Set<SlaveConnection> connections = new HashSet<>();
 
-	private final Map<Integer, Integer> slaveBotMatchMapper = new HashMap<>();
+	private final Map<Integer, Integer> slaveUserMatchMapper = new HashMap<>();
 
 	public SlavesManager(int desiredConnectionsCount, SlaveConnectionsFactory connectionsFactory, ReplaysStorage replaysStorage, BotPersistentDataStorage botPersistentDataStorage)
 	{
@@ -60,10 +60,10 @@ public class SlavesManager
 		String mapFileHash = matchInfo.getMapFileHash();
 
 		Set<SlaveConnection> freeSlaveConnections = new HashSet<>(connections);
-		Set<Integer> freeBotIds = matchInfo.getBotIds();
-		int videoStreamTargetBotId = matchInfo.getVideoStreamTargetBotId();
+		Set<UserBotInfo> freeBots = matchInfo.getUserBotInfos();
+		UserBotInfo videoStreamTarget = matchInfo.getVideoStreamTarget();
 
-		if (freeBotIds.size() > connections.size())
+		if (freeBots.size() > connections.size())
 		{
 			throw new RuntimeException("Not enough slaves for all bots");
 		}
@@ -71,21 +71,25 @@ public class SlavesManager
 		SlaveConnection connection;
 
 		connection = getAssociatedSlaveOfStream();
+		int videoStreamTargetBotId = videoStreamTarget.getBotId();
 		connection.sendMatchInfo(matchId, mapUrl, mapFileHash, videoStreamTargetBotId);
 
-		freeBotIds.remove(videoStreamTargetBotId);
+		freeBots.remove(videoStreamTarget);
 		freeSlaveConnections.remove(connection);
 		int streamSlaveId = connection.getSlaveId();
-		slaveBotMatchMapper.put(streamSlaveId, videoStreamTargetBotId);
+		int videoStreamTargetUserId = videoStreamTarget.getUserId();
+		slaveUserMatchMapper.put(streamSlaveId, videoStreamTargetUserId);
 
 		Queue<SlaveConnection> freeConnectionsQueue = new LinkedList<>(freeSlaveConnections);
-		for (Integer botId : freeBotIds)
+		for (UserBotInfo userBotInfo : freeBots)
 		{
 			connection = freeConnectionsQueue.remove();
+			int botId = userBotInfo.getBotId();
 			connection.sendMatchInfo(matchId, mapUrl, mapFileHash, botId);
 
 			int slaveId = connection.getSlaveId();
-			slaveBotMatchMapper.put(slaveId, botId);
+			int userId = userBotInfo.getUserId();
+			slaveUserMatchMapper.put(slaveId, userId);
 		}
 	}
 
@@ -105,10 +109,10 @@ public class SlavesManager
 	}
 
 	public void preparePersistentStorages(int tournamentId) throws IOException {
-		for (Map.Entry<Integer, Integer> entry : slaveBotMatchMapper.entrySet()) {
+		for (Map.Entry<Integer, Integer> entry : slaveUserMatchMapper.entrySet()) {
 			int slaveId = entry.getKey();
-			int botId = entry.getValue();
-			botPersistentDataStorage.prepareStorage(tournamentId, botId, slaveId);
+			int userId = entry.getValue();
+			botPersistentDataStorage.prepareStorage(tournamentId, userId, slaveId);
 		}
 	}
 
@@ -150,7 +154,7 @@ public class SlavesManager
 			}
 		}
 
-		slaveBotMatchMapper.clear();
+		slaveUserMatchMapper.clear();
 
 		if (valid)
 		{

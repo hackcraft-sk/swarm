@@ -22,8 +22,8 @@ public class BotPersistentDataStorage {
         slavesEntryPointsMapping.put(slaveId, entryPoint);
     }
 
-    public void prepareStorage(int tournamentId, int botId, int slaveId) throws IOException {
-        Path botStoragePath = assembleStoragePath(tournamentId, botId);
+    public void prepareStorage(int tournamentId, int userId, int slaveId) throws IOException {
+        Path botStoragePath = assembleStoragePath(tournamentId, userId);
 
         createStorageForBotIfNotExists(botStoragePath);
 
@@ -42,8 +42,8 @@ public class BotPersistentDataStorage {
         }
     }
 
-    private Path assembleStoragePath(int tournamentId, int botId) {
-        String pathString = String.format("%s/%s/%s", storageDirectoryPath, tournamentId, botId);
+    private Path assembleStoragePath(int tournamentId, int userId) {
+        String pathString = String.format("%s/%s/%s", storageDirectoryPath, tournamentId, userId);
         return Paths.get(pathString);
     }
 

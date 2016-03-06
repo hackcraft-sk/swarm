@@ -1,9 +1,7 @@
 package sk.hackcraft.als.master;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class MatchInfo
@@ -12,17 +10,17 @@ public class MatchInfo
 	private final int matchId;
 	private final String mapUrl;
 	private final String mapFileHash;
-	private final Set<Integer> botIds;
-	private final int videoStreamTargetBotId;
+	private final Set<UserBotInfo> userBotInfos;
+	private final UserBotInfo videoStreamTargetBotId;
 
-	public MatchInfo(int tournamentId, int matchId, String mapUrl, String mapFileHash, Set<Integer> botIds, int videoStreamTargetBotId)
+	public MatchInfo(int tournamentId, int matchId, String mapUrl, String mapFileHash, Set<UserBotInfo> userBotInfos, UserBotInfo videoStreamTargetBotId)
 	{
 		this.tournamentId = tournamentId;
 		this.matchId = matchId;
 		this.mapUrl = mapUrl;
 		this.mapFileHash = mapFileHash;
 
-		this.botIds = Collections.unmodifiableSet(new HashSet<>(botIds));
+		this.userBotInfos = Collections.unmodifiableSet(new HashSet<>(userBotInfos));
 		this.videoStreamTargetBotId = videoStreamTargetBotId;
 	}
 
@@ -44,12 +42,12 @@ public class MatchInfo
 		return mapFileHash;
 	}
 
-	public Set<Integer> getBotIds()
+	public Set<UserBotInfo> getUserBotInfos()
 	{
-		return new HashSet<>(botIds);
+		return new HashSet<>(userBotInfos);
 	}
 
-	public int getVideoStreamTargetBotId()
+	public UserBotInfo getVideoStreamTarget()
 	{
 		return videoStreamTargetBotId;
 	}
@@ -57,6 +55,6 @@ public class MatchInfo
 	@Override
 	public String toString()
 	{
-		return String.format("#%d, bots %s", matchId, botIds);
+		return String.format("#%d, bots %s", matchId, userBotInfos);
 	}
 }

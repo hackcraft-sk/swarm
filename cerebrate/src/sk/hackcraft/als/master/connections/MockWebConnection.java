@@ -9,6 +9,7 @@ import java.util.Set;
 import sk.hackcraft.als.master.MatchInfo;
 import sk.hackcraft.als.master.MatchReport;
 import sk.hackcraft.als.master.ReplaysStorage;
+import sk.hackcraft.als.master.UserBotInfo;
 import sk.hackcraft.als.utils.reports.SlaveMatchReport;
 
 public class MockWebConnection implements WebConnection
@@ -29,39 +30,40 @@ public class MockWebConnection implements WebConnection
 	@Override
 	public MatchInfo requestMatch() throws IOException
 	{
-		Set<Integer> botIds = new HashSet<>();
-		int videoStreamBotId = 1;
+		Set<UserBotInfo> userBotInfos = new HashSet<>();
+		UserBotInfo videoStreamBotId = new UserBotInfo(1, 1); // will be overwritten
 
 		if (input != null)
 		{
 			System.out.print("Bot 1:");
 			int bot1Id = input.nextInt();
-			botIds.add(bot1Id);
-			videoStreamBotId = bot1Id;
+			UserBotInfo ubi = new UserBotInfo(1, bot1Id);
+			userBotInfos.add(ubi);
+			videoStreamBotId = ubi;
 
 			System.out.print("Bot 2:");
-			botIds.add(input.nextInt());
+			userBotInfos.add(new UserBotInfo(2, input.nextInt()));
 		}
 		else
 		{
-			while (botIds.size() < botsCount)
+			while (userBotInfos.size() < botsCount)
 			{
 				int botId = random.nextInt(8);
 
-				if (botIds.contains(botIds))
+				if (userBotInfos.contains(userBotInfos))
 				{
 					continue;
 				}
 
-				botIds.add(botId);
+				userBotInfos.add(new UserBotInfo(botId + 10, botId));
 
-				if (botIds.size() == 1) {
-					videoStreamBotId = botId;
+				if (userBotInfos.size() == 1) {
+					videoStreamBotId = userBotInfos.iterator().next();
 				}
 			}
 		}
 
-		return new MatchInfo(1, 1, "maps/scmai/scmai2-arena-beginners.scx", "xxx", botIds, videoStreamBotId);
+		return new MatchInfo(1, 1, "maps/scmai/scmai2-arena-beginners.scx", "xxx", userBotInfos, videoStreamBotId);
 	}
 
 	@Override

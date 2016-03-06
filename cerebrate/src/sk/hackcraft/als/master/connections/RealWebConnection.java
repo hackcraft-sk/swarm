@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import sk.hackcraft.als.master.MatchInfo;
 import sk.hackcraft.als.master.MatchReport;
 import sk.hackcraft.als.master.ReplaysStorage;
+import sk.hackcraft.als.master.UserBotInfo;
 import sk.hackcraft.als.utils.Achievement;
 import sk.hackcraft.als.utils.Replay;
 import sk.hackcraft.als.utils.files.MD5ChecksumCreator;
@@ -68,6 +69,7 @@ public class RealWebConnection implements WebConnection
 		String mapUrl = response.getString("mapUrl");
 		String mapFileHash = response.getString("mapMd5");
 
+		JSONArray userIdsArray = response.getJSONArray("userIds");
 		JSONArray botIdsArray = response.getJSONArray("botIds");
 
 		if (botIdsArray.length() != 2)
@@ -75,15 +77,30 @@ public class RealWebConnection implements WebConnection
 			throw new RuntimeException("Currently only 2 bots are supported.");
 		}
 
-		Set<Integer> botIds = new HashSet<>();
+		Set<UserBotInfo> userBotInfos = new HashSet<>();
 		for (int i = 0; i < botIdsArray.length(); i++)
 		{
-			botIds.add(botIdsArray.getInt(i));
+			int userId = userIdsArray.getInt(i);
+			int botId = botIdsArray.getInt(i);
+			UserBotInfo userBotInfo = new UserBotInfo(userId, botId);
+			userBotInfos.add(userBotInfo);
 		}
 
 		int videoStreamTargetBotId = response.getInt("videoStreamTargetBotId");
 
-		return new MatchInfo(tournamentId, matchId, mapUrl, mapFileHash, botIds, videoStreamTargetBotId);
+		UserBotInfo videoStreamTarget = null;
+		for (UserBotInfo userBotInfo : userBotInfos) {
+			if (userBotInfo.getBotId() == videoStreamTargetBotId) {
+				videoStreamTarget = userBotInfo;
+				break;
+			}
+		}
+
+		if (videoStreamTarget == null) {
+			throw new IllegalArgumentException("Invalid video strema target bot id: " + videoStreamTargetBotId);
+		}
+
+		return new MatchInfo(tournamentId, matchId, mapUrl, mapFileHash, userBotInfos, videoStreamTarget);
 	}
 
 	@Override

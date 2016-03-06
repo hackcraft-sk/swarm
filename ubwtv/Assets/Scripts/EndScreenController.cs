@@ -7,12 +7,18 @@ public class EndScreenController : ScreenController {
 	public UnityEngine.UI.Text player1Text;
 	public UnityEngine.UI.Text player2Text;
 
+	public UnityEngine.UI.Text nextLeftPlayers;
+	public UnityEngine.UI.Text nextRightPlayers;
+
 	protected override void OnActivation() {
         gameObject.SetActive(true);
 
 		winnerText.text = "";
 		player1Text.text = "";
 		player2Text.text = "";
+
+		nextLeftPlayers.text = "";
+		nextRightPlayers.text = "";
 
 		int matchId = eventInfo.matchId;
 		StartCoroutine (DownloadMatchInfo (matchId));
@@ -44,6 +50,26 @@ public class EndScreenController : ScreenController {
 
 			player1Text.text = createText (winner.name, 3);
 			player2Text.text = createText (looser.name, 0);
+		}
+
+		int tournamentId = matchInfo.tournamentId;
+		StartCoroutine(DownloadUpcomingMatches(tournamentId));
+	}
+
+	protected override void OnUpcomingMatchesDownloaded(UpcomingMatches upcomingMatches) {
+		Match[] matches = upcomingMatches.matches;
+
+		for (int i = 0; i < 3 && i < matches.Length; i++) {
+			Match match = matches [i];
+			string botNameLeft = match.bots [0];
+			string botNameRight = match.bots [1];
+
+			if (i > 0) {
+				nextLeftPlayers.text += "\n";
+				nextRightPlayers.text += "\n";
+			}
+			nextLeftPlayers.text += botNameLeft;
+			nextRightPlayers.text += botNameRight;
 		}
 	}
 
