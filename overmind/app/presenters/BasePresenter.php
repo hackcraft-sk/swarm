@@ -1,28 +1,20 @@
 <?php
-/**
- * Base presenter for all application presenters.
- */
+
 abstract class BasePresenter extends Nette\Application\UI\Presenter {
-	private $selectedTournament = false;
-	
+
+	public function getSessionSection() {
+		return $this->getSession()->getSection("MyLifeForAI");
+	}
+
 	public function startup() {
 		parent::startup();
 		
-		$session = $this->getSession();
-		$section = $session->getSection("SCMAISystem");
-		
-		if(!isset($section->selectedTournament)) {
-			$tournaments = $this->context->model->getTournaments();
-			$tournamentIds = array_keys($tournaments);
-			$section->selectedTournament = $tournamentIds[0];
-		}
+		$section = $this->getSessionSection();
 		
 		if(isset($section->language)) {
 			$this->context->translator->setLanguage($section->language);
 		}
-		
-		$this->selectedTournament = $section->selectedTournament;
-		
+
 		$this->template->setTranslator($this->context->translator);
 		
 		$this->template->lang = $this->context->translator->getLanguage();
@@ -57,35 +49,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 	
 	public function setLanguage($language) {
 		$this->context->translator->setLanguage($language);
-		$section = $this->getSession()->getSection("SCMAISystem");
-		$section->language = $language;
-	}
-	
-	public function setSelectedTournamentId($id) {
-		$this->selectedTournament = $id;
-		
-		$session = $this->getSession();
-		$section = $session->getSection("SCMAISystem");
-		$section->selectedTournament = $this->selectedTournament;
-	}
-	
-	public function getSelectedTournamentId() {
-		return $this->selectedTournament;
-	}
-	
-	/**
-	 * 
-	 * @return Tournament
-	 */
-	public function getSelectedTournament() {
-		$tournament = $this->context->model->getTournament($this->getSelectedTournamentId());
-		if($tournament == null) {
-			$tournaments = $this->context->model->getTournaments();
-			$tournamentIds = array_keys($tournaments);
-			$this->selectedTournament = $tournamentIds[0];
-			$tournament = $this->context->model->getTournament($this->getSelectedTournamentId());
-		}
-		return $tournament;
+		$this->getSessionSection()->language = $language;
 	}
 	
 	public function beforeRender() {
@@ -93,14 +57,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 		
 		$this->template->loggedIn = $this->getUser()->isLoggedIn();
 		$this->template->user = $this->getUser()->getIdentity();
-
-		$this->template->tournament = $this->getSelectedTournament();
-		$this->template->tournaments = $this->context->model->getTournaments();
-
-		$this->template->liveTime = $this->template->tournament->getTestStartTime();
-		$this->template->isLive = time() >= $this->template->liveTime;
-
-		$this->template->activeTournaments = $this->context->model->getActiveTournaments();
 	}
 	
 	public function requireLogin() {

@@ -1,8 +1,6 @@
 <?php
-/**
- * Sign in/out presenters.
- */
-class SignPresenter extends BasePresenter
+
+class SignPresenter extends BaseTournamentPresenter
 {
 	/**
 	 * Sign-in form factory.

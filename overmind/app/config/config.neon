@@ -8,7 +8,7 @@ common:
 	parameters:
 
 	php:
-		date.timezone: Europe/Prague
+		date.timezone: Etc/UTC
 		# zlib.output_compression: yes
 
 	nette:

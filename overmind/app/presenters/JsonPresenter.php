@@ -115,6 +115,7 @@ class JsonPresenter extends BasePresenter {
 					"mapUrl" => $match['mapUrl'],
 					"tournamentId" => $match['tournamentId'],
 					"mapMd5" => $md5,
+					"userIds" => array($match['hostUserId'], $match['guestUserId']),
 					"botIds" => array($match['hostBotId'], $match['guestBotId']),
 					"videoStreamTargetBotId" => $match['hostBotId']
 				);
@@ -141,6 +142,26 @@ class JsonPresenter extends BasePresenter {
 		
 		if($success) {
 			$this->sendResponse(new Nette\Application\Responses\JsonResponse(array("result" => "OK")));
+		}
+	}
+
+	public function renderGetUpcomingMatches($content) {
+		$payload = json_decode($content, true);
+
+		try {
+			$matches = $this->context->model->getTournament($payload['tournamentId'])->getUpcomingMatches();
+			$response = array("matches" => array());
+			foreach($matches as $match) {
+				$response["matches"][] = array(
+					"bots" => array($match["hostName"], $match["guestName"])
+				);
+			}
+		} catch(Exception $e) {
+			$this->sendException($e);
+		}
+
+		if (isset($response)) {
+			$this->sendResponse(new Nette\Application\Responses\JsonResponse($response));
 		}
 	}
 	

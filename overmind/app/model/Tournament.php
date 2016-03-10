@@ -47,6 +47,10 @@ class Tournament {
 		$this->achievements = new Achievements($database, $this->data['id']);
 	}
 
+	public function getCode() {
+		return $this->data['code'];
+	}
+
 	public function getPriority() {
 		return $this->data['priority'];
 	}
@@ -61,6 +65,18 @@ class Tournament {
 	
 	public function getTestStartTime() {
 		return $this->data['testStartTime'];
+	}
+
+	public function isCompetitionPart() {
+		return time() >= $this->getCompetitionStartTime();
+	}
+
+	public function isTestingPart() {
+		return !$this->isCompetitionPart() && time() >= $this->getTestStartTime();
+	}
+
+	public function isRunning() {
+		return $this->isTestingPart() || $this->isCompetitionPart();
 	}
 	
 	public function getCompetitionStartTime() {
@@ -79,9 +95,17 @@ class Tournament {
 		return $this->data['info'];
 	}
 
+	public function getInfoJson() {
+		return json_encode($this->getInfo(), true);
+	}
+
 	public function getRules() {
 		return $this->data['rules'];
 	}
+	public function getRulesJson() {
+		return json_encode($this->getRules(), true);
+	}
+
 	
 	public function getExtras() {
 		return $this->data['extras'];
@@ -132,22 +156,23 @@ class Tournament {
 			$this->data['extrasJson'] = json_encode($data['extras']);
 		}
 
-		$info = json_encode($this->data['info'], true);
-		$rules = json_encode($this->data['rules'], true);
+		$info = $this->getInfoJson();
+		$rules = $this->getRulesJson();
 		
-		$stmt = $this->database->prepare("UPDATE `tournaments` SET `name`=?, `testStartTime`=?, `competitionStartTime`=?, `info`=?, `rules`=?, `hostStreamCode`=?, `guestStreamCode`=?, `extrasJson`=?, `mapUrl`=?, `archived`=?, `priority`=? WHERE `id`=?");
-		$stmt->bindParam(1, $this->data['name']);
-		$stmt->bindParam(2, $this->data['testStartTime']);
-		$stmt->bindParam(3, $this->data['competitionStartTime']);
-		$stmt->bindParam(4, $info);
-		$stmt->bindParam(5, $rules);
-		$stmt->bindParam(6, $this->data['hostStreamCode']);
-		$stmt->bindParam(7, $this->data['guestStreamCode']);
-		$stmt->bindParam(8, $this->data['extrasJson']);
-		$stmt->bindParam(9, $this->data['mapUrl']);
-		$stmt->bindParam(10, $this->data['archived']);
-		$stmt->bindParam(11, $this->data['priority']);
-		$stmt->bindParam(12, $this->data['id']);
+		$stmt = $this->database->prepare("UPDATE `tournaments` SET `code`=?, `name`=?, `testStartTime`=?, `competitionStartTime`=?, `info`=?, `rules`=?, `hostStreamCode`=?, `guestStreamCode`=?, `extrasJson`=?, `mapUrl`=?, `archived`=?, `priority`=? WHERE `id`=?");
+		$stmt->bindParam(1, $this->data['code']);
+		$stmt->bindParam(2, $this->data['name']);
+		$stmt->bindParam(3, $this->data['testStartTime']);
+		$stmt->bindParam(4, $this->data['competitionStartTime']);
+		$stmt->bindParam(5, $info);
+		$stmt->bindParam(6, $rules);
+		$stmt->bindParam(7, $this->data['hostStreamCode']);
+		$stmt->bindParam(8, $this->data['guestStreamCode']);
+		$stmt->bindParam(9, $this->data['extrasJson']);
+		$stmt->bindParam(10, $this->data['mapUrl']);
+		$stmt->bindParam(11, $this->data['archived']);
+		$stmt->bindParam(12, $this->data['priority']);
+		$stmt->bindParam(13, $this->data['id']);
 
 		if(!$stmt->execute()) {
 			throw new Exception("DB: Query error");
@@ -418,10 +443,17 @@ SQL;
 		$rows = array();
 		while($row = $stmt->fetch()) {
 			$row['points'] = $row['pointsAsHost']+$row['pointsAsGuest'];
+			$row['pointsPerMatch'] = $row['matchesTotal'] > 0 ? $row['points'] / (float)$row['matchesTotal'] : 0;
 			$rows[] = $row;
 		}
 
 		usort($rows, function($a, $b) {
+			if($a['pointsPerMatch'] < $b['pointsPerMatch']) {
+				return 1;
+			} else if($a['pointsPerMatch'] > $b['pointsPerMatch']) {
+				return -1;
+			}
+
 			if($a['points'] < $b['points']) {
 				return 1;
 			} else if($a['points'] > $b['points']) {
@@ -530,7 +562,7 @@ SQL;
 				if(count($ladder) < 2) {
 					throw new Exception("Not enough players to schedule a match.");
 				}
-
+/*
 				// 30% pripadov ideme cisto prioritou tych co nehrali
 				if(mt_rand(0, 10) <= 3) {
 					usort($ladder, function($a, $b) {
@@ -545,7 +577,7 @@ SQL;
 					$this->scheduleMatch($ladder[0]['id'], $ladder[1]['id']);
 				}
 				// 70% uplne nahodne
-				else {
+				else {*/
 					$a = $b = 0;
 					while($a == $b) {
 						$a = mt_rand(0, count($ladder)-1);
@@ -553,7 +585,7 @@ SQL;
 					}
 
 					$this->scheduleMatch($ladder[$a]['id'], $ladder[$b]['id']);
-				}
+				//}
 			}
 		}
 	}
@@ -566,6 +598,23 @@ SQL;
 		if(!$stmt->execute()) {
 			throw new Exception("DB error");
 		}
+	}
+
+	public function getUpcomingMatches($limit = 10) {
+		$id = $this->data['id'];
+
+		$stmt = $this->database->prepare("SELECT `matches`.*, `host`.`username` AS `hostName`, `guest`.`username` AS `guestName` FROM `matches` LEFT JOIN `users` AS `host` ON(`host`.`id`=`matches`.`hostUserId`) LEFT JOIN `users` AS `guest` ON (`guest`.`id`=`matches`.`guestUserId`) WHERE `tournamentId`=? AND `state`='WAITING' ORDER BY `id` ASC LIMIT 0,".(int)$limit);
+		$stmt->bindParam(1, $id);
+
+		if(!$stmt->execute()) {
+			throw new Exception("DB error");
+		}
+
+		$result = array();
+		while ($row = $stmt->fetch()) {
+			$result[] = $row;
+		}
+		return $result;
 	}
 	
 	public function pollMatch() {
@@ -730,7 +779,7 @@ SQL;
 			}
 			
 			foreach($snapshot['ladder'] as $ladderRow) {
-				$points[$ladderRow['username']] = $ladderRow['points'];
+				$points[$ladderRow['username']] = $ladderRow['pointsPerMatch'];
 			}
 			
 			foreach($users as $user) {

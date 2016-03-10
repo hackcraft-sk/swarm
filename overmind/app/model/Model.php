@@ -13,6 +13,8 @@ class Model {
 	
 	private $tournaments = array();
 	private $activeTournaments = array();
+	private $archivedTournaments = array();
+	private $tournamentsByCode = array();
 
 	public function __construct(Nette\Database\Connection $database) {
 		$this->database = $database;
@@ -26,7 +28,7 @@ class Model {
 	 */
 	public function getTournament($tournamentId) {
 		if(!isset($this->tournaments[$tournamentId])) {
-			$stmt = $this->database->prepare("SELECT * FROM `tournaments` WHERE `id`=? ORDER BY `testStartTime` DESC");
+			$stmt = $this->database->prepare("SELECT * FROM `tournaments` WHERE `id`=?");
 			$stmt->bindParam(1, $tournamentId);
 			
 			if(!$stmt->execute()) {
@@ -36,23 +38,48 @@ class Model {
 			if($stmt->rowCount() == 0) {
 				return null;
 			}
-			
-			$data = $stmt->fetch();
-			$tournament = new Tournament($this->database, $data);
-			$this->tournaments[$tournamentId] = $tournament;
 
-			if(!$tournament->isArchived()) {
-				$this->activeTournaments[$tournamentId] = $tournament;
-			}
+			$this->fetchTournament($stmt->fetch());
 		}
 		return $this->tournaments[$tournamentId];
 	}
+
+	public function getTournamentByCode($code) {
+		if(!isset($this->tournamentsByCode[$code])) {
+			$stmt = $this->database->prepare("SELECT * FROM `tournaments` WHERE `code`=?");
+			$stmt->bindParam(1, $code);
+
+			if(!$stmt->execute()) {
+				throw new Exception("DB: Query error");
+			}
+
+			if($stmt->rowCount() == 0) {
+				return null;
+			}
+
+			$this->fetchTournament($stmt->fetch());
+		}
+		return $this->tournamentsByCode[$code];
+	}
+
+	public function fetchTournament($data) {
+		$tournament = new Tournament($this->database, $data);
+		$this->tournaments[$data['id']] = $tournament;
+		$this->tournamentsByCode[$data['code']] = $tournament;
+
+		if(!$tournament->isArchived()) {
+			$this->activeTournaments[$data['id']] = $tournament;
+		} else {
+			$this->archivedTournaments[$data['id']] = $tournament;
+		}
+	}
 	
 	public function createNewTournament(&$data) {
-		$stmt = $this->database->prepare("INSERT INTO `tournaments` (`name`, `testStartTime`, `competitionStartTime`, `info`, `rules`, `mapUrl`, `extrasJson`) VALUES(?, ?, ?, '{}', '{}', '', '{}')");
-		$stmt->bindParam(1, $data['name']);
-		$stmt->bindParam(2, $data['testStartTime']);
-		$stmt->bindParam(3, $data['competitionStartTime']);
+		$stmt = $this->database->prepare("INSERT INTO `tournaments` (`code`, `name`, `testStartTime`, `competitionStartTime`, `info`, `rules`, `mapUrl`, `extrasJson`) VALUES(?, ?, ?, ?, '{}', '{}', '', '{}')");
+		$stmt->bindParam(1, $data['code']);
+		$stmt->bindParam(2, $data['name']);
+		$stmt->bindParam(3, $data['testStartTime']);
+		$stmt->bindParam(4, $data['competitionStartTime']);
 		
 		if(!$stmt->execute()) {
 			throw new Exception("DB: Query error");
@@ -71,12 +98,7 @@ class Model {
 			if(isset($this->tournaments[$row['id']])) {
 				continue;
 			}
-			$tournament = new Tournament($this->database, $row);
-			$this->tournaments[$tournament->getId()] = $tournament;
-
-			if(!$tournament->isArchived()) {
-				$this->activeTournaments[$tournament->getId()] = $tournament;
-			}
+			$this->fetchTournament($row);
 		}
 		
 		return $this->tournaments;
@@ -84,6 +106,10 @@ class Model {
 
 	public function getActiveTournaments() {
 		return $this->activeTournaments;
+	}
+
+	public function getArchivedTournaments() {
+		return $this->archivedTournaments;
 	}
 	
 	public function pollMatch($tournamentIds) {
@@ -111,8 +137,13 @@ class Model {
 	}
 	
 	public function deleteTournament($tournamentId) {
-		if(isset($this->tournaments[$tournamentId])) {
-			unset($this->tournaments[$tournamentId]);
+		$tournament = $this->getTournament($tournamentId);
+
+		if(isset($this->tournaments[$tournament->getId()])) {
+			unset($this->tournaments[$tournament->getId()]);
+			unset($this->activeTournaments[$tournament->getId()]);
+			unset($this->archivedTournaments[$tournament->getId()]);
+			unset($this->tournamentsByCode[$tournament->getCode()]);
 		}
 		$stmt = $this->database->prepare("DELETE FROM `tournaments` WHERE `id`=?");
 		$stmt->bindParam(1, $tournamentId);
@@ -120,17 +151,6 @@ class Model {
 		if(!$stmt->execute()) {
 			throw new Exception("DB: Query error");
 		}
-	}
-	
-	public function getLiveTime() {
-		$liveTime = false;
-		foreach($this->getTournaments() as $tournament) {
-			$t = $tournament->getTestStartTime();
-			if($liveTime === false || $t < $liveTime) {
-				$liveTime = $t;
-			}
-		}
-		return $liveTime;
 	}
 	
 	public function getConfig($key = null) {
@@ -333,19 +353,26 @@ class Model {
 			throw new Exception("Tournament with ID {$tournamentId} not found.");
 		}
 
-		$stmt = $this->database->prepare("INSERT INTO `tournaments` VALUES(NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		$stmt = $this->database->prepare("INSERT INTO `tournaments` VALUES(?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1000)");
 		$true = true;
 
-		$stmt->bindParam(1, $newName);
-		$stmt->bindParam(2, $tournament->getTestStartTime());
-		$stmt->bindParam(3, $tournament->getCompetitionStartTime());
-		$stmt->bindParam(4, $tournament->getInfo());
-		$stmt->bindParam(5, $tournament->getHostStreamCode());
-		$stmt->bindParam(6, $tournament->getGuestStreamCode());
-		$stmt->bindParam(7, $tournament->getMapUrl());
-		$stmt->bindParam(8, $tournament->getExtrasJson());
-		$stmt->bindParam(9, $tournament->getSystemClassName());
-		$stmt->bindParam(10, $true);
+		$info = $tournament->getInfoJson();
+		$rules = $tournament->getRulesJson();
+
+		$newCode = $tournament->getCode()."-archive";
+
+		$stmt->bindParam(1, $newCode);
+		$stmt->bindParam(2, $newName);
+		$stmt->bindParam(3, $tournament->getTestStartTime());
+		$stmt->bindParam(4, $tournament->getCompetitionStartTime());
+		$stmt->bindParam(5, $info);
+		$stmt->bindParam(6, $rules);
+		$stmt->bindParam(7, $tournament->getHostStreamCode());
+		$stmt->bindParam(8, $tournament->getGuestStreamCode());
+		$stmt->bindParam(9, $tournament->getMapUrl());
+		$stmt->bindParam(10, $tournament->getExtrasJson());
+		$stmt->bindParam(11, $tournament->getSystemClassName());
+		$stmt->bindParam(12, $true);
 
 		if(!$stmt->execute()) {
 			throw new Exception("DB: Query error");

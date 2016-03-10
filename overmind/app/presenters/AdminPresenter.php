@@ -1,7 +1,8 @@
 <?php
 use Nette\Application\UI;
 
-class AdminPresenter extends BasePresenter {
+class AdminPresenter extends BaseTournamentPresenter {
+
 	public function requireAdmin() {
 		$passed = true;
 		if(!parent::requireLogin())
@@ -104,7 +105,8 @@ class AdminPresenter extends BasePresenter {
 	
 	protected function createComponentNewTournamentForm() {
 		$form = new BaseForm;
-		
+
+		$form->addText("code", "Tournament code")->setRequired("Tournament code is required");
 		$form->addText("name", "Tournament name")->setRequired("Tournament name is required");
 		$form->addText("testStartTime", "Start time of testing part (YYYY-MM-DD H:I:S)")->setRequired("Start time of testing part is required");
 		$form->addText("competitionStartTime", "Start time of competition part (YYYY-MM-DD H:I:S)")->setRequired("Start time of competition part is required");
@@ -131,6 +133,7 @@ class AdminPresenter extends BasePresenter {
 			}
 			
 			$data = array(
+				"code" => $values['code'],
 				"name" => $values['name'],
 				"testStartTime" => $testStartTime,
 				"competitionStartTime" => $competitionStartTime
@@ -144,7 +147,9 @@ class AdminPresenter extends BasePresenter {
 	
 	protected function createComponentTournamentDetailsForm() {
 		$form = new BaseForm;
-		
+
+		$form->addText("code", "Tournament code")
+				->setRequired("Tournament code is required");
 		$form->addText("name", "Tournament name")
 				->setRequired("Tournament name is required");
 		$form->addCheckbox("archived", "Archived");
@@ -287,6 +292,7 @@ class AdminPresenter extends BasePresenter {
 		$tournament = $this->getSelectedTournament();
 		
 		$values = array(
+			"code" => $tournament->getCode(),
 			"name" => $tournament->getName(),
 			"testStartTime" => date("Y-m-d H:i:s", $tournament->getTestStartTime()),
 			"competitionStartTime" => date("Y-m-d H:i:s", $tournament->getCompetitionStartTime()),

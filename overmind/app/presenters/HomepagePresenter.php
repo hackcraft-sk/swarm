@@ -1,12 +1,9 @@
 <?php
 
-/**
- * Homepage presenter.
- */
-class HomepagePresenter extends BasePresenter {
-	public function actionSetTournament($tournamentId) {
-		$this->setSelectedTournamentId($tournamentId);
-		$this->redirectUrl($this->getHttpRequest()->getReferer());
+class HomepagePresenter extends BaseTournamentPresenter {
+
+	public function actionSetTournament($tournamentCode) {
+		$this->selectTournamentByCode($tournamentCode);
 	}
 	
 	public function actionSetLanguage($language) {

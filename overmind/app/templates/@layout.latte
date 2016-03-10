@@ -40,7 +40,7 @@
 
 	<script type="text/javascript">
 	$(function(){
-	    $("select[name=tournamentId]").change(function(){
+	    $("select[name=tournamentCode]").change(function(){
 	        $("form[method=get]").submit();
 	    });
 
@@ -60,8 +60,13 @@
     <div id="panel">
         <section>
             <form method="get" action="{$presenter->link('Homepage:setTournament')}">
-                <select name="tournamentId">
-                    <option n:foreach="$activeTournaments as $t" value="{$t->getId()}"{if $t->getId()==$tournament->getId()} selected="selected"{/if}>{$t->getName()}</option>
+                <select name="tournamentCode">
+                    <optgroup label="Ongoing">
+                        <option n:foreach="$activeTournaments as $t" value="{$t->getCode()}"{if $t->getId()==$tournament->getId()} selected="selected"{/if}>{$t->getName()}</option>
+                    </optgroup>
+                    <optgroup label="Archive">
+                        <option n:foreach="$archivedTournaments as $t" value="{$t->getCode()}"{if $t->getId()==$tournament->getId()} selected="selected"{/if}>{$t->getName()}</option>
+                    </optgroup>
                 </select>
             </form>
 

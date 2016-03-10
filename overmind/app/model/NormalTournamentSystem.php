@@ -42,5 +42,4 @@ class NormalTournamentSystem extends TournamentSystem {
 		return array(3, 0);
 	}
 }
-
 ?>

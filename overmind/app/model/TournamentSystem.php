@@ -36,4 +36,11 @@ abstract class TournamentSystem {
 	 * @return int points for both of the players
 	 */
 	public abstract function getDrawPoints();
+
+	public function getLadderStartTime() {
+		if (time() >= $this->tournament->getCompetitionStartTime()) {
+			return 0;
+		}
+		return time() - 24 * 3600;
+	}
 }

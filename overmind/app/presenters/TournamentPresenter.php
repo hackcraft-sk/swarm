@@ -4,7 +4,8 @@
  *
  * @author nixone
  */
-class TournamentPresenter extends BasePresenter {
+class TournamentPresenter extends BaseTournamentPresenter {
+
 	public function renderDefault() {
 		$this->template->playing = $this->getSelectedTournament()->getPlayingMatch();
 		$this->template->matches = $this->getSelectedTournament()->getMatches();
@@ -19,15 +20,16 @@ class TournamentPresenter extends BasePresenter {
 	}
 	
 	public function renderLadder() {
-		$ladder = $this->getSelectedTournament()->getLadder();
+		$tournament = $this->getSelectedTournament();
+		$ladder = $tournament->getLadder($tournament->getSystem()->getLadderStartTime());
 
 		foreach($ladder as &$user) {
-			$user['achievements'] = $this->getSelectedTournament()->getAchievements()->getAchievementsForUser($user['id']);
+			$user['achievements'] = $tournament->getAchievements()->getAchievementsForUser($user['id']);
 		}
 
 		$this->template->ladder = $ladder;
 
-		$this->template->snapshotsJson = $this->getSelectedTournament()->getLadderSnapshotData();
+		$this->template->snapshotsJson = $tournament->getLadderSnapshotData();
 	}
 	
 	public function handleRefreshLiveMatches() {

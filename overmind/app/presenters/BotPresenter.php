@@ -1,7 +1,8 @@
 <?php
 use Nette\Application\UI;
 
-class BotPresenter extends BasePresenter {
+class BotPresenter extends BaseTournamentPresenter {
+
 	protected function createComponentUploadForm()
 	{
 		$form = new BaseForm;
@@ -19,6 +20,16 @@ class BotPresenter extends BasePresenter {
 	public function uploadFormSucceeded(UI\Form $form) {
 		if(!$this->requireLogin())
 			return;
+
+		if (!$this->getSelectedTournament()->isRunning()) {
+			$this->flashMessage("You can't upload bots in tournament, which is not running.");
+			return false;
+		}
+
+		if ($this->getSelectedTournament()->isCompetitionPart()) {
+			$this->flashMessage("It is forbidden to upload bots in competition phase.");
+			return;
+		}
 		
 		$this->getSelectedTournament()->handleUpload($this->getUser()->getIdentity(), $form->getValues()->file);
 		
@@ -58,6 +69,9 @@ class BotPresenter extends BasePresenter {
 	}
 	
 	public function renderDetails($botId) {
+		if(!$this->requireLogin())
+			return;
+
 		$bot = $this->context->model->getBotDetails($botId);
 		$this['botDetailsForm']->setDefaults(array(
 			"botId" => $botId,
@@ -68,6 +82,19 @@ class BotPresenter extends BasePresenter {
 	}
 
 	public function actionSetActive($botId, $value = true) {
+		if(!$this->requireLogin())
+			return;
+
+		if (!$this->getSelectedTournament()->isRunning()) {
+			$this->flashMessage("You can't activate/deactivate bots in tournament, which is not running.");
+			return false;
+		}
+
+		if ($this->getSelectedTournament()->isCompetitionPart()) {
+			$this->flashMessage("It is forbidden to activate/deactivate bots in competition phase.");
+			return;
+		}
+
 		$this->context->model->setBotActive($this->getUser()->getIdentity(), $botId, $value);
 		
 		$this->flashMessage(
