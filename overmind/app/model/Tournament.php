@@ -306,7 +306,7 @@ class Tournament {
 				`tournamentId`=?
 				%USER_CONDITION%
 			ORDER BY id DESC
-			LIMIT 0, 10000
+			LIMIT 0, 250
 SQL;
 		if($userId == 0) {
 			$userCondition = "";
