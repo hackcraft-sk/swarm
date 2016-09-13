@@ -285,11 +285,11 @@ class AdminPresenter extends BaseTournamentPresenter {
 		$this->template->links = $this->context->link->getAll($this->getSelectedTournamentId());
 	}
 	
-	public function renderTournament() {
+	public function renderTournament($tournamentId) {
 		if(!$this->requireAdmin())
 			return false;
 		
-		$tournament = $this->getSelectedTournament();
+		$tournament = $this->context->model->getTournament($tournamentId);
 		
 		$values = array(
 			"code" => $tournament->getCode(),
@@ -317,11 +317,8 @@ class AdminPresenter extends BaseTournamentPresenter {
 				"newName" => $tournament->getName()." Archive"
 			)
 		);
-	}
-	
-	public function actionGoToTournament($tournamentId) {
-		$this->setSelectedTournamentId($tournamentId);
-		$this->redirect("tournament");
+
+		$this->template->t = $tournament;
 	}
 	
 	public function actionDeleteTournament($tournamentId) {
