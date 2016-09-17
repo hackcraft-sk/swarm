@@ -629,12 +629,10 @@ SQL;
 		
 		$row = $stmt->fetch();
 		$count = $row['waiting'];
-		
-		if($count == 0) {
-			if(!$this->system->createNextMatch()) {
-				return null;
-			}
-		}
+
+        if(!$this->system->createNextMatch($count)) {
+            return null;
+        }
 
 		$stmt2 = $this->database->prepare("SELECT * FROM `matches` WHERE `tournamentId`=? AND `state`='WAITING' ORDER BY `id` ASC LIMIT 0,1");
 		$stmt2->bindParam(1, $id);

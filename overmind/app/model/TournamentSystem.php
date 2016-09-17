@@ -20,7 +20,7 @@ abstract class TournamentSystem {
 	 * 
 	 * @return boolean ci sa operacia podarila (a ci pacient umrel)
 	 */
-	public abstract function createNextMatch();
+	public abstract function createNextMatch($currentWaitingMatches);
 	
 	/**
 	 * @return array (0 => POINTS_FOR_WINNER, 1 => POINTS_FOR_LOOSER)

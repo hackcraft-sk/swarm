@@ -13,7 +13,7 @@
 class NormalTournamentSystem extends TournamentSystem {
 	const BEFORE_COMPETITION_TIME = 1800; //0.5h
 	
-	public function createNextMatch() {
+	public function createNextMatch($currentWaitingMatches) {
 		$now = time();
 		
 		if($now >= $this->tournament->getTestStartTime() && $now < $this->tournament->getCompetitionStartTime()) {
