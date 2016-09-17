@@ -41,8 +41,8 @@ class RouterFactory
 	{
 		$router = new RouteList();
 		$router[] = new Route('index.php', 'Tournament:default', Route::ONE_WAY);
-		$router[] = new Route('//<tournament>.mylifeforai.com/<presenter>/<action>[/<id>]', 'Tournament:default');
-		$router[] = new Route('<presenter>/<action>[/<id>]', 'Tournament:default');
+		$router[] = new Route('//<tournament>.mylifeforai.com/<presenter>/<action>[/<id>]', 'Tournament:default', Route::SECURED);
+		$router[] = new Route('<presenter>/<action>[/<id>]', 'Tournament:default', Route::SECURED);
 		return $router;
 	}
 

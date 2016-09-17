@@ -20,7 +20,7 @@ abstract class BaseTournamentPresenter extends BasePresenter {
     }
 
     public function selectTournamentByCode($code) {
-        $this->redirectUrl("http://".$code.".mylifeforai.com");
+        $this->redirectUrl("https://".$code.".mylifeforai.com");
     }
 
     public function getSelectedTournamentId() {
