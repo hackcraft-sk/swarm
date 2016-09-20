@@ -57,6 +57,8 @@ class AdminPresenter extends BaseTournamentPresenter {
 		$form->addText("times", "Number of matches per pair of players")
 				->setRequired("You have to choose how many matches per pair")
 				->setDefaultValue("1");
+
+		$form->addCheckbox("mirror", "Do you want to mirror previous generation logic?");
 		
 		$form->addSubmit("send", "Generate");
 		
@@ -69,7 +71,7 @@ class AdminPresenter extends BaseTournamentPresenter {
 		if(!$this->requireAdmin())
 			return;
 		
-		$this->getSelectedTournament()->scheduleAllCombinations($form->getValues()->times);
+		$this->getSelectedTournament()->scheduleAllCombinations($form->getValues()->times, !!$form->getValues()->mirror);
 		
 		$this->flashMessage("Matches were planned");
 	}
