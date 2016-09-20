@@ -13,12 +13,12 @@ public class EndScreenController : ScreenController {
 	protected override void OnActivation() {
         gameObject.SetActive(true);
 
-		winnerText.text = "";
-		player1Text.text = "";
-		player2Text.text = "";
+		winnerText.text = "...";
+		player1Text.text = "...";
+		player2Text.text = "...";
 
-		nextLeftPlayers.text = "";
-		nextRightPlayers.text = "";
+		nextLeftPlayers.text = "...";
+		nextRightPlayers.text = "...";
 
 		int matchId = eventInfo.matchId;
 		StartCoroutine (DownloadMatchInfo (matchId));
@@ -59,6 +59,9 @@ public class EndScreenController : ScreenController {
 	protected override void OnUpcomingMatchesDownloaded(UpcomingMatches upcomingMatches) {
 		Match[] matches = upcomingMatches.matches;
 
+		nextLeftPlayers.text = "";
+		nextRightPlayers.text = "";
+
 		for (int i = 0; i < 3 && i < matches.Length; i++) {
 			Match match = matches [i];
 			string botNameLeft = match.bots [0];
@@ -74,8 +77,8 @@ public class EndScreenController : ScreenController {
 	}
 
 	private string createText(string botName, int pts) {
-		string sign = pts > 0 ? "+" : "";
-		return botName + " " + sign + pts + " pts";
+		string sign = pts >= 0 ? "+" : "";
+		return botName + "\n" + sign + pts + " pts";
 	}
 
 }
