@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyStore;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -48,6 +49,7 @@ import sk.hackcraft.als.utils.application.EventListener;
 import sk.hackcraft.als.utils.log.Log;
 import sk.hackcraft.als.utils.log.PrintStreamLog;
 import sk.hackcraft.als.utils.reports.SlaveMatchReport;
+import sk.hackcraft.util.KeyStoreLoader;
 
 public class Application implements Runnable
 {
@@ -107,6 +109,7 @@ public class Application implements Runnable
 		host = programSection.getPair("host").getBooleanValue();
 
 		String webAddress = config.getSection("web").getPair("address").getStringValue();
+		String keyStorePath = config.getSection("web").getPair("keystore").getStringValue();
 
 		Config.Section componentsSection = config.getSection("mockComponents");
 		boolean mockWeb = componentsSection.getPair("web").getBooleanValue();
@@ -123,8 +126,10 @@ public class Application implements Runnable
 		{
 			try
 			{
+				KeyStore keyStore = new KeyStoreLoader().load(keyStorePath, "aaaaaa");
+
 				MapFilePreparer mapFilePreparer = new MapFilePreparer(starCraftPath);
-				webConnection = new RealWebConnection(webAddress, mapFilePreparer);
+				webConnection = new RealWebConnection(webAddress, keyStore, mapFilePreparer);
 			}
 			catch (IOException e)
 			{

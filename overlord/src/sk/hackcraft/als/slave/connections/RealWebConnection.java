@@ -2,6 +2,7 @@ package sk.hackcraft.als.slave.connections;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.security.KeyStore;
 
 import org.json.JSONObject;
 
@@ -20,9 +21,9 @@ public class RealWebConnection implements WebConnection
 	private BotFilePreparer botFilePreparer;
 	private MapFilePreparer mapFilePreparer;
 
-	public RealWebConnection(String url, MapFilePreparer mapFilePreparer) throws IOException
+	public RealWebConnection(String url, KeyStore keyStore, MapFilePreparer mapFilePreparer) throws IOException
 	{
-		FormRequestFactory rawRequestFactory = new FormRequestFactory(url);
+		FormRequestFactory rawRequestFactory = new FormRequestFactory(url, keyStore);
 		this.requestFactory = new SimpleJsonRequestFactory(rawRequestFactory);
 
 		botFilePreparer = new BotFilePreparer();

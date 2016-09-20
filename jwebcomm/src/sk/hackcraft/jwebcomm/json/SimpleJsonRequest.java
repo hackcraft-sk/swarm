@@ -2,6 +2,7 @@ package sk.hackcraft.jwebcomm.json;
 
 import java.io.IOException;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import sk.hackcraft.jwebcomm.http.FormRequest;
@@ -31,6 +32,10 @@ public class SimpleJsonRequest
 
 		String response = request.send();
 
-		return new JSONObject(response);
+		try {
+			return new JSONObject(response);
+		} catch (JSONException e) {
+			throw new IOException("Can't parse received json: " + response);
+		}
 	}
 }

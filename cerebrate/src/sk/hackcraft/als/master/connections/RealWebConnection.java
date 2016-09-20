@@ -3,6 +3,7 @@ package sk.hackcraft.als.master.connections;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,9 +35,9 @@ public class RealWebConnection implements WebConnection
 	private final FormRequestFactory plainRequestFactory;
 	private final MultipartRequest.Builder multipartRequestBuilder;
 
-	public RealWebConnection(String url, Set<Integer> acceptingTournamentIds, Set<Integer> videoStreams) throws IOException
+	public RealWebConnection(KeyStore keyStore, String url, Set<Integer> acceptingTournamentIds, Set<Integer> videoStreams) throws IOException
 	{
-		plainRequestFactory = new FormRequestFactory(url);
+		plainRequestFactory = new FormRequestFactory(url, keyStore);
 		jsonRequestFactory = new SimpleJsonRequestFactory(plainRequestFactory);
 		multipartRequestBuilder = new MultipartRequest.Builder(url);
 

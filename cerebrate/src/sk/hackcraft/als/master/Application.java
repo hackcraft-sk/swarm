@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyStore;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,6 +18,7 @@ import sk.hackcraft.als.master.connections.WebConnection;
 import sk.hackcraft.als.utils.Config;
 import sk.hackcraft.als.utils.IniFileConfig;
 import sk.hackcraft.als.utils.MemoryConfig;
+import sk.hackcraft.util.KeyStoreLoader;
 
 public class Application implements Runnable
 {
@@ -68,6 +70,7 @@ public class Application implements Runnable
 			try
 			{
 				String address = config.getSection("web").getPair("address").getStringValue();
+				String keyStorePath = config.getSection("web").getPair("keystore").getStringValue();
 
 				String rawAcceptingTournamentIds[] = config.getSection("tournament").getPair("acceptingIds").getStringValueAsArray();
 				Set<Integer> acceptingTournamentIds = new HashSet<>();
@@ -85,7 +88,8 @@ public class Application implements Runnable
 					streamIds.add(id);
 				}
 
-				this.webConnection = new RealWebConnection(address, acceptingTournamentIds, streamIds);
+				KeyStore keyStore = new KeyStoreLoader().load(keyStorePath, "aaaaaa");
+				this.webConnection = new RealWebConnection(keyStore, address, acceptingTournamentIds, streamIds);
 			}
 			catch (IOException e)
 			{

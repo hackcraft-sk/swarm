@@ -4,6 +4,9 @@ import org.json.JSONObject;
 import sk.hackcraft.jwebcomm.http.FormRequestFactory;
 import sk.hackcraft.jwebcomm.json.SimpleJsonRequest;
 import sk.hackcraft.jwebcomm.json.SimpleJsonRequestFactory;
+import sk.hackcraft.util.KeyStoreLoader;
+
+import java.security.KeyStore;
 
 public class Test
 {
@@ -11,7 +14,13 @@ public class Test
 	{
 		try
 		{
-			FormRequestFactory rf = new FormRequestFactory("http://friscai.local.nixone.sk/");
+			System.out.println("Working Directory = " +
+					System.getProperty("user.dir"));
+
+			KeyStoreLoader keyStoreLoader = new KeyStoreLoader();
+			KeyStore keyStore = keyStoreLoader.load("jwebcomm/certs/server.jks", "aaaaaa");
+
+			FormRequestFactory rf = new FormRequestFactory("https://mylifeforai.com/", keyStore);
 			SimpleJsonRequestFactory jf = new SimpleJsonRequestFactory(rf);
 
 			JSONArray arr = new JSONArray();
