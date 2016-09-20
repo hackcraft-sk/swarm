@@ -11,7 +11,10 @@ abstract class BaseTournamentPresenter extends BasePresenter {
             $tournament = $this->context->model->getTournamentByCode($this->getParameter("tournament"));
             $this->selectedTournament = $tournament->getId();
         } else {
-            $tournaments = $this->context->model->getTournaments();
+            $tournaments = $this->context->model->getActiveTournaments();
+            if (count($tournaments) == 0) {
+                $tournaments = $this->context->model->getArchivedTournaments();
+            }
             $tournamentIds = array_keys($tournaments);
             $tournament = $tournaments[$tournamentIds[0]];
             $this->selectedTournament = $tournament->getId();

@@ -331,5 +331,19 @@ class AdminPresenter extends BaseTournamentPresenter {
 		
 		$this->redirectUrl($this->getHttpRequest()->getReferer());
 	}
+
+	public function renderMoveUp($tournamentId) {
+		if(!$this->requireAdmin())
+			return false;
+		$this->context->model->moveTournament($tournamentId, -1);
+		$this->redirect("tournaments");
+	}
+
+	public function renderMoveDown($tournamentId) {
+		if(!$this->requireAdmin())
+			return false;
+		$this->context->model->moveTournament($tournamentId, 1);
+		$this->redirect("tournaments");
+	}
 }
 ?>
