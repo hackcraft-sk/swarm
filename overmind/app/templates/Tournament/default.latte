@@ -23,33 +23,40 @@ $(function() {
         {var $info = $tournament->getInfo()}
         {ifset $info[$lang]}
             <div class="row">
-                <div class="box">{!$parsedown->text($info[$lang])}</div>
+                <div class="left-column">
+                    <div class="box tight">{!$parsedown->text($info[$lang])}</div>
+                </div>
+
+                <div class="right-column">
+                    <div class="box tight">
+                        <a class="twitter-timeline" data-lang="en" data-theme="dark" data-link-color="#2B7BB9" data-chrome="nofooter noheader" href="https://twitter.com/MyLifeForAI">Tweets by MyLifeForAI</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+                    </div>
+                </div>
             </div>
         {/ifset}
     {else}
         <div class="row">
-                <div class="left-column">
-                    <div id="tv">
-                        {if $isLive}{!$tournament->getHostStreamCode()}{/if}
-                    </div>
+            <div class="left-column">
+                <div id="tv">
+                    {if $isLive}{!$tournament->getHostStreamCode()}{/if}
                 </div>
-                <div class="right-column">
-                    <div class="box tight">
-                    {snippet liveMatches}
-                        {if !!$playing}<h1 style="font-size: 20px;">{$playing['hostName']} vs {$playing['guestName']}</h1>{else}<h1>Matches</h1>{/if}
 
-                        {includeblock '../components/matches.latte', matches => $matches, matchesCount => 6, futureMatches => 3, displayStartTime => true, displayPoints => true}
-                    {/snippet}
-                    </div>
+                <div class="box">
+                    {includeblock '../components/showcase.latte'}
                 </div>
             </div>
-    {/if}
-
-    <div class="row">
-        <div class="box">
-            {includeblock '../components/showcase.latte'}
+            <div class="right-column">
+                <div class="box tight">
+                    {snippet liveMatches}
+                        {includeblock '../components/matches.latte', matches => $matches, matchesCount => 3, futureMatches => 2, displayStartTime => true, displayPoints => true}
+                    {/snippet}
+                </div>
+                <div class="box tight">
+                    <a class="twitter-timeline" data-lang="en" data-theme="dark" data-link-color="#2B7BB9" data-chrome="nofooter noheader" href="https://twitter.com/MyLifeForAI">Tweets by MyLifeForAI</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+                </div>
+            </div>
         </div>
-    </div>
+    {/if}
 </section>
 {/block}
 
