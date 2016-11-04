@@ -21,6 +21,7 @@ common:
 	services:
 		authenticator: Authenticator
 		model: Model
+		pages: Pages
 		link: Link
 		routerFactory: RouterFactory
 		router: @routerFactory::createRouter

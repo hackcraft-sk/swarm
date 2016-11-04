@@ -1,0 +1,17 @@
+{block content}
+    <section>
+        <div class="row">
+            <div class="box">
+                <h1>Update the page</h1>
+
+                {control updatePageForm}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="box">
+                {!$parsedown->text($content)}
+            </div>
+        </div>
+    </section>
+{/block}

@@ -2,20 +2,6 @@
 use Nette\Application\UI;
 
 class AdminPresenter extends BaseTournamentPresenter {
-
-	public function requireAdmin() {
-		$passed = true;
-		if(!parent::requireLogin())
-			$passed = false;
-		if(!$this->getUser()->getIdentity()->isAdmin) {
-			$passed = false;
-		}
-		if(!$passed) {
-			$this->flashMessage("You have to be an administrator");
-			$this->redirect("Sign:in");
-		}
-		return $passed;
-	}
 	
 	protected function createComponentScheduleForm()
 	{

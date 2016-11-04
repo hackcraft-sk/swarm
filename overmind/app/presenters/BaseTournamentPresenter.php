@@ -22,6 +22,20 @@ abstract class BaseTournamentPresenter extends BasePresenter {
         }
     }
 
+    public function requireAdmin() {
+        $passed = true;
+        if(!parent::requireLogin())
+            $passed = false;
+        if(!$this->getUser()->getIdentity()->isAdmin) {
+            $passed = false;
+        }
+        if(!$passed) {
+            $this->flashMessage("You have to be an administrator");
+            $this->redirect("Sign:in");
+        }
+        return $passed;
+    }
+
     public function selectTournamentByCode($code) {
         $this->redirectUrl("https://".$code.".mylifeforai.com");
     }

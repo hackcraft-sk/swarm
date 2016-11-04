@@ -1,0 +1,29 @@
+{block content}
+    <section>
+        <div class="row">
+            <div class="box">
+                <h1>Pages management</h1>
+
+                <table class="list">
+                    <tr>
+                        <th>Slug</th>
+                    </tr>
+                    <tr n:foreach="$pages as $page">
+                        <td><a n:href="show, $page->slug">{$page->slug}</a></td>
+                        <td><a n:href="adminUpdate, $page->slug">Edit</a> <a n:href="adminDelete, $page->slug" onclick="return confirm('Are you sure?');">Delete</a></td>
+                    </tr>
+                </table>
+
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="box">
+                <h1>Create new page</h1>
+
+                {control newPageForm}
+            </div>
+        </div>
+    </section>
+{/block}
