@@ -9,3 +9,5 @@ if (!is_file(__DIR__ . '/Nette/loader.php')) {
 require __DIR__ . '/Nette/loader.php';
 
 require __DIR__ . '/Scmai/Utils.php';
+
+require __DIR__ . '/Recaptcha/autoload.php';

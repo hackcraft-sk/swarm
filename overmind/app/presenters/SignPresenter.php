@@ -67,27 +67,32 @@ class SignPresenter extends BaseTournamentPresenter
 		return $form;
 	}
 
-	public function signOnFormSucceeded($form)
-	{
-		$values = $form->getValues();
+	public function signOnFormSucceeded($form) {
+        $recaptcha = $this->context->captcha->getRecaptcha();
+        $response = $recaptcha->verify($_POST['g-recaptcha-response'], $_SERVER['REMOTE_ADDR']);
+        if (!$response->isSuccess()) {
+            $form->addError('We couldnt verify, if you are a robot. Please tell us by checking the checkbox.');
+        } else {
+            $values = $form->getValues();
 
-		if ($values->remember) {
-			$this->getUser()->setExpiration('+ 14 days', FALSE);
-		} else {
-			$this->getUser()->setExpiration('+ 20 minutes', TRUE);
-		}
+            if ($values->remember) {
+                $this->getUser()->setExpiration('+ 14 days', FALSE);
+            } else {
+                $this->getUser()->setExpiration('+ 20 minutes', TRUE);
+            }
 
-		try {
-			$this->context->authenticator->createAccount($values->username, $values->password);
-			
-			$this->getUser()->login($values->username, $values->password);
-		} catch (Exception $e) {
-			$form->addError($e->getMessage());
-			return;
-		}
+            try {
+                $this->context->authenticator->createAccount($values->username, $values->password);
 
-		$this->flashMessage("Welcome {$values->username}!");
-		$this->redirect('Tournament:');
+                $this->getUser()->login($values->username, $values->password);
+            } catch (Exception $e) {
+                $form->addError($e->getMessage());
+                return;
+            }
+
+            $this->flashMessage("Welcome {$values->username}!");
+            $this->redirect('Tournament:');
+        }
 	}
 
 	public function actionOut()

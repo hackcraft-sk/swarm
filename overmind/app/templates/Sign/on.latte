@@ -1,14 +1,57 @@
 {var $robots = noindex}
 
+{block head}
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+{/block}
+
 {block #content}
 <section>
     <div class="row">
         <div class="box">
 
-            <h1>{_}account_creation{/_}</h1>
+            <h1>Create new account</h1>
 
-            {control signOnForm}
+            {form signOnForm}
 
+                <ul class="errors" n:if="$form->hasErrors()">
+                    <li n:foreach="$form->errors as $error">{$error}</li>
+                </ul>
+
+                <table>
+                    <tr class="required">
+                        <th>{label username /}</th>
+                        <td>{input username}</td>
+                    </tr>
+
+                    <tr class="required">
+                        <th>{label password /}</th>
+                        <td>{input password}</td>
+                    </tr>
+
+                    <tr class="required">
+                        <th>{label password_repeat /}</th>
+                        <td>{input password_repeat}</td>
+                    </tr>
+
+                    <tr>
+                        <th></th>
+                        <td>
+                            <p><small>Please make sure you are a human. So far, robots cannot participate in our competition.</small></p>
+                            <div class="g-recaptcha" data-sitekey="6LdRJwsUAAAAAF2DJe-t4KWOrmEk5BkWVlLevZAB"></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th></th>
+                        <td><p>By clicking 'Sign on' button you agree with <a n:href="page:show, 'terms-of-service'">our terms of service</a>.</p></td>
+                    </tr>
+
+                    <tr>
+                        <th></th>
+                        <td>{input send}</td>
+                    </tr>
+                </table>
+            {/form}
         </div>
     </div>
 </section>
