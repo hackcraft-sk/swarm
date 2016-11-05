@@ -45,9 +45,13 @@
 
             <h1>{_}upload_new_bot_version{/_}</h1>
 
-            <p>{_}new_bot_upload_instructions{/_}</p>
+            {if $identity->isVerified}
+                <p>{_}new_bot_upload_instructions{/_}</p>
 
-            {control uploadForm}
+                {control uploadForm}
+            {else}
+                <p><strong>You cannot participate until you verify your account.</strong></p>
+            {/if}
         </div>
     </div>
 

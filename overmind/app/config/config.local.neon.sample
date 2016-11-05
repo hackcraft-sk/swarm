@@ -1,5 +1,6 @@
 parameters:
     captcha_secret: 'RECAPTCHA_SECRET'
+    email_token_secret: 'SOME_SECRET_KEY'
 
 nette:
 	database:

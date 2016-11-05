@@ -15,6 +15,10 @@ div.flash {
 	margin: 1em 0;
 }
 
+div.flash a {
+	color: #085AA3;
+}
+
 a[href^="error:"] {
 	background: red;
 	color: white;

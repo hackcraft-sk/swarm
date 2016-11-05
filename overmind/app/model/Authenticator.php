@@ -57,12 +57,13 @@ class Authenticator extends Nette\Object implements Security\IAuthenticator
 		return crypt($password, $salt ?: '$2a$07$' . Strings::random(22));
 	}
 	
-	public function createAccount($username, $password) {
+	public function createAccount($username, $email, $password) {
 		$hash = self::calculateHash($password);
 		
-		$stmt = $this->database->prepare("INSERT INTO users (username, passwordHash) VALUES(?, ?)");
+		$stmt = $this->database->prepare("INSERT INTO users (username, email, passwordHash) VALUES(?, ?, ?)");
 		$stmt->bindParam(1, $username);
-		$stmt->bindParam(2, $hash);
+        $stmt->bindParam(2, $email);
+		$stmt->bindParam(3, $hash);
 		if(!$stmt->execute()) {
 			throw new Exception("Execution failed");
 		}
@@ -71,4 +72,36 @@ class Authenticator extends Nette\Object implements Security\IAuthenticator
 			throw new Exception("Account creation failed. Possible duplicates");
 		}
 	}
+
+	public function updateAccount($id, $username, $email) {
+        $stmt = $this->database->prepare("UPDATE users SET username=?, email=? WHERE id=?");
+        $stmt->bindParam(1, $username);
+        $stmt->bindParam(2, $email);
+        $stmt->bindParam(3, $id);
+
+        if(!$stmt->execute()) {
+            throw new Exception("Execution failed");
+        }
+    }
+
+    public function updatePassword($id, $password) {
+        $hash = self::calculateHash($password);
+
+        $stmt = $this->database->prepare("UPDATE users SET passwordHash=? WHERE id=?");
+        $stmt->bindParam(1, $hash);
+        $stmt->bindParam(2, $id);
+
+        if(!$stmt->execute()) {
+            throw new Exception("Execution failed");
+        }
+    }
+
+    public function verifyEmail($email) {
+        $stmt = $this->database->prepare("UPDATE users SET isVerified=1 WHERE email=?");
+        $stmt->bindParam(1, $email);
+
+        if(!$stmt->execute()) {
+            throw new Exception("Execution failed");
+        }
+    }
 }

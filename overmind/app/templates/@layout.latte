@@ -77,6 +77,7 @@
                 <li><a n:href="Tournament:ladder">{_}ladder{/_}</a></li>
                 <li><a n:href="Tournament:matches">{_}matches{/_}</a></li>
                     {if $loggedIn}
+                        <li><a n:href="Sign:profile">Profile</a></li>
                         <li><a class="private" n:href="Bot:my">{_}my_bot{/_}</a></li>
                             {if $user->isAdmin}
                                 <li><a class="admin" n:href="Admin:console">{_}administration{/_}</a></li>
@@ -92,6 +93,15 @@
     <div id="panel-separator"></div>
 	
 	<script> document.body.className+=' js' </script>
+
+    {if $identity && (!$identity->email || !$identity->isVerified)}
+    <section>
+        <div class="row">
+            <div n:if="!$identity->email" class="flash">You don't have an valid email address. Please <a n:href="sign:profile">go to your profile</a> and change it.</div>
+            <div n:if="!$identity->isVerified" class="flash">You cannot participate, until your account is not verified. You can verify your account <a n:href="sign:profile">in profile section</a>.</div>
+        </div>
+    </section>
+    {/if}
 
     {if count($flashes)>0}
     <section class="flashes">
