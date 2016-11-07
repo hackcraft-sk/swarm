@@ -9,7 +9,7 @@ $configurator = new Nette\Config\Configurator;
 
 // Enable Nette Debugger for error visualisation & logging
 
-if (isset($_SERVER['HTTP_X_NIXONE'])) {
+if (isset($_SERVER['HTTP_X_SWARM_ADMIN'])) {
     $configurator->setDebugMode(true);
     $configurator->enableDebugger(__DIR__ . '/../log');
 } else {

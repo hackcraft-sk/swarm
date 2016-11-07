@@ -158,12 +158,12 @@ section {
 }
 
 .left-column {
-    width: 500px;
+    width: 600px;
     float: left;
 }
 
 .right-column {
-    width: 500px;
+    width: 400px;
     float: right;
 }
 

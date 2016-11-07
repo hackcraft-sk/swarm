@@ -94,6 +94,8 @@ class JsonPresenter extends BasePresenter {
 	public function renderAssignMatch($content) {
 		$payload = json_decode($content, true);
 
+		$response = null;
+
 		try {
 			$tournamentIds = $payload['tournamentIds'];
 			
@@ -103,11 +105,7 @@ class JsonPresenter extends BasePresenter {
 			
 			$match = $this->context->model->pollMatch($tournamentIds);
 
-			if($match == null) {
-				$response = array(
-					"matchId" => "NONE"
-				);
-			} else {
+			if($match != null) {
 				$md5 = md5_file($match['mapUrl']);
 
 				$response = array(
@@ -122,11 +120,10 @@ class JsonPresenter extends BasePresenter {
 			}
 		} catch(Exception $e) {
 			$this->sendException($e);
+			return;
 		}
 
-		if (isset($response)) {
-			$this->sendResponse(new Nette\Application\Responses\JsonResponse($response));
-		}
+		$this->sendResponse(new Nette\Application\Responses\JsonResponse($response));
 	}
 	
 	public function renderPostMatchResult() {

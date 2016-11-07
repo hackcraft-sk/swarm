@@ -136,6 +136,7 @@ class AdminPresenter extends BaseTournamentPresenter {
 	protected function createComponentTournamentDetailsForm() {
 		$form = new BaseForm;
 
+		$form->addHidden("id");
 		$form->addText("code", "Tournament code")
 				->setRequired("Tournament code is required");
 		$form->addText("name", "Tournament name")
@@ -179,7 +180,7 @@ class AdminPresenter extends BaseTournamentPresenter {
 			$values['info'] = $info;
 			$values['rules'] = $rules;
 			
-			$this->getSelectedTournament()->update($values);
+			$this->context->model->getTournament($values['id'])->update($values);
 			$this->flashMessage("Tournament details were saved");
 		} catch(Exception $e) {
 			$form->addError($e->getMessage());
@@ -280,6 +281,7 @@ class AdminPresenter extends BaseTournamentPresenter {
 		$tournament = $this->context->model->getTournament($tournamentId);
 		
 		$values = array(
+			"id" => $tournamentId,
 			"code" => $tournament->getCode(),
 			"name" => $tournament->getName(),
 			"testStartTime" => date("Y-m-d H:i:s", $tournament->getTestStartTime()),
