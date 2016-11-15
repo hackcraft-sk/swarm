@@ -77,6 +77,7 @@ class JsonPresenter extends BasePresenter {
 			$displayName = iconv("utf-8", "ASCII//TRANSLIT", $displayName);
 
 			$response = array(
+				"id" => $bot['id'],
 				"name" => $displayName,
 				"type" => $type,
 				"botFileUrl" => $bot['url'],
