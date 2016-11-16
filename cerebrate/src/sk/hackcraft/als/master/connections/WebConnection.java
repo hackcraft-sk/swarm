@@ -8,7 +8,7 @@ import sk.hackcraft.als.master.ReplaysStorage;
 
 public interface WebConnection
 {
-	public MatchInfo requestMatch() throws IOException;
+	MatchInfo requestMatch() throws IOException;
 
-	public void postMatchResult(MatchReport matchResult, ReplaysStorage replaysStorage) throws IOException;
+	void postMatchResult(MatchReport matchResult, ReplaysStorage replaysStorage) throws IOException;
 }

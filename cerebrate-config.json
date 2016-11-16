@@ -1,0 +1,22 @@
+{
+  "tournament": {
+    "masterId": "master1",
+    "acceptingIds": [
+      1
+    ],
+    "playersCount": 2
+  },
+  "storage": {
+    "entryPointsPath": "/Users/matej.istenik/strg/entryPoints",
+    "storagePath": "Users/matej.istenik/strg/storage"
+  },
+  "web": {
+    "address": "https://mylifeforai.com/",
+    "certificatePath": "/Users/matej.istenik/Projects/swarm/lets_encrypt_x3.pem"
+  },
+  "components": {
+    "webConnection": "RetrofitWebConnection",
+    "slaveConnection": "MockSlaveConnection",
+    "replaysStorage": "MockReplayStorage"
+  }
+}

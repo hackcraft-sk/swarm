@@ -1,223 +1,173 @@
 package sk.hackcraft.als.slave;
 
+import okhttp3.OkHttpClient;
+import sk.hackcraft.als.slave.connections.*;
+import sk.hackcraft.als.slave.download.BotFilePreparer;
+import sk.hackcraft.als.slave.download.MapFilePreparer;
+import sk.hackcraft.als.slave.game.*;
+import sk.hackcraft.als.slave.game.ParasiteConnection.ParasiteConnectionException;
+import sk.hackcraft.als.slave.launcher.*;
+import sk.hackcraft.als.slave.plugins.BWTV;
+import sk.hackcraft.als.utils.*;
+import sk.hackcraft.als.utils.application.EventListener;
+import sk.hackcraft.als.utils.components.SSLSocketFactoryCreator;
+import sk.hackcraft.als.utils.log.Log;
+import sk.hackcraft.als.utils.log.PrintStreamLog;
+import sk.hackcraft.als.utils.reports.SlaveMatchReport;
+
+import javax.net.ssl.SSLSocketFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.KeyStore;
 import java.util.HashSet;
 import java.util.Set;
 
-import sk.hackcraft.als.slave.connections.MasterConnection;
-import sk.hackcraft.als.slave.connections.MockMasterConnection;
-import sk.hackcraft.als.slave.connections.MockWebConnection;
-import sk.hackcraft.als.slave.connections.RealMasterConnection;
-import sk.hackcraft.als.slave.connections.RealWebConnection;
-import sk.hackcraft.als.slave.connections.WebConnection;
-import sk.hackcraft.als.slave.download.MapFilePreparer;
-import sk.hackcraft.als.slave.game.BwapiConfig;
-import sk.hackcraft.als.slave.game.GameEnvironment;
-import sk.hackcraft.als.slave.game.MockGameEnvironment;
-import sk.hackcraft.als.slave.game.MockParasiteConnection;
-import sk.hackcraft.als.slave.game.ParasiteConnection;
-import sk.hackcraft.als.slave.game.ParasiteConnection.ParasiteConnectionException;
-import sk.hackcraft.als.slave.game.Profile;
-import sk.hackcraft.als.slave.game.RealGameEnvironment;
-import sk.hackcraft.als.slave.game.TemporaryRealParasiteConnection;
-import sk.hackcraft.als.slave.launcher.BotLauncher;
-import sk.hackcraft.als.slave.launcher.BotLauncherFactory;
-import sk.hackcraft.als.slave.launcher.MockBotLauncherFactory;
-import sk.hackcraft.als.slave.launcher.RealBotLauncherFactory;
-import sk.hackcraft.als.slave.launcher.ReplayRetriever;
-import sk.hackcraft.als.slave.plugins.BWTV;
-import sk.hackcraft.als.utils.Achievement;
-import sk.hackcraft.als.utils.Config;
-import sk.hackcraft.als.utils.EnvironmentCleaner;
-import sk.hackcraft.als.utils.FastForceProcessesKiller;
-import sk.hackcraft.als.utils.IniFileConfig;
-import sk.hackcraft.als.utils.MatchEvent;
-import sk.hackcraft.als.utils.MemoryConfig;
-import sk.hackcraft.als.utils.PlayerColor;
-import sk.hackcraft.als.utils.ProcessStarter;
-import sk.hackcraft.als.utils.ProcessesKiller;
-import sk.hackcraft.als.utils.ProcessesList;
-import sk.hackcraft.als.utils.ProcessesListFactory;
-import sk.hackcraft.als.utils.Replay;
-import sk.hackcraft.als.utils.StandardAchievements;
-import sk.hackcraft.als.utils.WindowsTasklist;
-import sk.hackcraft.als.utils.application.EventListener;
-import sk.hackcraft.als.utils.log.Log;
-import sk.hackcraft.als.utils.log.PrintStreamLog;
-import sk.hackcraft.als.utils.reports.SlaveMatchReport;
-import sk.hackcraft.util.KeyStoreLoader;
+public class Application implements Runnable {
+    public static void main(String[] args) {
+        new Application(args).run();
+    }
 
-public class Application implements Runnable
-{
-	public static void main(String[] args)
-	{
-		new Application(args).run();
-	}
+    private final WebConnection webConnection;
+    private final MasterConnection masterConnection;
 
-	private final WebConnection webConnection;
-	private final MasterConnection masterConnection;
+    private final GameEnvironment gameEnvironment;
+    private final ParasiteConnection parasiteConnection;
 
-	private final GameEnvironment gameEnvironment;
-	private final ParasiteConnection parasiteConnection;
+    private final BotLauncherFactory botLauncherFactory;
 
-	private final BotLauncherFactory botLauncherFactory;
+    private final Profile profile;
 
-	private final Profile profile;
+    private final Log log;
 
-	private final Log log;
+    private volatile boolean run = true;
 
-	private volatile boolean run = true;
+    private final int id;
+    private final boolean host;
 
-	private final int id;
-	private final boolean host;
+    private BWTV bwtv;
 
-	private BWTV bwtv;
+    private EnvironmentCleaner environmentCleaner;
 
-	private EnvironmentCleaner environmentCleaner;
+    private Path starCraftPath;
+    private final ReplayRetriever replayRetriever;
 
-	private Path starCraftPath;
-	private final ReplayRetriever replayRetriever;
+    public Application(String[] args) {
+        String iniFileName = (args.length > 0) ? args[0] : "overlord.cfg";
+        File iniFile = new File(iniFileName);
 
-	public Application(String[] args)
-	{
-		String iniFileName = (args.length > 0) ? args[0] : "overlord.cfg";
-		File iniFile = new File(iniFileName);
+        IniFileConfig configLoader = new IniFileConfig();
 
-		IniFileConfig configLoader = new IniFileConfig();
+        MemoryConfig config;
+        try {
+            config = configLoader.load(iniFile);
+        } catch (IOException e) {
+            throw new RuntimeException("Can't load config.", e);
+        }
 
-		MemoryConfig config;
-		try
-		{
-			config = configLoader.load(iniFile);
-		}
-		catch (IOException e)
-		{
-			throw new RuntimeException("Can't load config.", e);
-		}
+        Config.Section pathsSection = config.getSection("paths");
 
-		Config.Section pathsSection = config.getSection("paths");
+        Path chaosLauncherPath = Paths.get(pathsSection.getPair("chaosLauncher").getStringValue());
+        starCraftPath = Paths.get(pathsSection.getPair("starCraft").getStringValue());
 
-		Path chaosLauncherPath = Paths.get(pathsSection.getPair("chaosLauncher").getStringValue());
-		starCraftPath = Paths.get(pathsSection.getPair("starCraft").getStringValue());
+        Config.Section programSection = config.getSection("program");
+        id = programSection.getPair("id").getIntValue();
+        host = programSection.getPair("host").getBooleanValue();
 
-		Config.Section programSection = config.getSection("program");
-		id = programSection.getPair("id").getIntValue();
-		host = programSection.getPair("host").getBooleanValue();
+        String webAddress = config.getSection("web").getPair("address").getStringValue();
+        String certificatePath = config.getSection("web").getPair("certificatePath").getStringValue();
+        String keyStorePath = config.getSection("web").getPair("keystore").getStringValue();
 
-		String webAddress = config.getSection("web").getPair("address").getStringValue();
-		String keyStorePath = config.getSection("web").getPair("keystore").getStringValue();
+        Config.Section componentsSection = config.getSection("mockComponents");
+        boolean mockWeb = componentsSection.getPair("web").getBooleanValue();
+        boolean mockMaster = componentsSection.getPair("master").getBooleanValue();
+        boolean mockGameEnvironment = componentsSection.getPair("gameEnvironment").getBooleanValue();
+        boolean mockGameConnection = componentsSection.getPair("gameConnection").getBooleanValue();
+        boolean mockBotLauncherFactory = componentsSection.getPair("botLauncherFactory").getBooleanValue();
 
-		Config.Section componentsSection = config.getSection("mockComponents");
-		boolean mockWeb = componentsSection.getPair("web").getBooleanValue();
-		boolean mockMaster = componentsSection.getPair("master").getBooleanValue();
-		boolean mockGameEnvironment = componentsSection.getPair("gameEnvironment").getBooleanValue();
-		boolean mockGameConnection = componentsSection.getPair("gameConnection").getBooleanValue();
-		boolean mockBotLauncherFactory = componentsSection.getPair("botLauncherFactory").getBooleanValue();
+        if (mockWeb) {
+            webConnection = new MockWebConnection();
+        } else {
+            try {
+                SSLSocketFactory socketFactory = SSLSocketFactoryCreator.create(certificatePath);
 
-		if (mockWeb)
-		{
-			webConnection = new MockWebConnection();
-		}
-		else
-		{
-			try
-			{
-				KeyStore keyStore = new KeyStoreLoader().load(keyStorePath, "aaaaaa");
+                OkHttpClient client = new OkHttpClient.Builder()
+                        .sslSocketFactory(socketFactory)
+                        .build();
 
-				MapFilePreparer mapFilePreparer = new MapFilePreparer(starCraftPath);
-				webConnection = new RealWebConnection(webAddress, keyStore, mapFilePreparer);
-			}
-			catch (IOException e)
-			{
-				throw new RuntimeException("Can't create connection to web.", e);
-			}
-		}
+                BotFilePreparer botFilePreparer = new BotFilePreparer();
+                MapFilePreparer mapFilePreparer = new MapFilePreparer(starCraftPath);
+                webConnection = new RetrofitWebConnection(client, webAddress, botFilePreparer, mapFilePreparer);
+            } catch (SSLSocketFactoryCreator.SocketFactoryCreationException e) {
+                throw new RuntimeException("Can't create connection to web.", e);
+            }
+        }
 
-		if (mockMaster)
-		{
-			this.masterConnection = new MockMasterConnection();
-		}
-		else
-		{
-			String masterAddress = config.getSection("master").getPair("address").getStringValue();
+        if (mockMaster) {
+            this.masterConnection = new MockMasterConnection();
+        } else {
+            String masterAddress = config.getSection("master").getPair("address").getStringValue();
 
-			this.masterConnection = new RealMasterConnection(masterAddress, id);
-		}
+            this.masterConnection = new RealMasterConnection(masterAddress, id);
+        }
 
-		if (mockGameEnvironment)
-		{
-			this.gameEnvironment = new MockGameEnvironment(starCraftPath);
-		}
-		else
-		{
-			this.gameEnvironment = new RealGameEnvironment(chaosLauncherPath);
-		}
+        if (mockGameEnvironment) {
+            this.gameEnvironment = new MockGameEnvironment(starCraftPath);
+        } else {
+            this.gameEnvironment = new RealGameEnvironment(chaosLauncherPath);
+        }
 
-		if (mockGameConnection)
-		{
-			this.parasiteConnection = new MockParasiteConnection();
-		}
-		else
-		{
-			this.parasiteConnection = new TemporaryRealParasiteConnection();
-		}
+        if (mockGameConnection) {
+            this.parasiteConnection = new MockParasiteConnection();
+        } else {
+            this.parasiteConnection = new TemporaryRealParasiteConnection();
+        }
 
-		if (mockBotLauncherFactory)
-		{
-			this.botLauncherFactory = new MockBotLauncherFactory();
-		}
-		else
-		{
-			this.botLauncherFactory = new RealBotLauncherFactory(starCraftPath);
-		}
+        if (mockBotLauncherFactory) {
+            this.botLauncherFactory = new MockBotLauncherFactory();
+        } else {
+            this.botLauncherFactory = new RealBotLauncherFactory(starCraftPath);
+        }
 
-		profile = new Profile(starCraftPath);
-		replayRetriever = new ReplayRetriever(starCraftPath);
+        profile = new Profile(starCraftPath);
+        replayRetriever = new ReplayRetriever(starCraftPath);
 
-		log = new PrintStreamLog(System.out, "Overlord");
+        log = new PrintStreamLog(System.out, "Overlord");
 
-		bwtv = new BWTV();
+        bwtv = new BWTV();
 
-		this.environmentCleaner = new EnvironmentCleaner()
-		{
-			private int runsWithoutClean = 0;
-			private final int runsWithoutCleanLimit = 0;
+        this.environmentCleaner = new EnvironmentCleaner() {
+            private int runsWithoutClean = 0;
+            private final int runsWithoutCleanLimit = 0;
 
-			private final ProcessesKiller explorerKiller;
-			private final ProcessStarter explorerStarter;
+            private final ProcessesKiller explorerKiller;
+            private final ProcessStarter explorerStarter;
 
-			{
-				Set<String> processNames = new HashSet<>();
-				processNames.add("explorer.exe");
+            {
+                Set<String> processNames = new HashSet<>();
+                processNames.add("explorer.exe");
 
-				ProcessesListFactory factory = new ProcessesListFactory()
-				{
-					@Override
-					public ProcessesList create() throws IOException
-					{
-						return new WindowsTasklist();
-					}
-				};
+                ProcessesListFactory factory = new ProcessesListFactory() {
+                    @Override
+                    public ProcessesList create() throws IOException {
+                        return new WindowsTasklist();
+                    }
+                };
 
-				this.explorerKiller = new FastForceProcessesKiller(processNames, factory);
+                this.explorerKiller = new FastForceProcessesKiller(processNames, factory);
 
-				this.explorerStarter = new ProcessStarter("explorer.exe");
-			}
+                this.explorerStarter = new ProcessStarter("explorer.exe");
+            }
 
-			@Override
-			public void clean() throws IOException
-			{
-				gameEnvironment.killApplications();
+            @Override
+            public void clean() throws IOException {
+                gameEnvironment.killApplications();
 
-				// TODO not working properly
-				// first kill is perfect
-				// but subsequent one are opening my documents and not clearing
-				// chaoslauncher taskbar icons
-				/*
+                // TODO not working properly
+                // first kill is perfect
+                // but subsequent one are opening my documents and not clearing
+                // chaoslauncher taskbar icons
+                /*
 				 * if (runsWithoutClean >= runsWithoutCleanLimit) {
 				 * log.info("Restarting explorer.exe...");
 				 * 
@@ -225,229 +175,192 @@ public class Application implements Runnable
 				 * 
 				 * runsWithoutClean = 0; } else { runsWithoutClean++; }
 				 */
-			}
-		};
-	}
+            }
+        };
+    }
 
-	@Override
-	public void run()
-	{
-		while (run)
-		{
-			try
-			{
-				log.info("Cleaning environment...");
-				environmentCleaner.clean();
+    @Override
+    public void run() {
+        while (run) {
+            try {
+                log.info("Cleaning environment...");
+                environmentCleaner.clean();
 
-				BwapiConfig bwapiConfig = new BwapiConfig(starCraftPath.toString());
+                BwapiConfig bwapiConfig = new BwapiConfig(starCraftPath.toString());
 
-				log.info("Connecting to master...");
-				masterConnection.open();
+                log.info("Connecting to master...");
+                masterConnection.open();
 
-				log.info("Waiting for match info...");
-				MatchInfo matchInfo = masterConnection.getMatchInfo();
-				int matchId = matchInfo.getMatchId();
+                log.info("Waiting for match info...");
+                MatchInfo matchInfo = masterConnection.getMatchInfo();
+                int matchId = matchInfo.getMatchId();
 
-				bwtv.setMatchId(matchId);
+                bwtv.setMatchId(matchId);
 
-				int botId = matchInfo.getBotId();
+                int botId = matchInfo.getBotId();
 
-				log.info("Downloading bot info...");
-				Bot bot = webConnection.getBotInfo(botId);
+                log.info("Downloading bot info...");
+                Bot bot = webConnection.getBotInfo(botId);
 
-				log.info("Bot playing here: " + bot.getName());
+                log.info("Bot playing here: " + bot.getName());
 
-				log.info("Downloading bot file...");
-				Path botFilePath = webConnection.prepareBotFile(bot);
+                log.info("Downloading bot file...");
+                Path botFilePath = webConnection.prepareBotFile(bot);
 
-				log.info("Preparing bot...");
-				profile.changeName(bot.getName());
+                log.info("Preparing bot...");
+                profile.changeName(bot.getName());
 
-				BwapiConfig.Editor bwapiConfigEditor = bwapiConfig.edit();
-				if (host)
-				{
-					String mapUrl = matchInfo.getMapUrl();
-					String mapFileHash = matchInfo.getMapFileHash();
+                BwapiConfig.Editor bwapiConfigEditor = bwapiConfig.edit();
+                if (host) {
+                    String mapUrl = matchInfo.getMapUrl();
+                    String mapFileHash = matchInfo.getMapFileHash();
 
-					log.info("Setting map: " + mapUrl);
+                    log.info("Setting map: " + mapUrl);
 
-					String mapGamePath = webConnection.prepareMapFile(mapUrl, mapFileHash);
+                    String mapGamePath = webConnection.prepareMapFile(mapUrl, mapFileHash);
 
-					bwapiConfigEditor.setMap(mapGamePath);
-				}
-				else
-				{
-					bwapiConfigEditor.setMap("");
-				}
+                    bwapiConfigEditor.setMap(mapGamePath);
+                } else {
+                    bwapiConfigEditor.setMap("");
+                }
 
-				String replayName = String.format("%d.rep", matchInfo.getMatchId());
-				bwapiConfigEditor.setReplay(replayName);
+                String replayName = String.format("%d.rep", matchInfo.getMatchId());
+                bwapiConfigEditor.setReplay(replayName);
 
-				bwapiConfigEditor.save();
+                bwapiConfigEditor.save();
 
-				BotLauncher botLauncher = botLauncherFactory.create(bot, botFilePath);
+                BotLauncher botLauncher = botLauncherFactory.create(bot, botFilePath);
 
-				try
-				{
-					botLauncher.prepare();
+                try {
+                    botLauncher.prepare();
 
-					log.info("Waiting for match synchronization go");
-					masterConnection.sendReadyState();
-					masterConnection.waitForGo();
+                    log.info("Waiting for match synchronization go");
+                    masterConnection.sendReadyState();
+                    masterConnection.waitForGo();
 
-					SlaveMatchReport matchReport = runGame(matchId, bot);
+                    SlaveMatchReport matchReport = runGame(matchId, bot);
 
-					bwtv.sendEvent(MatchEvent.END);
+                    bwtv.sendEvent(MatchEvent.END);
 
-					log.info("Sending match result");
+                    log.info("Sending match result");
 
-					masterConnection.postSlaveMatchReport(matchReport);
+                    masterConnection.postSlaveMatchReport(matchReport);
 
-					try
-					{
-						Replay replay = replayRetriever.getReplay(matchId, 5000);
+                    try {
+                        Replay replay = replayRetriever.getReplay(matchId, 5000);
 
-						masterConnection.postReplay(replay);
-					}
-					catch (IOException e)
-					{
-						log.info("Can't retrieve replay: " + e.getMessage());
+                        masterConnection.postReplay(replay);
+                    } catch (IOException e) {
+                        log.info("Can't retrieve replay: " + e.getMessage());
 
-						masterConnection.postReplay(null);
-					}
+                        masterConnection.postReplay(null);
+                    }
 
-					if (matchReport.isValid())
-					{
-						log.info("Waiting 15 seconds to show score screen");
+                    if (matchReport.isValid()) {
+                        log.info("Waiting 15 seconds to show score screen");
 
-						try
-						{
-							Thread.sleep(15 * 1000);
-						}
-						catch (InterruptedException e)
-						{
-							Thread.currentThread().interrupt();
-						}
-					}
-				}
-				finally
-				{
-					disposeGame();
-					botLauncher.dispose();
-				}
-			}
-			catch (Exception e)
-			{
-				log.error("Error: " + e.getMessage());
+                        try {
+                            Thread.sleep(15 * 1000);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                } finally {
+                    disposeGame();
+                    botLauncher.dispose();
+                }
+            } catch (Exception e) {
+                log.error("Error: " + e.getMessage());
 
-				e.printStackTrace();
-			}
-			finally
-			{
-				try
-				{
-					log.info("Closing master connection...");
-					masterConnection.close();
-				}
-				catch (IOException e)
-				{
-					log.error("Could't succesfully close master connection: " + e.getMessage());
-				}
-			}
-		}
-	}
+                e.printStackTrace();
+            } finally {
+                try {
+                    log.info("Closing master connection...");
+                    masterConnection.close();
+                } catch (IOException e) {
+                    log.error("Could't succesfully close master connection: " + e.getMessage());
+                }
+            }
+        }
+    }
 
-	private SlaveMatchReport runGame(final int matchId, final Bot bot) throws IOException
-	{
-		log.info("Launching game environment");
-		gameEnvironment.launch();
+    private SlaveMatchReport runGame(final int matchId, final Bot bot) throws IOException {
+        log.info("Launching game environment");
+        gameEnvironment.launch();
 
-		bwtv.sendEvent(MatchEvent.PREPARE);
+        bwtv.sendEvent(MatchEvent.PREPARE);
 
-		class AsyncHolder
-		{
-			public SlaveMatchReport report;
-			public boolean connected = true;
-		}
+        class AsyncHolder {
+            public SlaveMatchReport report;
+            public boolean connected = true;
+        }
 
-		final AsyncHolder holder = new AsyncHolder();
+        final AsyncHolder holder = new AsyncHolder();
 
-		EventListener<PlayerColor> matchStartedEventListener = new EventListener<PlayerColor>()
-		{
-			@Override
-			public void onEvent(Object origin, PlayerColor playerColor)
-			{
-				log.info("Connected to Parasite. Player color: " + playerColor);
+        EventListener<PlayerColor> matchStartedEventListener = new EventListener<PlayerColor>() {
+            @Override
+            public void onEvent(Object origin, PlayerColor playerColor) {
+                log.info("Connected to Parasite. Player color: " + playerColor);
 
-				bwtv.sendEvent(MatchEvent.RUN);
-			}
-		};
+                bwtv.sendEvent(MatchEvent.RUN);
+            }
+        };
 
-		EventListener<Set<Achievement>> matchEndedEventListener = new EventListener<Set<Achievement>>()
-		{
-			@Override
-			public void onEvent(Object origin, Set<Achievement> achievements)
-			{
-				log.info("Match ended. Bot earned :" + achievements);
+        EventListener<Set<Achievement>> matchEndedEventListener = new EventListener<Set<Achievement>>() {
+            @Override
+            public void onEvent(Object origin, Set<Achievement> achievements) {
+                log.info("Match ended. Bot earned :" + achievements);
 
-				holder.report = new SlaveMatchReport(true, matchId, bot.getId(), achievements);
-			}
-		};
+                holder.report = new SlaveMatchReport(true, matchId, bot.getId(), achievements);
+            }
+        };
 
-		EventListener<ParasiteConnectionException> disconnectEventListener = new EventListener<ParasiteConnectionException>()
-		{
-			@Override
-			public void onEvent(Object origin, ParasiteConnectionException e)
-			{
-				boolean valid = e.wasMatchValid();
+        EventListener<ParasiteConnectionException> disconnectEventListener = new EventListener<ParasiteConnectionException>() {
+            @Override
+            public void onEvent(Object origin, ParasiteConnectionException e) {
+                boolean valid = e.wasMatchValid();
 
-				log.error("Disconnect: " + e.getMessage());
-				log.info("Match validity: " + valid);
+                log.error("Disconnect: " + e.getMessage());
+                log.info("Match validity: " + valid);
 
-				Set<Achievement> achievements = new HashSet<>();
+                Set<Achievement> achievements = new HashSet<>();
 
-				if (valid)
-				{
-					achievements.add(StandardAchievements.DEFEAT);
-					achievements.add(StandardAchievements.CRASH);
-				}
+                if (valid) {
+                    achievements.add(StandardAchievements.DEFEAT);
+                    achievements.add(StandardAchievements.CRASH);
+                }
 
-				holder.report = new SlaveMatchReport(valid, matchId, bot.getId(), achievements);
-				holder.connected = false;
-			}
-		};
+                holder.report = new SlaveMatchReport(valid, matchId, bot.getId(), achievements);
+                holder.connected = false;
+            }
+        };
 
-		try
-		{
-			parasiteConnection.getMatchStartedEvent().addListener(matchStartedEventListener);
-			parasiteConnection.getMatchEndedEvent().addListener(matchEndedEventListener);
-			parasiteConnection.getDisconnectEvent().addListener(disconnectEventListener);
+        try {
+            parasiteConnection.getMatchStartedEvent().addListener(matchStartedEventListener);
+            parasiteConnection.getMatchEndedEvent().addListener(matchEndedEventListener);
+            parasiteConnection.getDisconnectEvent().addListener(disconnectEventListener);
 
-			log.info("Connecting to parasite...");
-			parasiteConnection.open();
+            log.info("Connecting to parasite...");
+            parasiteConnection.open();
 
-			if (!holder.connected)
-			{
-				throw new IOException("Cant connect to Parasite.");
-			}
+            if (!holder.connected) {
+                throw new IOException("Cant connect to Parasite.");
+            }
 
-			parasiteConnection.run();
+            parasiteConnection.run();
 
-			parasiteConnection.close();
-		}
-		finally
-		{
-			parasiteConnection.getMatchStartedEvent().removeListener(matchStartedEventListener);
-			parasiteConnection.getMatchEndedEvent().removeListener(matchEndedEventListener);
-			parasiteConnection.getDisconnectEvent().removeListener(disconnectEventListener);
-		}
+            parasiteConnection.close();
+        } finally {
+            parasiteConnection.getMatchStartedEvent().removeListener(matchStartedEventListener);
+            parasiteConnection.getMatchEndedEvent().removeListener(matchEndedEventListener);
+            parasiteConnection.getDisconnectEvent().removeListener(disconnectEventListener);
+        }
 
-		return holder.report;
-	}
+        return holder.report;
+    }
 
-	private void disposeGame()
-	{
-		log.info("Shutting down game environment");
-		gameEnvironment.killApplications();
-	}
+    private void disposeGame() {
+        log.info("Shutting down game environment");
+        gameEnvironment.killApplications();
+    }
 }

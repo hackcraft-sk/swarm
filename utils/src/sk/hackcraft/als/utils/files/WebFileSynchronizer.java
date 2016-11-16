@@ -1,5 +1,7 @@
 package sk.hackcraft.als.utils.files;
 
+import okhttp3.OkHttpClient;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,20 +11,17 @@ import java.nio.file.Paths;
 
 public class WebFileSynchronizer implements FileSynchronizer
 {
-	private final HttpDownloader downloader;
+	private final RetrofitHttpDownloader downloader;
 
+	private final String fileUrl;
 	private final String fileChecksum;
 	private final Path filePath;
 
-	public WebFileSynchronizer(String fileUrl, String fileChecksum, String filePath)
+	public WebFileSynchronizer(OkHttpClient client, String fileUrl, String fileChecksum, Path filePath)
 	{
-		this(fileUrl, fileChecksum, Paths.get(filePath));
-	}
+		downloader = new RetrofitHttpDownloader(client);
 
-	public WebFileSynchronizer(String fileUrl, String fileChecksum, Path filePath)
-	{
-		downloader = new HttpDownloader(fileUrl, fileChecksum, filePath);
-
+		this.fileUrl = fileUrl;
 		this.fileChecksum = fileChecksum;
 		this.filePath = filePath;
 	}
@@ -35,7 +34,7 @@ public class WebFileSynchronizer implements FileSynchronizer
 
 		if (!mapFileExists)
 		{
-			downloader.download();
+			downloader.download(fileUrl, fileChecksum, filePath);
 			return;
 		}
 
@@ -46,7 +45,7 @@ public class WebFileSynchronizer implements FileSynchronizer
 
 			if (!actualFileChecksum.equals(fileChecksum))
 			{
-				downloader.download();
+				downloader.download(fileUrl, fileChecksum, filePath);
 				return;
 			}
 		}

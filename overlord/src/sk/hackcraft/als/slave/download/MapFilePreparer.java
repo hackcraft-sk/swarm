@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import okhttp3.OkHttpClient;
 import sk.hackcraft.als.utils.files.FileSynchronizer;
 import sk.hackcraft.als.utils.files.WebFileSynchronizer;
 
@@ -16,13 +17,13 @@ public class MapFilePreparer
 		this.starCraftPath = starCraftPath;
 	}
 
-	public String prepareMap(String mapUrl, String mapFileHash) throws IOException
+	public String prepareMap(OkHttpClient client, String mapUrl, String mapFileHash) throws IOException
 	{
 		String mapName = parseMapName(mapUrl);
 		String checksum = mapFileHash;
 		Path destinationMapFilePath = Paths.get(starCraftPath.toString(), "Maps/download/" + mapName);
 
-		FileSynchronizer botFileSyncronizer = new WebFileSynchronizer(mapUrl, checksum, destinationMapFilePath);
+		FileSynchronizer botFileSyncronizer = new WebFileSynchronizer(client, mapUrl, checksum, destinationMapFilePath);
 		botFileSyncronizer.synchronize();
 
 		return "maps\\download\\" + mapName;

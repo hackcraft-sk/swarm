@@ -14,8 +14,8 @@ public class BotPersistentDataStorage {
 
     private final Path storageDirectoryPath;
 
-    public BotPersistentDataStorage(Path storageDirectoryPath) {
-        this.storageDirectoryPath = storageDirectoryPath;
+    public BotPersistentDataStorage(String storageDirectoryPath, String storageEntryPointsPath) {
+        this.storageDirectoryPath = Paths.get(storageDirectoryPath);
     }
 
     public void setSlaveEntryPointMapping(int slaveId, Path entryPoint) {
