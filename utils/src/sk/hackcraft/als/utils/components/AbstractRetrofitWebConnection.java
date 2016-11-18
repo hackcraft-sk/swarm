@@ -2,6 +2,7 @@ package sk.hackcraft.als.utils.components;
 
 import com.google.gson.Gson;
 import okhttp3.HttpUrl;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -11,26 +12,33 @@ public class AbstractRetrofitWebConnection implements Component {
 
     private final Gson gson = new Gson();
 
-    private Log log;
+    private BareLog log;
 
     @Override
-    public void addLog(Log log) {
-        this.log = log;
+    public void addLog(BareLog bareLog) {
+        this.log = bareLog;
     }
 
-    protected <T extends ResponseJson, U> U run(ServiceCall<T> serviceCall, Object params) throws IOException {
+    protected <T extends ResponseJson, U> U run(ServiceCall serviceCall, Class<T> jsonClass, Object params) throws IOException {
         String requestJson = gson.toJson(params);
-        Call<T> call = serviceCall.execute(requestJson);
+        Call<ResponseBody> call = serviceCall.execute(requestJson);
 
         if (log != null) {
             HttpUrl httpUrl = call.request().url();
             log.m("Request to url: %s", httpUrl);
         }
 
-        Response<T> response = call.execute();
+        Response<ResponseBody> response = call.execute();
+
+        ResponseBody body = response.body();
+        String contentString = body.string();
+
+        if (log != null) {
+            log.m("Received: %s", contentString);
+        }
 
         if (response.isSuccessful()) {
-            T responseJson = response.body();
+            T responseJson = gson.fromJson(contentString, jsonClass);
 
             if (responseJson.hasError()) {
                 Error error = responseJson.getError();
@@ -45,8 +53,8 @@ public class AbstractRetrofitWebConnection implements Component {
     }
 
     @FunctionalInterface
-    protected interface ServiceCall<T> {
-        Call<T> execute(String json);
+    protected interface ServiceCall {
+        Call<ResponseBody> execute(String json);
     }
 
     protected static abstract class ResponseJson {

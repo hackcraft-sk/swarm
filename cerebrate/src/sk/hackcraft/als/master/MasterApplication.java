@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import okhttp3.OkHttpClient;
 import sk.hackcraft.als.master.connections.*;
+import sk.hackcraft.als.utils.components.BareLog;
+import sk.hackcraft.als.utils.components.PrintStreamBareLog;
 import sk.hackcraft.als.utils.components.SSLSocketFactoryCreator;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -72,7 +74,11 @@ public class MasterApplication implements Runnable {
         String masterId = tournamentConfigPart.getMasterId();
         Set<Integer> acceptingIds = tournamentConfigPart.getAcceptingIds();
 
-        return new RetrofitWebConnection(client, address, masterId, acceptingIds);
+        RetrofitWebConnection webConnection = new RetrofitWebConnection(client, address, masterId, acceptingIds);
+
+        webConnection.addLog(new PrintStreamBareLog("WebConnection", System.out));
+
+        return webConnection;
     }
 
     private SlaveConnectionsFactory createSlaveConnectionFactory(MasterConfig config) {

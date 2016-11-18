@@ -2,6 +2,7 @@ package sk.hackcraft.als.master.connections;
 
 import com.google.gson.Gson;
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
@@ -25,16 +26,10 @@ import java.util.Set;
 
 public class RetrofitWebConnection extends AbstractRetrofitWebConnection implements WebConnection {
 
-    private final Gson gson = new Gson();
-
     private final String masterId;
     private final Set<Integer> tournamentIds;
 
     private final RetrofitConnectionService retrofitConnectionService;
-
-    public RetrofitWebConnection(String url, String masterId, Set<Integer> tournamentIds) {
-        this(new OkHttpClient(), url, masterId, tournamentIds);
-    }
 
     public RetrofitWebConnection(OkHttpClient client, String url, String masterId, Set<Integer> tournamentIds) {
         this.masterId = masterId;
@@ -51,20 +46,20 @@ public class RetrofitWebConnection extends AbstractRetrofitWebConnection impleme
 
     @Override
     public MatchInfo requestMatch() throws IOException {
-        return run(retrofitConnectionService::requestMatch, new MatchAssignRequest(masterId, tournamentIds));
+        return run(retrofitConnectionService::requestMatch, MatchInfoJson.class, new MatchAssignRequest(masterId, tournamentIds));
     }
 
     @Override
     public void postMatchResult(MatchReport matchResult, ReplaysStorage replaysStorage) throws IOException {
-        run(retrofitConnectionService::postMatchResult, MatchResultRequest.fromMatchReport(matchResult));
+        run(retrofitConnectionService::postMatchResult, ResponseJson.class, MatchResultRequest.fromMatchReport(matchResult));
     }
 
     private interface RetrofitConnectionService {
         @GET("json/assign-match")
-        Call<MatchInfoJson> requestMatch(@Query("content") String request);
+        Call<ResponseBody> requestMatch(@Query("content") String request);
 
         @POST("json/post-match-result")
-        Call<MatchPostResultJson> postMatchResult(@Query("content") String request);
+        Call<ResponseBody> postMatchResult(@Query("content") String request);
     }
 
     private static class MatchAssignRequest {
