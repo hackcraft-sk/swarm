@@ -8,16 +8,9 @@ import retrofit2.Response;
 
 import java.io.IOException;
 
-public class AbstractRetrofitWebConnection implements Component {
+public class AbstractRetrofitWebConnection extends AbstractComponent implements Component {
 
     private final Gson gson = new Gson();
-
-    private BareLog log;
-
-    @Override
-    public void addLog(BareLog bareLog) {
-        this.log = bareLog;
-    }
 
     protected <T extends ResponseJson, U> U run(ServiceCall serviceCall, Class<T> jsonClass, Object params) throws IOException {
         String requestJson = gson.toJson(params);
@@ -54,10 +47,12 @@ public class AbstractRetrofitWebConnection implements Component {
 
     @FunctionalInterface
     protected interface ServiceCall {
+
         Call<ResponseBody> execute(String json);
     }
 
     protected static abstract class ResponseJson {
+
         private final Error error;
 
         public ResponseJson() {
@@ -80,6 +75,7 @@ public class AbstractRetrofitWebConnection implements Component {
     }
 
     protected static class Error {
+
         private final String message;
         private final int code;
 
@@ -96,5 +92,4 @@ public class AbstractRetrofitWebConnection implements Component {
             return code;
         }
     }
-
 }

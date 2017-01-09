@@ -1,63 +1,51 @@
 package sk.hackcraft.datacom.socket;
 
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DataChunkSocket
-{
-	private static final Logger logger = Logger.getLogger(DataChunkSocket.class.getName());
-	private final String address;
-	private final int port;
+public class DataChunkSocket {
 
-	private Socket socket;
-	private DataInput input;
-	private DataOutput output;
+    private static final Logger logger = Logger.getLogger(DataChunkSocket.class.getName());
+    private final String address;
+    private final int port;
 
-	public DataChunkSocket(String address, int port)
-	{
-		this.address = address;
-		this.port = port;
-	}
+    private Socket socket;
+    private DataInput input;
+    private DataOutput output;
 
-	public void connect() throws IOException
-	{
-		socket = new Socket(address, port);
+    public DataChunkSocket(String address, int port) {
+        this.address = address;
+        this.port = port;
+    }
 
-		input = new DataInputStream(socket.getInputStream());
-		output = new DataOutputStream(socket.getOutputStream());
-	}
+    public void connect() throws IOException {
+        socket = new Socket(address, port);
 
-	public void close()
-	{
-		try
-		{
-			socket.close();
-		}
-		catch (IOException e)
-		{
-			logger.log(Level.INFO, "Can't properly close socket.", e);
-		}
-	}
+        input = new DataInputStream(socket.getInputStream());
+        output = new DataOutputStream(socket.getOutputStream());
+    }
 
-	public void send(byte content[]) throws IOException
-	{
-		output.writeInt(content.length);
-		output.write(content);
-	}
+    public void close() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            logger.log(Level.INFO, "Can't properly close socket.", e);
+        }
+    }
 
-	public byte[] receive() throws IOException
-	{
-		int length = input.readInt();
-		byte content[] = new byte[length];
+    public void send(byte content[]) throws IOException {
+        output.writeInt(content.length);
+        output.write(content);
+    }
 
-		input.readFully(content);
+    public byte[] receive() throws IOException {
+        int length = input.readInt();
+        byte content[] = new byte[length];
 
-		return content;
-	}
+        input.readFully(content);
+
+        return content;
+    }
 }

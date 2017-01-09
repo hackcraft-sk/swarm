@@ -5,54 +5,45 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 @Deprecated
-public class ProcessKiller
-{
-	private final String processName;
+public class ProcessKiller {
 
-	public ProcessKiller(String processName)
-	{
-		this.processName = processName;
-	}
+    private final String processName;
 
-	public void kill() throws IOException
-	{
-		Runtime runtime = Runtime.getRuntime();
-		runtime.exec("taskkill /IM Chaoslauncher.exe /f");
-	}
+    public ProcessKiller(String processName) {
+        this.processName = processName;
+    }
 
-	public void waitForDeath() throws IOException
-	{
-		final int TIMEPAUSE = 100;
+    public void kill() throws IOException {
+        Runtime runtime = Runtime.getRuntime();
+        runtime.exec("taskkill /IM Chaoslauncher.exe /f");
+    }
 
-		while (processExists())
-		{
-			try
-			{
-				Thread.sleep(TIMEPAUSE);
-			}
-			catch (InterruptedException e)
-			{
-			}
-		}
-	}
+    public void waitForDeath() throws IOException {
+        final int TIMEPAUSE = 100;
 
-	private boolean processExists() throws IOException
-	{
-		Runtime runtime = Runtime.getRuntime();
+        while (processExists()) {
+            try {
+                Thread.sleep(TIMEPAUSE);
+            } catch (InterruptedException e) {
+                // Ignore...
+            }
+        }
+    }
 
-		Process ps = runtime.exec("tasklist");
+    private boolean processExists() throws IOException {
+        Runtime runtime = Runtime.getRuntime();
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(ps.getInputStream()));
+        Process ps = runtime.exec("tasklist");
 
-		String line;
-		while ((line = reader.readLine()) != null)
-		{
-			if (line.contains(processName))
-			{
-				return true;
-			}
-		}
+        BufferedReader reader = new BufferedReader(new InputStreamReader(ps.getInputStream()));
 
-		return false;
-	}
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.contains(processName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

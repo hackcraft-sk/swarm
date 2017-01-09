@@ -2,17 +2,15 @@ package sk.hackcraft.als.utils;
 
 import java.io.IOException;
 
-public class ProcessStarter
-{
-	private String command;
+public class ProcessStarter {
 
-	public ProcessStarter(String command)
-	{
-		this.command = command;
-	}
+    private String command;
 
-	public void start() throws IOException
-	{
-		Runtime.getRuntime().exec(command);
-	}
+    public ProcessStarter(String command) {
+        this.command = command;
+    }
+
+    public void start() throws IOException {
+        Runtime.getRuntime().exec(command);
+    }
 }

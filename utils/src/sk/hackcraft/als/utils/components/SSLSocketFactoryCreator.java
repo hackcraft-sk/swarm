@@ -46,9 +46,9 @@ public class SSLSocketFactoryCreator {
     }
 
     public static class SocketFactoryCreationException extends Exception {
+
         public SocketFactoryCreationException(Exception cause) {
             super("Can't create SSL socket factory.", cause);
         }
     }
-
 }

@@ -1,6 +1,6 @@
 package sk.hackcraft.datacom;
 
-public interface MessageListener
-{
-	public void onMessageReceived(byte content[]);
+public interface MessageListener {
+
+    void onMessageReceived(byte content[]);
 }

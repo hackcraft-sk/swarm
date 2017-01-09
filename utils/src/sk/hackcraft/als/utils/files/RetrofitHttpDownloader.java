@@ -12,6 +12,7 @@ import java.io.*;
 import java.nio.file.Path;
 
 public class RetrofitHttpDownloader {
+
     private final RetrofitFileDownloader retrofitFileDownloader;
 
     public RetrofitHttpDownloader(OkHttpClient client) {
@@ -33,7 +34,7 @@ public class RetrofitHttpDownloader {
 
             try (
                     BufferedInputStream urlInputStream = new BufferedInputStream(body.byteStream());
-                    FileOutputStream fileOutputStream = new FileOutputStream(destinationPath.toFile());
+                    FileOutputStream fileOutputStream = new FileOutputStream(destinationPath.toFile())
             ) {
                 byte data[] = new byte[1024];
                 int count;
@@ -44,7 +45,7 @@ public class RetrofitHttpDownloader {
                 File downloadedFile = destinationPath.toFile();
 
                 if (!downloadedFile.exists()) {
-                    throw new IOException("Bot file doesn't exists after download.");
+                    throw new IOException("BotInfo file doesn't exists after download.");
                 }
 
                 try (FileInputStream fis = new FileInputStream(downloadedFile); BufferedInputStream bis = new BufferedInputStream(fis)) {
@@ -74,7 +75,5 @@ public class RetrofitHttpDownloader {
 
         @GET
         Call<ResponseBody> downloadFile(@Url String fileUrl);
-
     }
-
 }

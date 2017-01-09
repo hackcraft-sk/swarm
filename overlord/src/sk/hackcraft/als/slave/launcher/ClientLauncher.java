@@ -1,62 +1,45 @@
 package sk.hackcraft.als.slave.launcher;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
-public abstract class ClientLauncher extends BotLauncherBase
-{
-	private Process clientProcess;
+abstract class ClientLauncher extends AbstractBotLauncher {
 
-	protected final Path activeBotFilePath;
+    private Process clientProcess;
 
-	public ClientLauncher(Path starCraftPath, Path botFilePath)
-	{
-		super(starCraftPath, botFilePath);
+    private final Path botClientFileTargetPath;
 
-		activeBotFilePath = Paths.get(starCraftPath.toString(), createBotName());
-	}
+    ClientLauncher(String environmentBaseDirectory, byte[] botBlob) {
+        super(environmentBaseDirectory, botBlob);
 
-	@Override
-	public void prepare() throws IOException
-	{
-		Path source = botFilePath;
-		Path target = activeBotFilePath;
+        String botName = createBotName();
+        botClientFileTargetPath = Paths.get(environmentBaseDirectory, botName);
+    }
 
-		Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+    @Override
+    public void prepare() throws IOException {
+        writeBotBlobToFile(botClientFileTargetPath);
 
-		ProcessBuilder builder = getProcessBuilder();
-		builder.redirectErrorStream(true);
-		builder.directory(starCraftPath.toFile());
-		clientProcess = builder.start();
+        String botName = createBotName();
+        String botFilePath = Paths.get(environmentBaseDirectory, botName).toString();
 
-		// TODO upravit tak, aby to nestrkalo do stdout, alebo vyhodit
-		/*
-		 * new Thread(new Runnable() {
-		 * 
-		 * @Override public void run() { try { BufferedReader reader = new
-		 * BufferedReader(new
-		 * InputStreamReader(clientProcess.getInputStream()));
-		 * 
-		 * String line; while ((line = reader.readLine()) != null) {
-		 * System.out.println ("CLIENT SAYS: " + line); } } catch (IOException
-		 * e) { System.out.println("Client output stream abruptly closed."); } }
-		 * }).start();
-		 */
-	}
+        ProcessBuilder builder = getProcessBuilder(environmentBaseDirectory, botFilePath);
+        builder.redirectErrorStream(true);
+        File workingDirFile = new File(environmentBaseDirectory);
+        builder.directory(workingDirFile);
+        clientProcess = builder.start();
+    }
 
-	protected abstract String createBotName();
+    protected abstract ProcessBuilder getProcessBuilder(String workingDirectoryPath, String botFilePath) throws IOException;
 
-	protected abstract ProcessBuilder getProcessBuilder() throws IOException;
+    protected abstract String createBotName();
 
-	@Override
-	public void dispose()
-	{
-		if (clientProcess != null)
-		{
-			clientProcess.destroy();
-		}
-	}
+    @Override
+    public void dispose() {
+        if (clientProcess != null) {
+            clientProcess.destroy();
+        }
+    }
 }

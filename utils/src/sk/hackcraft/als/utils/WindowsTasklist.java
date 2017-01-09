@@ -8,98 +8,80 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class WindowsTasklist implements ProcessesList
-{
-	private final Map<String, Integer> processes;
+public class WindowsTasklist implements ProcessesList {
 
-	public WindowsTasklist() throws IOException
-	{
-		processes = new HashMap<>();
+    private final Map<String, Integer> processes;
 
-		Runtime runtime = Runtime.getRuntime();
-		Process ps = runtime.exec("tasklist");
+    public WindowsTasklist() throws IOException {
+        processes = new HashMap<>();
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(ps.getInputStream()));
+        Runtime runtime = Runtime.getRuntime();
+        Process ps = runtime.exec("tasklist");
 
-		String line;
-		while ((line = reader.readLine()) != null)
-		{
-			List<String> words = tokenizeLine(line);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(ps.getInputStream()));
 
-			// no empty lines
-			if (words.size() == 0)
-			{
-				continue;
-			}
+        String line;
+        while ((line = reader.readLine()) != null) {
+            List<String> words = tokenizeLine(line);
 
-			// only valid process names
-			if (!words.get(0).contains(".exe"))
-			{
-				continue;
-			}
+            // no empty lines
+            if (words.size() == 0) {
+                continue;
+            }
 
-			try
-			{
-				String processName = words.get(0);
-				int pid = Integer.parseInt(words.get(1));
+            // only valid process names
+            if (!words.get(0).contains(".exe")) {
+                continue;
+            }
 
-				processes.put(processName, pid);
-			}
-			catch (NumberFormatException e)
-			{
-				continue;
-			}
-		}
-	}
+            String processName = words.get(0);
+            int pid = Integer.parseInt(words.get(1));
 
-	private List<String> tokenizeLine(String line)
-	{
-		List<String> words = new LinkedList<>();
+            processes.put(processName, pid);
+        }
+    }
 
-		boolean insideWord = false;
-		int wordStart = -1;
-		for (int i = 0; i < line.length(); i++)
-		{
-			char c = line.charAt(i);
+    private List<String> tokenizeLine(String line) {
+        List<String> words = new LinkedList<>();
 
-			// word start
-			if (c != ' ' && !insideWord)
-			{
-				wordStart = i;
-				insideWord = true;
-			}
+        boolean insideWord = false;
+        int wordStart = -1;
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
 
-			// word end
-			if (insideWord && c == ' ' || i + 1 == line.length())
-			{
-				insideWord = false;
+            // word start
+            if (c != ' ' && !insideWord) {
+                wordStart = i;
+                insideWord = true;
+            }
 
-				int wordEnd = (i + 1 == line.length()) ? i + 1 : i;
+            // word end
+            if (insideWord && c == ' ' || i + 1 == line.length()) {
+                insideWord = false;
 
-				String word = line.substring(wordStart, wordEnd);
-				words.add(word);
-			}
-		}
+                int wordEnd = (i + 1 == line.length()) ? i + 1 : i;
 
-		return words;
-	}
+                String word = line.substring(wordStart, wordEnd);
+                words.add(word);
+            }
+        }
 
-	@Override
-	public boolean has(String processName)
-	{
-		return processes.containsKey(processName);
-	}
+        return words;
+    }
 
-	@Override
-	public boolean has(int pid)
-	{
-		// TODO trosku hack, opravit casom
-		return processes.containsValue(pid);
-	}
+    @Override
+    public boolean has(String processName) {
+        return processes.containsKey(processName);
+    }
 
-	@Override
-	public int getPid(String processName)
-	{
-		return processes.get(processName);
-	}
+    @Override
+    public boolean has(int pid) {
+        // TODO trosku hack, opravit casom
+        return processes.containsValue(pid);
+    }
+
+    @Override
+    public int getPid(String processName) {
+        return processes.get(processName);
+    }
 }

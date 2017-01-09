@@ -10,290 +10,243 @@ import java.util.Set;
  * pairs. This class is not thread safe; create more copies or use external
  * synchronization to access this class.
  */
-public class MemoryConfig implements Config
-{
-	private Map<String, MemorySection> sections;
+public class MemoryConfig implements Config {
 
-	/**
-	 * Constructs new empty config.
-	 */
-	public MemoryConfig()
-	{
-		sections = new HashMap<>();
-	}
+    private Map<String, MemorySection> sections;
 
-	/**
-	 * Constructs new config as deep copy of specified config.
-	 * 
-	 * @param config
-	 *            specified config to copy
-	 */
-	public MemoryConfig(Config config)
-	{
-		for (Section section : config.getAllSections())
-		{
-			MemorySection memorySection = new MemorySection(section);
-			sections.put(memorySection.getName(), memorySection);
-		}
-	}
+    /**
+     * Constructs new empty config.
+     */
+    public MemoryConfig() {
+        sections = new HashMap<>();
+    }
 
-	@Override
-	public boolean hasSection(String section)
-	{
-		return sections.containsKey(section);
-	}
+    /**
+     * Constructs new config as deep copy of specified config.
+     *
+     * @param config specified config to copy
+     */
+    public MemoryConfig(Config config) {
+        for (Section section : config.getAllSections()) {
+            MemorySection memorySection = new MemorySection(section);
+            sections.put(memorySection.getName(), memorySection);
+        }
+    }
 
-	@Override
-	public MemorySection getSection(String section)
-	{
-		return sections.get(section);
-	}
+    @Override
+    public boolean hasSection(String section) {
+        return sections.containsKey(section);
+    }
 
-	/**
-	 * Adds new section to this config.
-	 * 
-	 * @param section
-	 *            section to add
-	 */
-	public void addSection(MemorySection section)
-	{
-		sections.put(section.getName(), section);
-	}
+    @Override
+    public MemorySection getSection(String section) {
+        return sections.get(section);
+    }
 
-	@Override
-	public Set<MemorySection> getAllSections()
-	{
-		return new HashSet<>(sections.values());
-	}
+    /**
+     * Adds new section to this config.
+     *
+     * @param section section to add
+     */
+    public void addSection(MemorySection section) {
+        sections.put(section.getName(), section);
+    }
 
-	/**
-	 * Section which holds its content in memory.
-	 */
-	public static class MemorySection implements Section
-	{
-		private String name;
-		protected final Map<String, MemoryPair> pairs;
+    @Override
+    public Set<MemorySection> getAllSections() {
+        return new HashSet<>(sections.values());
+    }
 
-		/**
-		 * Constructs new empty section.
-		 * 
-		 * @param name
-		 *            section name
-		 */
-		public MemorySection(String name)
-		{
-			this.name = name;
-			this.pairs = new HashMap<>();
-		}
+    /**
+     * Section which holds its content in memory.
+     */
+    public static class MemorySection implements Section {
 
-		/**
-		 * Constructs new section as deep copy of specified section.
-		 * 
-		 * @param section
-		 *            section to copy
-		 */
-		public MemorySection(Section section)
-		{
-			this(section.getName());
+        private String name;
+        protected final Map<String, MemoryPair> pairs;
 
-			for (Pair pair : section.getAllPairs())
-			{
-				MemoryPair memoryPair = new MemoryPair(pair);
-				addPair(memoryPair);
-			}
-		}
+        /**
+         * Constructs new empty section.
+         *
+         * @param name section name
+         */
+        public MemorySection(String name) {
+            this.name = name;
+            this.pairs = new HashMap<>();
+        }
 
-		@Override
-		public String getName()
-		{
-			return name;
-		}
+        /**
+         * Constructs new section as deep copy of specified section.
+         *
+         * @param section section to copy
+         */
+        public MemorySection(Section section) {
+            this(section.getName());
 
-		@Override
-		public boolean hasPair(String key)
-		{
-			return pairs.containsKey(key);
-		}
+            for (Pair pair : section.getAllPairs()) {
+                MemoryPair memoryPair = new MemoryPair(pair);
+                addPair(memoryPair);
+            }
+        }
 
-		@Override
-		public MemoryPair getPair(String key)
-		{
-			return pairs.get(key);
-		}
+        @Override
+        public String getName() {
+            return name;
+        }
 
-		/**
-		 * Adds new pair to this section.
-		 * 
-		 * @param pair
-		 *            new pair to add
-		 */
-		public void addPair(MemoryPair pair)
-		{
-			pairs.put(pair.getKey(), pair);
-		}
+        @Override
+        public boolean hasPair(String key) {
+            return pairs.containsKey(key);
+        }
 
-		@Override
-		public Set<MemoryPair> getAllPairs()
-		{
-			return new HashSet<>(pairs.values());
-		}
+        @Override
+        public MemoryPair getPair(String key) {
+            return pairs.get(key);
+        }
 
-		@Override
-		public String toString()
-		{
-			StringBuilder builder = new StringBuilder("[");
+        /**
+         * Adds new pair to this section.
+         *
+         * @param pair new pair to add
+         */
+        public void addPair(MemoryPair pair) {
+            pairs.put(pair.getKey(), pair);
+        }
 
-			boolean first = true;
-			for (Pair pair : pairs.values())
-			{
-				if (!first)
-				{
-					builder.append(", ");
-				}
-				else
-				{
-					first = false;
-				}
+        @Override
+        public Set<MemoryPair> getAllPairs() {
+            return new HashSet<>(pairs.values());
+        }
 
-				builder.append(pair);
-			}
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder("[");
 
-			builder.append("]");
+            boolean first = true;
+            for (Pair pair : pairs.values()) {
+                if (!first) {
+                    builder.append(", ");
+                } else {
+                    first = false;
+                }
 
-			return builder.toString();
-		}
-	}
+                builder.append(pair);
+            }
 
-	/**
-	 * Config pair which is holdint its content in memory. Values are internally
-	 * hold as strings.
-	 */
-	public static class MemoryPair implements Pair
-	{
-		private String key;
-		private String value;
+            builder.append("]");
 
-		/**
-		 * Constructs new pair with specified key and value.
-		 * 
-		 * @param key
-		 *            specified key
-		 * @param value
-		 *            specified value
-		 */
-		public MemoryPair(String key, String value)
-		{
-			this.key = key;
-			this.value = value;
-		}
+            return builder.toString();
+        }
+    }
 
-		/**
-		 * Constructs new pair as deep copy of specified pair.
-		 * 
-		 * @param pair
-		 *            pair to copy
-		 */
-		public MemoryPair(Pair pair)
-		{
-			this(pair.getKey(), pair.getStringValue());
-		}
+    /**
+     * Config pair which is holdint its content in memory. Values are internally
+     * hold as strings.
+     */
+    public static class MemoryPair implements Pair {
 
-		@Override
-		public String getKey()
-		{
-			return key;
-		}
+        private String key;
+        private String value;
 
-		@Override
-		public String getStringValue()
-		{
-			return value;
-		}
+        /**
+         * Constructs new pair with specified key and value.
+         *
+         * @param key   specified key
+         * @param value specified value
+         */
+        public MemoryPair(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
 
-		/**
-		 * Sets string value.
-		 * 
-		 * @param value
-		 *            new value
-		 */
-		public void setStringValue(String value)
-		{
-			this.value = value;
-		}
+        /**
+         * Constructs new pair as deep copy of specified pair.
+         *
+         * @param pair pair to copy
+         */
+        public MemoryPair(Pair pair) {
+            this(pair.getKey(), pair.getStringValue());
+        }
 
-		@Override
-		public String[] getStringValueAsArray()
-		{
-			if (value.length() == 0)
-			{
-				return new String[0];
-			}
+        @Override
+        public String getKey() {
+            return key;
+        }
 
-			String items[] = value.split(",");
+        @Override
+        public String getStringValue() {
+            return value;
+        }
 
-			for (int i = 0; i < items.length; i++)
-			{
-				items[i] = items[i].trim();
-			}
+        /**
+         * Sets string value.
+         *
+         * @param value new value
+         */
+        public void setStringValue(String value) {
+            this.value = value;
+        }
 
-			return items;
-		}
+        @Override
+        public String[] getStringValueAsArray() {
+            if (value.length() == 0) {
+                return new String[0];
+            }
 
-		@Override
-		public int getIntValue()
-		{
-			return Integer.parseInt(value);
-		}
+            String items[] = value.split(",");
 
-		/**
-		 * Sets int value.
-		 * 
-		 * @param value
-		 *            new value
-		 */
-		public void setIntValue(int value)
-		{
-			this.value = Integer.toString(value);
-		}
+            for (int i = 0; i < items.length; i++) {
+                items[i] = items[i].trim();
+            }
 
-		@Override
-		public boolean getBooleanValue()
-		{
-			return Boolean.parseBoolean(value);
-		}
+            return items;
+        }
 
-		/**
-		 * Sets boolean value.
-		 * 
-		 * @param value
-		 *            new value
-		 */
-		public void setBooleanValue(boolean value)
-		{
-			this.value = Boolean.toString(value);
-		}
+        @Override
+        public int getIntValue() {
+            return Integer.parseInt(value);
+        }
 
-		@Override
-		public double getDoubleValue()
-		{
-			return Double.parseDouble(value);
-		}
+        /**
+         * Sets int value.
+         *
+         * @param value new value
+         */
+        public void setIntValue(int value) {
+            this.value = Integer.toString(value);
+        }
 
-		/**
-		 * Sets double value.
-		 * 
-		 * @param value
-		 *            new value
-		 */
-		public void setDoubleValue(double value)
-		{
-			this.value = Double.toString(value);
-		}
+        @Override
+        public boolean getBooleanValue() {
+            return Boolean.parseBoolean(value);
+        }
 
-		@Override
-		public String toString()
-		{
-			return key + "=" + value;
-		}
-	}
+        /**
+         * Sets boolean value.
+         *
+         * @param value new value
+         */
+        public void setBooleanValue(boolean value) {
+            this.value = Boolean.toString(value);
+        }
+
+        @Override
+        public double getDoubleValue() {
+            return Double.parseDouble(value);
+        }
+
+        /**
+         * Sets double value.
+         *
+         * @param value new value
+         */
+        public void setDoubleValue(double value) {
+            this.value = Double.toString(value);
+        }
+
+        @Override
+        public String toString() {
+            return key + "=" + value;
+        }
+    }
 }

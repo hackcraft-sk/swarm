@@ -6,22 +6,20 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class Replay
-{
-	private Path replayPath;
+public class Replay {
 
-	public Replay(Path replayPath)
-	{
-		this.replayPath = replayPath;
-	}
+    private Path replayPath;
 
-	public void writeToStream(OutputStream output) throws IOException
-	{
-		DataOutputStream dataOutput = new DataOutputStream(output);
+    public Replay(Path replayPath) {
+        this.replayPath = replayPath;
+    }
 
-		byte[] replayContent = Files.readAllBytes(replayPath);
+    public void writeToStream(OutputStream output) throws IOException {
+        DataOutputStream dataOutput = new DataOutputStream(output);
 
-		dataOutput.writeInt(replayContent.length);
-		dataOutput.write(replayContent);
-	}
+        byte[] replayContent = Files.readAllBytes(replayPath);
+
+        dataOutput.writeInt(replayContent.length);
+        dataOutput.write(replayContent);
+    }
 }

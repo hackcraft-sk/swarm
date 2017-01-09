@@ -1,0 +1,20 @@
+{
+  "componentsSelection": {
+    "masterConnection": "MockMasterConnection",
+    "gameEnvironment": "MockGameEnvironment",
+    "parasiteConnection": "MockParasiteConnection",
+    "botLauncherFactory": "MockBotLauncherFactory"
+  },
+  "componentsConfig": {
+    "TcpSocketMasterConnection": {
+      "host": "localhost",
+      "port": 11089,
+      "overlordId": 1
+    },
+    "TcpSocketParasiteConnection": {
+      "port": 11998,
+      "connectionTimeoutMillis": 20000,
+      "pingTimeoutMillis": 70000
+    }
+  }
+}

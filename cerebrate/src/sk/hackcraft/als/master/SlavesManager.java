@@ -1,168 +1,119 @@
 package sk.hackcraft.als.master;
 
+import sk.hackcraft.als.master.connection.definition.SlaveConnection;
+import sk.hackcraft.als.master.connection.definition.WebConnection;
+import sk.hackcraft.als.master.connection.implementation.SlaveConnectionsFactory;
+import sk.hackcraft.als.master.model.MatchReport;
+import sk.hackcraft.als.master.model.MatchSpecification;
+import sk.hackcraft.als.master.model.UserBotInfo;
+import sk.hackcraft.als.utils.MemoryConfig;
+import sk.hackcraft.als.utils.SlaveMatchSpecification;
+import sk.hackcraft.als.utils.components.AbstractComponent;
+import sk.hackcraft.als.utils.model.BotInfo;
+import sk.hackcraft.als.utils.reports.SlaveMatchReport;
+import sk.hackcraft.als.utils.reports.SlaveSetupReport;
+
 import java.io.IOException;
 import java.util.*;
 
-import sk.hackcraft.als.master.connections.SlaveConnection;
-import sk.hackcraft.als.master.connections.SlaveConnectionsFactory;
-import sk.hackcraft.als.utils.reports.SlaveMatchReport;
+public class SlavesManager extends AbstractComponent {
 
-public class SlavesManager
-{
-	private final int desiredConnectionsCount;
-	private final SlaveConnectionsFactory connectionsFactory;
-	private final ReplaysStorage replaysStorage;
-	private final BotPersistentDataStorage botPersistentDataStorage;
+    private final SlaveConnectionsFactory connectionsFactory;
+    private final WebConnection webConnection;
 
-	private final Set<SlaveConnection> connections = new HashSet<>();
+    private final List<SlaveConnection> connections = new ArrayList<>();
 
-	private final Map<Integer, Integer> slaveUserMatchMapper = new HashMap<>();
+    private final Map<Integer, Integer> slaveUserMatchMapper = new HashMap<>();
 
-	public SlavesManager(int desiredConnectionsCount, SlaveConnectionsFactory connectionsFactory, ReplaysStorage replaysStorage, BotPersistentDataStorage botPersistentDataStorage)
-	{
-		this.desiredConnectionsCount = desiredConnectionsCount;
-		this.connectionsFactory = connectionsFactory;
-		this.replaysStorage = replaysStorage;
-		this.botPersistentDataStorage = botPersistentDataStorage;
-	}
+    public SlavesManager(SlaveConnectionsFactory connectionsFactory, WebConnection webConnection) {
+        this.connectionsFactory = connectionsFactory;
+        this.webConnection = webConnection;
+    }
 
-	public void waitForConnection(int timeout) throws IOException
-	{
-		SlaveConnection connection = connectionsFactory.create(timeout, replaysStorage);
+    private void pingSlaves() throws IOException {
+        for (SlaveConnection slaveConnection : connections) {
+            slaveConnection.ping();
+        }
+    }
 
-		connections.add(connection);
-	}
+    public MatchReport runMatch(MatchSpecification matchSpecification) throws Exception {
+        for (SlaveConnection slaveConnection : connections) {
+            try {
+                slaveConnection.close();
+            } catch (IOException e) {
+                log.e("Can't disconnect the slave.", e);
+            }
+        }
+        connections.clear();
 
-	public void closeAll() throws IOException
-	{
-		try
-		{
-			for (SlaveConnection connection : connections)
-			{
-				connection.disconnect();
-			}
-		}
-		finally
-		{
-			connections.clear();
-		}
-	}
+        List<UserBotInfo> userBotInfos = matchSpecification.getUserBotInfos();
+        int count = userBotInfos.size();
 
-	public boolean hasEnoughConnections()
-	{
-		return connections.size() == desiredConnectionsCount;
-	}
+        List<SlaveConnection> newConnections = connectionsFactory.waitForConnections(count);
+        connections.addAll(newConnections);
 
-	public void broadcastMatchInfo(MatchInfo matchInfo) throws IOException
-	{
-		int matchId = matchInfo.getMatchId();
-		String mapUrl = matchInfo.getMapUrl();
-		String mapFileHash = matchInfo.getMapFileHash();
+        pingSlaves();
 
-		Set<SlaveConnection> freeSlaveConnections = new HashSet<>(connections);
-		Set<UserBotInfo> freeBots = matchInfo.getUserBotInfos();
-		UserBotInfo videoStreamTarget = matchInfo.getVideoStreamTarget();
+        int matchId = matchSpecification.getMatchId();
 
-		if (freeBots.size() > connections.size())
-		{
-			throw new RuntimeException("Not enough slaves for all bots");
-		}
+        String mapUrl = matchSpecification.getMapUrl();
+        String mapHash = matchSpecification.getMapFileHash();
 
-		SlaveConnection connection;
+        String[] tokens = mapUrl.split("/");
+        int lastIndex = tokens.length - 1;
+        String mapName = tokens[lastIndex];
+        byte[] mapBlob = webConnection.downloadMap(mapUrl, mapHash);
 
-		connection = getAssociatedSlaveOfStream();
-		int videoStreamTargetBotId = videoStreamTarget.getBotId();
-		connection.sendMatchInfo(matchId, mapUrl, mapFileHash, videoStreamTargetBotId);
+        LinkedList<UserBotInfo> queuedUserBotInfos = new LinkedList<>(userBotInfos);
 
-		freeBots.remove(videoStreamTarget);
-		freeSlaveConnections.remove(connection);
-		int streamSlaveId = connection.getSlaveId();
-		int videoStreamTargetUserId = videoStreamTarget.getUserId();
-		slaveUserMatchMapper.put(streamSlaveId, videoStreamTargetUserId);
+        boolean hostSet = false;
+        for (SlaveConnection slaveConnection : connections) {
 
-		Queue<SlaveConnection> freeConnectionsQueue = new LinkedList<>(freeSlaveConnections);
-		for (UserBotInfo userBotInfo : freeBots)
-		{
-			connection = freeConnectionsQueue.remove();
-			int botId = userBotInfo.getBotId();
-			connection.sendMatchInfo(matchId, mapUrl, mapFileHash, botId);
+            UserBotInfo userBotInfo = queuedUserBotInfos.removeFirst();
+            int botId = userBotInfo.getBotId();
 
-			int slaveId = connection.getSlaveId();
-			int userId = userBotInfo.getUserId();
-			slaveUserMatchMapper.put(slaveId, userId);
-		}
-	}
+            boolean host = !hostSet;
 
-	private SlaveConnection getAssociatedSlaveOfStream()
-	{
-		SlaveConnection streamConnection = null;
-		for (SlaveConnection connection : connections)
-		{
-			if (connection.getSlaveId() == 1)
-			{
-				streamConnection = connection;
-				break;
-			}
-		}
+            if (!hostSet) {
+                hostSet = true;
+            }
 
-		return streamConnection;
-	}
+            BotInfo botInfo = webConnection.getBotInfo(botId);
+            String botFileUrl = botInfo.getFileUrl();
+            String botFileHash = botInfo.getFileHash();
+            byte[] botBlob = webConnection.downloadBot(botFileUrl, botFileHash);
 
-	public void preparePersistentStorages(int tournamentId) throws IOException {
-		for (Map.Entry<Integer, Integer> entry : slaveUserMatchMapper.entrySet()) {
-			int slaveId = entry.getKey();
-			int userId = entry.getValue();
-			botPersistentDataStorage.prepareStorage(tournamentId, userId, slaveId);
-		}
-	}
+            MemoryConfig slaveConfig = null;
 
-	public void waitForReadySignals() throws IOException
-	{
-		for (SlaveConnection connection : connections)
-		{
-			connection.waitForReadySignal();
-		}
-	}
+            SlaveMatchSpecification specification = new SlaveMatchSpecification(host, matchId, slaveConfig, botInfo, botBlob, mapName, mapBlob);
+            SlaveSetupReport setupReport = slaveConnection.setupSlave(specification);
 
-	public void broadcastGo() throws IOException
-	{
-		for (SlaveConnection connection : connections)
-		{
-			connection.sendGo();
-		}
-	}
+            List<Throwable> setupErrors = setupReport.getSetupErrors();
+            if (!setupErrors.isEmpty()) {
+                for (Throwable throwable : setupErrors) {
+                    log.e("Slave errors.", throwable);
+                }
+                throw new IOException("Slave configuration problem.");
+            }
+        }
 
-	public MatchReport waitForMatchResult(int matchId) throws IOException
-	{
-		List<SlaveMatchReport> slavesMatchReports = new ArrayList<>();
+        pingSlaves();
 
-		boolean valid = true;
+        for (SlaveConnection slaveConnection : connections) {
+            slaveConnection.runMatch();
+        }
 
-		for (SlaveConnection connection : connections)
-		{
-			SlaveMatchReport report = connection.waitForMatchResult();
+        List<SlaveMatchReport> reports = new ArrayList<>();
+        for (SlaveConnection slaveConnection : connections) {
+            slaveConnection.runMatch();
+            SlaveMatchReport report = slaveConnection.waitForResult();
+            reports.add(report);
+        }
 
-			slavesMatchReports.add(report);
+        for (SlaveConnection slaveConnection : connections) {
+            slaveConnection.close();
+        }
 
-			if (!report.isValid())
-			{
-				valid = false;
-			}
-			else
-			{
-				connection.retrieveAndSaveReplay();
-			}
-		}
-
-		slaveUserMatchMapper.clear();
-
-		if (valid)
-		{
-			return new MatchReport(valid, matchId, slavesMatchReports);
-		}
-		else
-		{
-			return new MatchReport(valid, matchId, null);
-		}
-	}
+        return new MatchReport(true, matchId, reports);
+    }
 }

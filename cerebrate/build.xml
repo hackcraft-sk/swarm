@@ -6,7 +6,8 @@
         <jar destfile="/home/moergil/Projects/swarm/binaries/cerebrate.jar">
             <manifest>
                 <attribute name="Main-Class" value="sk.hackcraft.als.master.MasterApplication"/>
-                <attribute name="Class-Path" value=". cerebrate_lib/junit.jar cerebrate_lib/org.hamcrest.core_1.3.0.v201303031735.jar cerebrate_lib/commons-cli-1.2.jar cerebrate_lib/commons-codec-1.6.jar cerebrate_lib/commons-logging-1.1.1.jar cerebrate_lib/fluent-hc-4.2.5.jar cerebrate_lib/httpclient-4.2.5.jar cerebrate_lib/httpclient-cache-4.2.5.jar cerebrate_lib/httpcore-4.2.4.jar cerebrate_lib/httpcore-4.3.jar cerebrate_lib/httpcore-ab-4.3.jar cerebrate_lib/httpcore-nio-4.3.jar cerebrate_lib/httpmime-4.2.5.jar"/>
+                <attribute name="Class-Path"
+                           value=". cerebrate_lib/junit.jar cerebrate_lib/org.hamcrest.core_1.3.0.v201303031735.jar cerebrate_lib/commons-cli-1.2.jar cerebrate_lib/commons-codec-1.6.jar cerebrate_lib/commons-logging-1.1.1.jar cerebrate_lib/fluent-hc-4.2.5.jar cerebrate_lib/httpclient-4.2.5.jar cerebrate_lib/httpclient-cache-4.2.5.jar cerebrate_lib/httpcore-4.2.4.jar cerebrate_lib/httpcore-4.3.jar cerebrate_lib/httpcore-ab-4.3.jar cerebrate_lib/httpcore-nio-4.3.jar cerebrate_lib/httpmime-4.2.5.jar"/>
             </manifest>
             <fileset dir="/home/moergil/Projects/swarm/cerebrate/bin"/>
             <fileset dir="/home/moergil/Projects/swarm/json/bin"/>
@@ -15,18 +16,31 @@
         </jar>
         <delete dir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
         <mkdir dir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
-        <copy file="/opt/eclipse/plugins/org.junit_4.11.0.v201303080030/junit.jar" todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
-        <copy file="/opt/eclipse/plugins/org.hamcrest.core_1.3.0.v201303031735.jar" todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
-        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/commons-cli-1.2.jar" todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
-        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/commons-codec-1.6.jar" todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
-        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/commons-logging-1.1.1.jar" todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
-        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/fluent-hc-4.2.5.jar" todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
-        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpclient-4.2.5.jar" todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
-        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpclient-cache-4.2.5.jar" todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
-        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpcore-4.2.4.jar" todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
-        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpcore-4.3.jar" todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
-        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpcore-ab-4.3.jar" todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
-        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpcore-nio-4.3.jar" todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
-        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpmime-4.2.5.jar" todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
+        <copy file="/opt/eclipse/plugins/org.junit_4.11.0.v201303080030/junit.jar"
+              todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
+        <copy file="/opt/eclipse/plugins/org.hamcrest.core_1.3.0.v201303031735.jar"
+              todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/commons-cli-1.2.jar"
+              todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/commons-codec-1.6.jar"
+              todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/commons-logging-1.1.1.jar"
+              todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/fluent-hc-4.2.5.jar"
+              todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpclient-4.2.5.jar"
+              todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpclient-cache-4.2.5.jar"
+              todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpcore-4.2.4.jar"
+              todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpcore-4.3.jar"
+              todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpcore-ab-4.3.jar"
+              todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpcore-nio-4.3.jar"
+              todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
+        <copy file="/home/moergil/Projects/swarm/jwebcomm/lib/httpmime-4.2.5.jar"
+              todir="/home/moergil/Projects/swarm/binaries/cerebrate_lib"/>
     </target>
 </project>

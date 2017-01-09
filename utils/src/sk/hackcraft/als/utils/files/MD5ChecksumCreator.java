@@ -5,54 +5,45 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class MD5ChecksumCreator implements ChecksumCreator
-{
-	private final InputStream input;
+public class MD5ChecksumCreator implements ChecksumCreator {
 
-	public MD5ChecksumCreator(InputStream input)
-	{
-		this.input = input;
-	}
+    private final InputStream input;
 
-	@Override
-	public String create() throws IOException
-	{
-		try
-		{
-			byte[] digest = createDigest(input);
-			String checksum = "";
+    public MD5ChecksumCreator(InputStream input) {
+        this.input = input;
+    }
 
-			for (int i = 0; i < digest.length; i++)
-			{
-				checksum += Integer.toString((digest[i] & 0xff) + 0x100, 16).substring(1);
-			}
+    @Override
+    public String create() throws IOException {
+        try {
+            byte[] digest = createDigest(input);
+            String checksum = "";
 
-			return checksum;
-		}
-		catch (NoSuchAlgorithmException e)
-		{
-			throw new IOException("Can't create MD5 message digest instance.");
-		}
-	}
+            for (byte chunk : digest) {
+                checksum += Integer.toString((chunk & 0xff) + 0x100, 16).substring(1);
+            }
 
-	private static byte[] createDigest(InputStream input) throws IOException, NoSuchAlgorithmException
-	{
-		MessageDigest complete = MessageDigest.getInstance("MD5");
+            return checksum;
+        } catch (NoSuchAlgorithmException e) {
+            throw new IOException("Can't create MD5 masterslave digest instance.");
+        }
+    }
 
-		byte[] buffer = new byte[1024];
-		int numRead;
+    private static byte[] createDigest(InputStream input) throws IOException, NoSuchAlgorithmException {
+        MessageDigest complete = MessageDigest.getInstance("MD5");
 
-		do
-		{
-			numRead = input.read(buffer);
+        byte[] buffer = new byte[1024];
+        int numRead;
 
-			if (numRead > 0)
-			{
-				complete.update(buffer, 0, numRead);
-			}
-		}
-		while (numRead != -1);
+        do {
+            numRead = input.read(buffer);
 
-		return complete.digest();
-	}
+            if (numRead > 0) {
+                complete.update(buffer, 0, numRead);
+            }
+        }
+        while (numRead != -1);
+
+        return complete.digest();
+    }
 }

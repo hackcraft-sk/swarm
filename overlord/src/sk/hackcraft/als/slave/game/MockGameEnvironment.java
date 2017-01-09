@@ -1,41 +1,44 @@
 package sk.hackcraft.als.slave.game;
 
-import java.io.File;
+import sk.hackcraft.als.utils.MemoryConfig;
+import sk.hackcraft.als.utils.components.AbstractComponent;
+
 import java.io.IOException;
-import java.nio.file.Path;
 
-public class MockGameEnvironment implements GameEnvironment
-{
-	private final Path starCraftPath;
+public class MockGameEnvironment extends AbstractComponent implements GameEnvironment {
 
-	public MockGameEnvironment(Path starCraftPath)
-	{
-		this.starCraftPath = starCraftPath;
-	}
+    @Override
+    public void clean() {
 
-	@Override
-	public void launch()
-	{
-		System.out.println("Game environment launched.");
+    }
 
-		try
-		{
-			BwapiConfig bwapiConfig = new BwapiConfig(starCraftPath.toString());
-			String gameReplayPath = bwapiConfig.getReplay();
-			gameReplayPath = gameReplayPath.replace('\\', '/');
+    @Override
+    public void setupPlayerProfile(String playerName) throws IOException {
 
-			File file = new File("./game/" + gameReplayPath);
-			file.createNewFile();
-		}
-		catch (IOException e)
-		{
-			throw new RuntimeException("Can't create dummy replay", e);
-		}
-	}
+    }
 
-	@Override
-	public void killApplications()
-	{
-		System.out.println("Game environment shutdown.");
-	}
+    @Override
+    public void setupMap(String path, byte[] mapBlob) throws IOException {
+
+    }
+
+    @Override
+    public void setupGameConfig(MemoryConfig config) throws IOException {
+
+    }
+
+    @Override
+    public byte[] retrieveGameReplay(int matchId) throws IOException {
+        return new byte[0];
+    }
+
+    @Override
+    public void launch() {
+
+    }
+
+    @Override
+    public void close() {
+
+    }
 }

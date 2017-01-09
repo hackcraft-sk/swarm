@@ -1,10 +1,10 @@
 package sk.hackcraft.als.utils;
 
-public interface ProcessesList
-{
-	public boolean has(String processName);
+public interface ProcessesList {
 
-	public boolean has(int pid);
+    boolean has(String processName);
 
-	public int getPid(String processName);
+    boolean has(int pid);
+
+    int getPid(String processName);
 }

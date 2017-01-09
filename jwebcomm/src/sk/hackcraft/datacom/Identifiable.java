@@ -1,6 +1,6 @@
 package sk.hackcraft.datacom;
 
-public interface Identifiable
-{
-	public int getId();
+public interface Identifiable {
+
+    int getId();
 }

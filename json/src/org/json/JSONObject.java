@@ -690,7 +690,7 @@ public class JSONObject
 		int i = 0;
 		while (iterator.hasNext())
 		{
-			names[i] = (String) iterator.next();
+			names[i] = iterator.next();
 			i += 1;
 		}
 		return names;

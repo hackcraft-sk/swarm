@@ -1,37 +1,33 @@
 package sk.hackcraft.datacom.socket;
 
-import java.io.IOException;
-
 import sk.hackcraft.datacom.Message;
 
-public class SocketMessage implements Message
-{
-	private DataChunkSocket dataChunkSocket;
+import java.io.IOException;
 
-	private byte content[];
+public class SocketMessage implements Message {
 
-	public SocketMessage(DataChunkSocket dataChunkSocket, byte content[])
-	{
-		this.dataChunkSocket = dataChunkSocket;
+    private DataChunkSocket dataChunkSocket;
 
-		this.content = content;
-	}
+    private byte content[];
 
-	@Override
-	public void send() throws IOException
-	{
-		dataChunkSocket.send(content);
-	}
+    public SocketMessage(DataChunkSocket dataChunkSocket, byte content[]) {
+        this.dataChunkSocket = dataChunkSocket;
 
-	@Override
-	public void send(Listener listener) throws IOException
-	{
-		throw new UnsupportedOperationException();
-	}
+        this.content = content;
+    }
 
-	@Override
-	public byte[] sendAndWait() throws IOException
-	{
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void send() throws IOException {
+        dataChunkSocket.send(content);
+    }
+
+    @Override
+    public void send(Listener listener) throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public byte[] sendAndWait() throws IOException {
+        throw new UnsupportedOperationException();
+    }
 }

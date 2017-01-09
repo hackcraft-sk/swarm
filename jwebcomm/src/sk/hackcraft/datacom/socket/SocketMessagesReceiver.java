@@ -1,5 +1,9 @@
 package sk.hackcraft.datacom.socket;
 
+import sk.hackcraft.datacom.Identifiable;
+import sk.hackcraft.datacom.MessageListener;
+import sk.hackcraft.datacom.MessagesReceiver;
+
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
@@ -8,72 +12,56 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import sk.hackcraft.datacom.Identifiable;
-import sk.hackcraft.datacom.MessageListener;
-import sk.hackcraft.datacom.MessagesReceiver;
+public class SocketMessagesReceiver<I> implements MessagesReceiver<Identifiable> {
 
-public class SocketMessagesReceiver<I> implements MessagesReceiver<Identifiable>
-{
-	private static final Logger logger = Logger.getLogger(SocketMessagesReceiver.class.getName());
+    private static final Logger logger = Logger.getLogger(SocketMessagesReceiver.class.getName());
 
-	private DataChunkSocket dataChunkSocket;
+    private DataChunkSocket dataChunkSocket;
 
-	private volatile boolean run;
+    private volatile boolean run;
 
-	private Map<Integer, MessageListener> messageListeners;
+    private Map<Integer, MessageListener> messageListeners;
 
-	public SocketMessagesReceiver(DataChunkSocket dataChunkSocket)
-	{
-		this.dataChunkSocket = dataChunkSocket;
-	}
+    public SocketMessagesReceiver(DataChunkSocket dataChunkSocket) {
+        this.dataChunkSocket = dataChunkSocket;
+    }
 
-	@Override
-	public void run()
-	{
-		run = true;
+    @Override
+    public void run() {
+        run = true;
 
-		while (run)
-		{
-			try
-			{
-				processMessage();
-			}
-			catch (IOException e)
-			{
-				logger.log(Level.INFO, "Can't process message.", e);
+        while (run) {
+            try {
+                processMessage();
+            } catch (IOException e) {
+                logger.log(Level.INFO, "Can't process message.", e);
 
-				tryReconnect();
-			}
-		}
-	}
+                tryReconnect();
+            }
+        }
+    }
 
-	private void processMessage() throws IOException
-	{
-		byte content[] = dataChunkSocket.receive();
+    private void processMessage() throws IOException {
+        byte content[] = dataChunkSocket.receive();
 
-		DataInput dataInput = new DataInputStream(new ByteArrayInputStream(content));
+        DataInput dataInput = new DataInputStream(new ByteArrayInputStream(content));
 
-		int type = dataInput.readInt();
+        int type = dataInput.readInt();
 
-		MessageListener listener = messageListeners.get(type);
-		listener.onMessageReceived(content);
-	}
+        MessageListener listener = messageListeners.get(type);
+        listener.onMessageReceived(content);
+    }
 
-	private void tryReconnect()
-	{
-		try
-		{
-			dataChunkSocket.connect();
-		}
-		catch (IOException ioe)
-		{
-			logger.log(Level.SEVERE, "Can't create connection.", ioe);
-		}
-	}
+    private void tryReconnect() {
+        try {
+            dataChunkSocket.connect();
+        } catch (IOException ioe) {
+            logger.log(Level.SEVERE, "Can't create connection.", ioe);
+        }
+    }
 
-	@Override
-	public void stop()
-	{
-		run = false;
-	}
+    @Override
+    public void stop() {
+        run = false;
+    }
 }

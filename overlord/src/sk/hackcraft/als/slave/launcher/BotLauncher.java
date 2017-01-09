@@ -2,9 +2,9 @@ package sk.hackcraft.als.slave.launcher;
 
 import java.io.IOException;
 
-public interface BotLauncher
-{
-	public void prepare() throws IOException;
+public interface BotLauncher {
 
-	public void dispose() throws IOException;
+    void prepare() throws IOException;
+
+    void dispose() throws IOException;
 }

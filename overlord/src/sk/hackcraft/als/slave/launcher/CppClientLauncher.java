@@ -1,24 +1,20 @@
 package sk.hackcraft.als.slave.launcher;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
-public class CppClientLauncher extends ClientLauncher
-{
-	public CppClientLauncher(Path starCraftPath, Path botFilePath)
-	{
-		super(starCraftPath, botFilePath);
-	}
+class CppClientLauncher extends ClientLauncher {
 
-	@Override
-	protected String createBotName()
-	{
-		return "Bot.exe";
-	}
+    CppClientLauncher(String environmentBaseDirectory, byte[] botBlob) {
+        super(environmentBaseDirectory, botBlob);
+    }
 
-	@Override
-	protected ProcessBuilder getProcessBuilder() throws IOException
-	{
-		return new ProcessBuilder(activeBotFilePath.toString());
-	}
+    @Override
+    protected String createBotName() {
+        return "BotCppClient.exe";
+    }
+
+    @Override
+    protected ProcessBuilder getProcessBuilder(String workingDirectoryPath, String botFilePath) throws IOException {
+        return new ProcessBuilder(botFilePath);
+    }
 }

@@ -1,10 +1,9 @@
 package sk.hackcraft.datacom;
 
-public class Test
-{
-	public static void main(String[] args)
-	{
-		/*
+public class Test {
+
+    public static void main(String[] args) {
+        /*
 		 * 
 		 * Message message = messageFactory.createMessage(...);
 		 * 
@@ -19,5 +18,5 @@ public class Test
 		 * 
 		 * Match match = serverConnection.requestMatch();
 		 */
-	}
+    }
 }

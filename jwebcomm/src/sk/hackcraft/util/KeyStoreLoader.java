@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 
 public class KeyStoreLoader {
@@ -29,5 +28,4 @@ public class KeyStoreLoader {
             throw new IllegalStateException("Can't check keystore integrity.", e);
         }
     }
-
 }

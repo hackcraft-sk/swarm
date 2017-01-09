@@ -1,10 +1,9 @@
 package sk.hackcraft.als.slave.launcher;
 
-import java.nio.file.Path;
+import sk.hackcraft.als.utils.components.Component;
+import sk.hackcraft.als.utils.model.BotInfo;
 
-import sk.hackcraft.als.slave.Bot;
+public interface BotLauncherFactory extends Component {
 
-public interface BotLauncherFactory
-{
-	public BotLauncher create(Bot bot, Path botFilePath);
+    BotLauncher create(BotInfo bot, byte[] botBlob);
 }

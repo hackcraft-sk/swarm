@@ -1,14 +1,12 @@
 package sk.hackcraft.als.slave.launcher;
 
-import java.nio.file.Path;
+import sk.hackcraft.als.utils.components.AbstractComponent;
+import sk.hackcraft.als.utils.model.BotInfo;
 
-import sk.hackcraft.als.slave.Bot;
+public class MockBotLauncherFactory extends AbstractComponent implements BotLauncherFactory {
 
-public class MockBotLauncherFactory implements BotLauncherFactory
-{
-	@Override
-	public BotLauncher create(Bot bot, Path botFilePath)
-	{
-		return new MockBotLauncher();
-	}
+    @Override
+    public BotLauncher create(BotInfo botInfo, byte[] botBlob) {
+        return new MockBotLauncher();
+    }
 }
