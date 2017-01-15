@@ -9,6 +9,10 @@ import java.io.IOException;
 
 public interface SlaveConnection extends Component {
 
+    int readSlaveId() throws IOException;
+
+    int getSlaveId();
+
     void close() throws IOException;
 
     void ping() throws IOException;

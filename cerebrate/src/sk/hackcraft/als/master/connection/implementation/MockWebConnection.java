@@ -42,7 +42,7 @@ public class MockWebConnection extends AbstractComponent implements WebConnectio
             for (SlaveMatchReport botResult : matchReport.getSlavesMatchReports()) {
                 int botId = botResult.getBotId();
                 boolean victor = botResult.getAchievements().contains(StandardAchievements.VICTORY);
-                log.m("#%d - %s%n", botId, victor);
+                log.m("#%d - victorious: %s%n", botId, victor);
             }
         } else {
             log.m("Match was INVALID.");

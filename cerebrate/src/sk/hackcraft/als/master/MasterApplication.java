@@ -94,14 +94,23 @@ public class MasterApplication extends AbstractApplication<MasterConfig> impleme
         factory.addCreator("MockWebConnection", new ComponentFactory.Creator<MasterConfig>() {
             @Override
             public MockWebConnection create(String componentName, MasterConfig config) throws Exception {
-                return new MockWebConnection(2);
+                MasterConfig.MockWebConnection part = config.getConfigModel().getMockWebConnection();
+
+                int botsCount = part.getBotsCount();
+
+                return new MockWebConnection(botsCount);
             }
         });
 
         factory.addCreator("TcpSocketSlaveConnectionsFactory", new ComponentFactory.Creator<MasterConfig>() {
             @Override
             public TcpSocketSlaveConnectionsFactory create(String componentName, MasterConfig config) throws Exception {
-                throw new UnsupportedOperationException("Not yet implemented.");
+                MasterConfig.TcpSocketSlaveConnectionsFactory part = config.getConfigModel().getTcpSocketSlaveConnectionsFactory();
+
+                int port = part.getPort();
+                long serverSocketTimeout = part.getServerSocketTimeout();
+
+                return new TcpSocketSlaveConnectionsFactory(port, serverSocketTimeout);
             }
         });
 
@@ -129,7 +138,7 @@ public class MasterApplication extends AbstractApplication<MasterConfig> impleme
         factory.addCreator("DiskBotPersistentDataStorage", new ComponentFactory.Creator<MasterConfig>() {
             @Override
             public DiskBotPersistentDataStorage create(String componentName, MasterConfig config) throws Exception {
-                MasterConfig.DiskBotPersistentStorage part = config.getConfigModel().getDiskBotPersistentStorage();
+                MasterConfig.DiskBotPersistentStorage part = config.getConfigModel().getDiskBotPersistentDataStorage();
                 String entryPointsPath = part.getEntryPointsPath();
                 String storagePath = part.getStoragePath();
                 return new DiskBotPersistentDataStorage(entryPointsPath, storagePath);
@@ -190,6 +199,7 @@ public class MasterApplication extends AbstractApplication<MasterConfig> impleme
         MatchReport matchReport = MatchReport.createInvalid(matchId);
 
         try {
+            log.m("Acquiring slaves...");
             matchReport = slavesManager.runMatch(matchSpecification);
             achievementsModifier.modifyAchievements(matchReport);
         } finally {

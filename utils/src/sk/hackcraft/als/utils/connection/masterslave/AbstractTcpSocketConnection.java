@@ -30,13 +30,13 @@ public class AbstractTcpSocketConnection extends AbstractComponent {
         }
     }
 
-    protected void write(MessageId messageId) throws IOException {
+    protected void writeHeader(MessageId messageId) throws IOException {
         int rawId = messageId.getRawId();
         dataOutput.writeInt(rawId);
     }
 
-    protected void write(MessageId messageId, Object data) throws IOException {
-        write(messageId);
+    protected void writeHeaderAndContent(MessageId messageId, Object data) throws IOException {
+        writeHeader(messageId);
         String json = gson.toJson(data);
         dataOutput.writeUTF(json);
     }
@@ -46,24 +46,24 @@ public class AbstractTcpSocketConnection extends AbstractComponent {
         return MessageId.fromRawId(rawId);
     }
 
-    protected <T> T readContent(Class<T> dataType) throws IOException {
-        String json = dataInput.readUTF();
-        return gson.fromJson(json, dataType);
-    }
-
-    protected <T> T readContent(MessageId expectedMessageId, Class<T> dataType) throws IOException {
-        readAndExpect(expectedMessageId);
-
-        String json = dataInput.readUTF();
-        return gson.fromJson(json, dataType);
-    }
-
-    protected void readAndExpect(MessageId expectedMessageId) throws IOException {
+    protected void readAndExpectHeader(MessageId expectedMessageId) throws IOException {
         int rawId = dataInput.readInt();
         MessageId id = MessageId.fromRawId(rawId);
 
         if (id != expectedMessageId) {
             throw new IllegalStateException("Unexpected " + id + ", " + expectedMessageId + " expected.");
         }
+    }
+
+    protected <T> T readContent(Class<T> dataType) throws IOException {
+        String json = dataInput.readUTF();
+        return gson.fromJson(json, dataType);
+    }
+
+    protected <T> T readHeaderAndContentWithHeaderCheck(MessageId expectedMessageId, Class<T> dataType) throws IOException {
+        readAndExpectHeader(expectedMessageId);
+
+        String json = dataInput.readUTF();
+        return gson.fromJson(json, dataType);
     }
 }

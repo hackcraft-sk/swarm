@@ -11,11 +11,11 @@ public class SlaveConfig extends Config {
     }
 
     @Override
-    public Object getConfigModel() {
+    public ComponentsConfig getConfigModel() {
         return componentsConfig;
     }
 
-    private static class ComponentsConfig {
+    public static class ComponentsConfig {
 
         private final TcpSocketMasterConnection tcpSocketMasterConnection;
         private final MockMasterConnection mockMasterConnection;

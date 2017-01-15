@@ -20,9 +20,11 @@ import sk.hackcraft.als.utils.reports.SlaveMatchReport;
 import sk.hackcraft.als.utils.reports.SlaveSetupReport;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class SlaveApplication extends AbstractApplication<SlaveConfig> implements Runnable {
 
@@ -66,17 +68,22 @@ public class SlaveApplication extends AbstractApplication<SlaveConfig> implement
         factory.addCreator("TcpSocketMasterConnection", new ComponentFactory.Creator<SlaveConfig>() {
             @Override
             public TcpSocketMasterConnection create(String componentName, SlaveConfig config) throws Exception {
-                SlaveConfig.TcpSocketMasterConnection part = config.getComponentConfig(componentName);
+                SlaveConfig.TcpSocketMasterConnection part = config.getConfigModel().getTcpSocketMasterConnection();
 
                 String host = part.getHost();
                 int port = part.getPort();
                 Socket socket = new Socket(host, port);
 
+                socket.setKeepAlive(true);
+
                 Gson gson = new Gson();
 
                 int overlordId = part.getOverlordId();
 
-                return new TcpSocketMasterConnection(socket, gson, overlordId);
+                TcpSocketMasterConnection connection = new TcpSocketMasterConnection(socket, gson, overlordId);
+                connection.setLog(log);
+
+                return connection;
             }
         });
 
@@ -97,7 +104,7 @@ public class SlaveApplication extends AbstractApplication<SlaveConfig> implement
         factory.addCreator("TcpSocketParasiteConnection", new ComponentFactory.Creator<SlaveConfig>() {
             @Override
             public TcpSocketParasiteConnection create(String componentName, SlaveConfig config) throws Exception {
-                SlaveConfig.TcpSocketParasiteConnection part = config.getComponentConfig(componentName);
+                SlaveConfig.TcpSocketParasiteConnection part = config.getConfigModel().getTcpSocketParasiteConnection();
 
                 int port = part.getPort();
                 long connectionTimeoutMillis = part.getConnectionTimeoutMillis();
@@ -152,6 +159,11 @@ public class SlaveApplication extends AbstractApplication<SlaveConfig> implement
                 SlaveSetupReport setupReport = new SlaveSetupReport();
                 setupReport.addSetupError(e);
                 masterConnection.postSetupCompleted(setupReport);
+            }
+
+            if (e instanceof IOException) {
+                log.m("IO error occured, waiting before next attempt.");
+                wait(5, TimeUnit.SECONDS);
             }
         } finally {
             if (masterConnection != null) {

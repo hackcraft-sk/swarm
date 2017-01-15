@@ -1,38 +1,40 @@
 {
   "componentsSelection": {
-    "webConnection": "RetrofitWebConnection",
+    "webConnection": "MockWebConnection",
     "slaveConnectionsFactory": "TcpSocketSlaveConnectionsFactory",
     "replaysStorage": "MockReplaysStorage",
     "botPersistentDataStorage": "MockBotPersistentDataStorage"
   },
   "componentsConfig": {
-    "RetrofitWebConnection": {
+    "retrofitWebConnection": {
       "address": "https://mylifeforai.com/",
-      "certificatePath": "/Users/matej.istenik/Projects/swarm/lets_encrypt_x3.pem",
+      "certificatePath": "lets_encrypt_x3.pem",
       "masterId": "master1",
       "acceptingIds": [
         6
       ],
       "playersCount": 2
     },
-    "MockWebConnection": {
+    "mockWebConnection": {
+      "botsCount": 1
     },
-    "TcpSocketSlaveConnectionsFactory": {
-      "port": 11997
+    "tcpSocketSlaveConnectionsFactory": {
+      "port": 11089,
+      "serverSocketTimeout": 5000
     },
-    "MockSlaveConnectionsFactory": {
+    "mockSlaveConnectionsFactory": {
       "targetCount": 2
     },
-    "DiskReplaysStorage": {
+    "diskReplaysStorage": {
       "storagePath": "Users/matej.istenik/strg/replays"
     },
-    "MockReplaysStorage": {
+    "mockReplaysStorage": {
     },
-    "DiskBotPersistentDataStorage": {
+    "diskBotPersistentDataStorage": {
       "entryPointsPath": "/Users/matej.istenik/strg/entryPoints",
       "storagePath": "Users/matej.istenik/strg/storage"
     },
-    "MockBotPersistentDataStorage": {
+    "mockBotPersistentDataStorage": {
     }
   }
 }

@@ -2,7 +2,6 @@ package sk.hackcraft.als.utils.connection.masterslave;
 
 public enum MessageId {
     PING(1),
-    CLOSE(2),
     SLAVE_SETUP(3),
     SLAVE_SETUP_REPORT(4),
     RUN_MATCH(5),

@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import sk.hackcraft.als.utils.Achievement;
-import sk.hackcraft.als.utils.MarkAchievement;
 import sk.hackcraft.als.utils.PlayerColor;
 import sk.hackcraft.als.utils.components.AbstractComponent;
 
@@ -79,7 +78,7 @@ public class TcpSocketParasiteConnection extends AbstractComponent implements Pa
                 JsonArray achievementsJsonArray = response.getAsJsonArray("achievements");
                 for (JsonElement element : achievementsJsonArray) {
                     String achievementName = element.getAsString();
-                    Achievement achievement = new MarkAchievement(achievementName);
+                    Achievement achievement = new Achievement(achievementName);
                     achievements.add(achievement);
                 }
 

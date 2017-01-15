@@ -3,7 +3,6 @@ package sk.hackcraft.als.master.connection.implementation;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.GsonConverterFactory;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
@@ -41,7 +40,6 @@ public class RetrofitWebConnection extends AbstractRetrofitWebConnection impleme
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(url)
                 .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         retrofitConnectionService = retrofit.create(RetrofitConnectionService.class);

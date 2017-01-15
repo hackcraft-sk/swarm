@@ -15,7 +15,7 @@ public class TcpSocketMasterConnection extends AbstractTcpSocketConnection imple
 
     public TcpSocketMasterConnection(Socket socket, Gson gson, int overlordId) throws IOException {
         super(socket, gson);
-        write(MessageId.SLAVE_ID, overlordId);
+        writeHeaderAndContent(MessageId.SLAVE_ID, overlordId);
     }
 
     @Override
@@ -25,10 +25,11 @@ public class TcpSocketMasterConnection extends AbstractTcpSocketConnection imple
 
             switch (id) {
                 case PING:
-                    write(MessageId.PING);
+                    log.m("Ping from master received.");
+                    writeHeader(MessageId.PING);
                     break;
                 case SLAVE_SETUP:
-                    return readContent(id, SlaveMatchSpecification.class);
+                    return readContent(SlaveMatchSpecification.class);
                 default:
                     throw new IOException("Unexpected " + id + ".");
             }
@@ -37,16 +38,16 @@ public class TcpSocketMasterConnection extends AbstractTcpSocketConnection imple
 
     @Override
     public void postSetupCompleted(SlaveSetupReport report) throws IOException {
-        write(MessageId.SLAVE_SETUP_REPORT, report);
+        writeHeaderAndContent(MessageId.SLAVE_SETUP_REPORT, report);
     }
 
     @Override
     public void waitForGo() throws IOException {
-        readAndExpect(MessageId.RUN_MATCH);
+        readAndExpectHeader(MessageId.RUN_MATCH);
     }
 
     @Override
     public void postMatchReport(SlaveMatchReport slaveMatchReport) throws IOException {
-        write(MessageId.SLAVE_MATCH_REPORT, slaveMatchReport);
+        writeHeaderAndContent(MessageId.SLAVE_MATCH_REPORT, slaveMatchReport);
     }
 }

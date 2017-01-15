@@ -24,13 +24,13 @@ overlord/bots
 overlord/game/
 
 # parasite
-.cproject
-lib
-Debug
-Release
-Parasite.vcproj.*
-SCMAI.ncb
-SCMAI.suo
+parasite/.cproject
+parasite/lib
+parasite/Debug
+parasite/Release
+parasite/Parasite.vcproj.*
+parasite/SCMAI.ncb
+parasite/SCMAI.suo
 
 # ubwtv
 *.csproj

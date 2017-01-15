@@ -6,6 +6,7 @@ import sk.hackcraft.als.utils.log.BareLog;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractApplication<T> {
 
@@ -26,5 +27,14 @@ public abstract class AbstractApplication<T> {
         FileReader fileReader = new FileReader(configFilePath + "/" + configFileName);
         JsonReader reader = new JsonReader(fileReader);
         return gson.fromJson(reader, configClass);
+    }
+
+    protected void wait(long amount, TimeUnit timeUnit) {
+        long millis = timeUnit.toMillis(amount);
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            // Ignore
+        }
     }
 }

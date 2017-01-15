@@ -4,7 +4,7 @@ import sk.hackcraft.als.utils.config.Config;
 
 import java.util.Set;
 
-public class MasterConfig extends Config<MasterConfig.ComponentsConfig> {
+public class MasterConfig extends Config {
 
     private ComponentsConfig componentsConfig;
 
@@ -25,17 +25,17 @@ public class MasterConfig extends Config<MasterConfig.ComponentsConfig> {
         private final MockSlaveConnectionsFactory mockSlaveConnectionsFactory;
         private final DiskReplaysStorage diskReplaysStorage;
         private final MockReplaysStorage mockReplaysStorage;
-        private final DiskBotPersistentStorage diskBotPersistentStorage;
+        private final DiskBotPersistentStorage diskBotPersistentDataStorage;
         private final MockBotPersistentDataStorage mockBotPersistentDataStorage;
 
-        public ComponentsConfig(RetrofitWebConnection retrofitWebConnection, MockWebConnection mockWebConnection, TcpSocketSlaveConnectionsFactory tcpSocketSlaveConnectionsFactory, MockSlaveConnectionsFactory mockSlaveConnectionsFactory, DiskReplaysStorage diskReplaysStorage, MockReplaysStorage mockReplaysStorage, DiskBotPersistentStorage diskBotPersistentStorage, MockBotPersistentDataStorage mockBotPersistentDataStorage) {
+        public ComponentsConfig(RetrofitWebConnection retrofitWebConnection, MockWebConnection mockWebConnection, TcpSocketSlaveConnectionsFactory tcpSocketSlaveConnectionsFactory, MockSlaveConnectionsFactory mockSlaveConnectionsFactory, DiskReplaysStorage diskReplaysStorage, MockReplaysStorage mockReplaysStorage, DiskBotPersistentStorage diskBotPersistentDataStorage, MockBotPersistentDataStorage mockBotPersistentDataStorage) {
             this.retrofitWebConnection = retrofitWebConnection;
             this.mockWebConnection = mockWebConnection;
             this.tcpSocketSlaveConnectionsFactory = tcpSocketSlaveConnectionsFactory;
             this.mockSlaveConnectionsFactory = mockSlaveConnectionsFactory;
             this.diskReplaysStorage = diskReplaysStorage;
             this.mockReplaysStorage = mockReplaysStorage;
-            this.diskBotPersistentStorage = diskBotPersistentStorage;
+            this.diskBotPersistentDataStorage = diskBotPersistentDataStorage;
             this.mockBotPersistentDataStorage = mockBotPersistentDataStorage;
         }
 
@@ -63,8 +63,8 @@ public class MasterConfig extends Config<MasterConfig.ComponentsConfig> {
             return mockReplaysStorage;
         }
 
-        public DiskBotPersistentStorage getDiskBotPersistentStorage() {
-            return diskBotPersistentStorage;
+        public DiskBotPersistentStorage getDiskBotPersistentDataStorage() {
+            return diskBotPersistentDataStorage;
         }
 
         public MockBotPersistentDataStorage getMockBotPersistentDataStorage() {
@@ -105,18 +105,33 @@ public class MasterConfig extends Config<MasterConfig.ComponentsConfig> {
 
     public static class MockWebConnection {
 
+        private int botsCount;
+
+        public MockWebConnection(int botsCount) {
+            this.botsCount = botsCount;
+        }
+
+        public int getBotsCount() {
+            return botsCount;
+        }
     }
 
     public static class TcpSocketSlaveConnectionsFactory {
 
         private final int port;
+        private final long serverSocketTimeout;
 
-        public TcpSocketSlaveConnectionsFactory(int port) {
+        public TcpSocketSlaveConnectionsFactory(int port, long serverSocketTimeout) {
             this.port = port;
+            this.serverSocketTimeout = serverSocketTimeout;
         }
 
         public int getPort() {
             return port;
+        }
+
+        public long getServerSocketTimeout() {
+            return serverSocketTimeout;
         }
     }
 

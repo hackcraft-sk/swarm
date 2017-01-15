@@ -23,6 +23,16 @@ public class MockSlaveConnection extends AbstractComponent implements SlaveConne
     }
 
     @Override
+    public int readSlaveId() throws IOException {
+        return 1;
+    }
+
+    @Override
+    public int getSlaveId() {
+        return 1;
+    }
+
+    @Override
     public void close() {
 
     }

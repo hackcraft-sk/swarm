@@ -30,12 +30,6 @@ public class SlavesManager extends AbstractComponent {
         this.webConnection = webConnection;
     }
 
-    private void pingSlaves() throws IOException {
-        for (SlaveConnection slaveConnection : connections) {
-            slaveConnection.ping();
-        }
-    }
-
     public MatchReport runMatch(MatchSpecification matchSpecification) throws Exception {
         for (SlaveConnection slaveConnection : connections) {
             try {
@@ -51,8 +45,6 @@ public class SlavesManager extends AbstractComponent {
 
         List<SlaveConnection> newConnections = connectionsFactory.waitForConnections(count);
         connections.addAll(newConnections);
-
-        pingSlaves();
 
         int matchId = matchSpecification.getMatchId();
 
@@ -83,7 +75,15 @@ public class SlavesManager extends AbstractComponent {
             String botFileHash = botInfo.getFileHash();
             byte[] botBlob = webConnection.downloadBot(botFileUrl, botFileHash);
 
-            MemoryConfig slaveConfig = null;
+            MemoryConfig slaveConfig = new MemoryConfig();
+            MemoryConfig.MemorySection autoMenuSection = new MemoryConfig.MemorySection("auto_menu");
+            slaveConfig.addSection(autoMenuSection);
+
+            MemoryConfig.MemoryPair mapPair = new MemoryConfig.MemoryPair("map", "");
+            autoMenuSection.addPair(mapPair);
+
+            MemoryConfig.MemoryPair saveReplayPair = new MemoryConfig.MemoryPair("save_replay", "");
+            autoMenuSection.addPair(saveReplayPair);
 
             SlaveMatchSpecification specification = new SlaveMatchSpecification(host, matchId, slaveConfig, botInfo, botBlob, mapName, mapBlob);
             SlaveSetupReport setupReport = slaveConnection.setupSlave(specification);
@@ -96,8 +96,6 @@ public class SlavesManager extends AbstractComponent {
                 throw new IOException("Slave configuration problem.");
             }
         }
-
-        pingSlaves();
 
         for (SlaveConnection slaveConnection : connections) {
             slaveConnection.runMatch();
