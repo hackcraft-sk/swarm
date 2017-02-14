@@ -2,14 +2,14 @@
 <section>
     <div class="row">
         <div class="box">
-            <h1>{$tournament->getName()}</h1>
+            <h1>{$t->getName()}</h1>
             <h2>Basic information</h2>
 
             {control tournamentDetailsForm}
 
             <h2>Archiving of tournament</h2>
 
-            {if $tournament->isArchived()}
+            {if $t->isArchived()}
                 Tournament is already archived.
             {else}
                 {control archiveTournamentForm}

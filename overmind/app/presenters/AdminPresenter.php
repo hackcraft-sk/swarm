@@ -2,20 +2,6 @@
 use Nette\Application\UI;
 
 class AdminPresenter extends BaseTournamentPresenter {
-
-	public function requireAdmin() {
-		$passed = true;
-		if(!parent::requireLogin())
-			$passed = false;
-		if(!$this->getUser()->getIdentity()->isAdmin) {
-			$passed = false;
-		}
-		if(!$passed) {
-			$this->flashMessage("You have to be an administrator");
-			$this->redirect("Sign:in");
-		}
-		return $passed;
-	}
 	
 	protected function createComponentScheduleForm()
 	{
@@ -57,6 +43,8 @@ class AdminPresenter extends BaseTournamentPresenter {
 		$form->addText("times", "Number of matches per pair of players")
 				->setRequired("You have to choose how many matches per pair")
 				->setDefaultValue("1");
+
+		$form->addCheckbox("mirror", "Do you want to mirror previous generation logic?");
 		
 		$form->addSubmit("send", "Generate");
 		
@@ -69,7 +57,7 @@ class AdminPresenter extends BaseTournamentPresenter {
 		if(!$this->requireAdmin())
 			return;
 		
-		$this->getSelectedTournament()->scheduleAllCombinations($form->getValues()->times);
+		$this->getSelectedTournament()->scheduleAllCombinations($form->getValues()->times, !!$form->getValues()->mirror);
 		
 		$this->flashMessage("Matches were planned");
 	}
@@ -148,6 +136,7 @@ class AdminPresenter extends BaseTournamentPresenter {
 	protected function createComponentTournamentDetailsForm() {
 		$form = new BaseForm;
 
+		$form->addHidden("id");
 		$form->addText("code", "Tournament code")
 				->setRequired("Tournament code is required");
 		$form->addText("name", "Tournament name")
@@ -191,7 +180,7 @@ class AdminPresenter extends BaseTournamentPresenter {
 			$values['info'] = $info;
 			$values['rules'] = $rules;
 			
-			$this->getSelectedTournament()->update($values);
+			$this->context->model->getTournament($values['id'])->update($values);
 			$this->flashMessage("Tournament details were saved");
 		} catch(Exception $e) {
 			$form->addError($e->getMessage());
@@ -285,13 +274,14 @@ class AdminPresenter extends BaseTournamentPresenter {
 		$this->template->links = $this->context->link->getAll($this->getSelectedTournamentId());
 	}
 	
-	public function renderTournament() {
+	public function renderTournament($tournamentId) {
 		if(!$this->requireAdmin())
 			return false;
 		
-		$tournament = $this->getSelectedTournament();
+		$tournament = $this->context->model->getTournament($tournamentId);
 		
 		$values = array(
+			"id" => $tournamentId,
 			"code" => $tournament->getCode(),
 			"name" => $tournament->getName(),
 			"testStartTime" => date("Y-m-d H:i:s", $tournament->getTestStartTime()),
@@ -317,11 +307,8 @@ class AdminPresenter extends BaseTournamentPresenter {
 				"newName" => $tournament->getName()." Archive"
 			)
 		);
-	}
-	
-	public function actionGoToTournament($tournamentId) {
-		$this->setSelectedTournamentId($tournamentId);
-		$this->redirect("tournament");
+
+		$this->template->t = $tournament;
 	}
 	
 	public function actionDeleteTournament($tournamentId) {
@@ -333,6 +320,20 @@ class AdminPresenter extends BaseTournamentPresenter {
 		$this->flashMessage("Tournament was deleted");
 		
 		$this->redirectUrl($this->getHttpRequest()->getReferer());
+	}
+
+	public function renderMoveUp($tournamentId) {
+		if(!$this->requireAdmin())
+			return false;
+		$this->context->model->moveTournament($tournamentId, -1);
+		$this->redirect("tournaments");
+	}
+
+	public function renderMoveDown($tournamentId) {
+		if(!$this->requireAdmin())
+			return false;
+		$this->context->model->moveTournament($tournamentId, 1);
+		$this->redirect("tournaments");
 	}
 }
 ?>

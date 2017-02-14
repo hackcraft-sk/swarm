@@ -8,7 +8,13 @@ require __DIR__ . '/../libs/autoload.php';
 $configurator = new Nette\Config\Configurator;
 
 // Enable Nette Debugger for error visualisation & logging
-$configurator->setDebugMode(true);
+
+if (isset($_SERVER['HTTP_X_SWARM_ADMIN'])) {
+    $configurator->setDebugMode(true);
+    $configurator->enableDebugger(__DIR__ . '/../log');
+} else {
+    $configurator->setDebugMode(true);
+}
 
 // Enable RobotLoader - this will load all classes automatically
 $configurator->setTempDirectory(__DIR__ . '/../temp');

@@ -120,8 +120,6 @@ class User extends Nette\Object
 		}
 	}
 
-
-
 	/**
 	 * Is this user authenticated?
 	 * @return bool

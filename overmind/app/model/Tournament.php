@@ -520,9 +520,13 @@ SQL;
 		);
 	}
 
-	public function scheduleAllCombinations($times = 1) {
+	public function scheduleAllCombinations($times = 1, $mirror = false) {
 		$combinations = array();
 		$bots = array_keys($this->getActiveBots());
+
+        if ($mirror) {
+            $bots = array_reverse($bots);
+        }
 
 		for($i=0; $i < $times; $i++) {
 			for($j=0; $j < count($bots); $j++) {
@@ -562,22 +566,7 @@ SQL;
 				if(count($ladder) < 2) {
 					throw new Exception("Not enough players to schedule a match.");
 				}
-/*
-				// 30% pripadov ideme cisto prioritou tych co nehrali
-				if(mt_rand(0, 10) <= 3) {
-					usort($ladder, function($a, $b) {
-						if($a['matchesTotal'] < $b['matchesTotal']) {
-							return -1;
-						} else if($a['matchesTotal'] > $b['matchesTotal']) {
-							return 1;
-						}
-						return 0;
-					});
 
-					$this->scheduleMatch($ladder[0]['id'], $ladder[1]['id']);
-				}
-				// 70% uplne nahodne
-				else {*/
 					$a = $b = 0;
 					while($a == $b) {
 						$a = mt_rand(0, count($ladder)-1);
@@ -585,7 +574,6 @@ SQL;
 					}
 
 					$this->scheduleMatch($ladder[$a]['id'], $ladder[$b]['id']);
-				//}
 			}
 		}
 	}
@@ -629,12 +617,10 @@ SQL;
 		
 		$row = $stmt->fetch();
 		$count = $row['waiting'];
-		
-		if($count == 0) {
-			if(!$this->system->createNextMatch()) {
-				return null;
-			}
-		}
+
+        if(!$this->system->createNextMatch($count)) {
+            return null;
+        }
 
 		$stmt2 = $this->database->prepare("SELECT * FROM `matches` WHERE `tournamentId`=? AND `state`='WAITING' ORDER BY `id` ASC LIMIT 0,1");
 		$stmt2->bindParam(1, $id);

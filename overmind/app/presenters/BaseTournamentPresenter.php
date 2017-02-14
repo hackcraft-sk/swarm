@@ -11,7 +11,10 @@ abstract class BaseTournamentPresenter extends BasePresenter {
             $tournament = $this->context->model->getTournamentByCode($this->getParameter("tournament"));
             $this->selectedTournament = $tournament->getId();
         } else {
-            $tournaments = $this->context->model->getTournaments();
+            $tournaments = $this->context->model->getActiveTournaments();
+            if (count($tournaments) == 0) {
+                $tournaments = $this->context->model->getArchivedTournaments();
+            }
             $tournamentIds = array_keys($tournaments);
             $tournament = $tournaments[$tournamentIds[0]];
             $this->selectedTournament = $tournament->getId();
@@ -19,8 +22,22 @@ abstract class BaseTournamentPresenter extends BasePresenter {
         }
     }
 
+    public function requireAdmin() {
+        $passed = true;
+        if(!parent::requireLogin())
+            $passed = false;
+        if(!$this->getUser()->getIdentity()->isAdmin) {
+            $passed = false;
+        }
+        if(!$passed) {
+            $this->flashMessage("You have to be an administrator");
+            $this->redirect("Sign:in");
+        }
+        return $passed;
+    }
+
     public function selectTournamentByCode($code) {
-        $this->redirectUrl("http://".$code.".mylifeforai.com");
+        $this->redirectUrl("https://".$code.".mylifeforai.com");
     }
 
     public function getSelectedTournamentId() {

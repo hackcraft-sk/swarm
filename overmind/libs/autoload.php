@@ -9,3 +9,10 @@ if (!is_file(__DIR__ . '/Nette/loader.php')) {
 require __DIR__ . '/Nette/loader.php';
 
 require __DIR__ . '/Scmai/Utils.php';
+
+require __DIR__ . '/Recaptcha/autoload.php';
+
+require __DIR__ . '/Firebase/JWT/BeforeValidException.php';
+require __DIR__ . '/Firebase/JWT/ExpiredException.php';
+require __DIR__ . '/Firebase/JWT/JWT.php';
+require __DIR__ . '/Firebase/JWT/SignatureInvalidException.php';

@@ -1,3 +1,7 @@
+parameters:
+    captcha_secret: 'RECAPTCHA_SECRET'
+    email_token_secret: 'SOME_SECRET_KEY'
+
 nette:
 	database:
 			dsn: 'mysql:unix_socket=/tmp/mysql51.sock;dbname=DATABASE_NAME'

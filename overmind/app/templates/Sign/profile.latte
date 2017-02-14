@@ -1,0 +1,30 @@
+{block content}
+    <section>
+        <div class="row">
+            <div class="box">
+                <h1>Account verification</h1>
+
+                {if $identity->isVerified}
+                    <p>Your account is verified, nothing more to do.</p>
+                {else}
+                    <p>Your account is <strong>not verified</strong>. You will not be able to upload your bot until you verify your account.</p>
+
+                    {if $identity->email}
+                        <p>We can <a n:href="sendVerificationEmail">send you a link to verify your email</a>.</p>
+                    {else}
+                        <p>First <strong>you have to enter a valid email</strong> for your profile to verify your account.</p>
+                    {/if}
+                {/if}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="box">
+                <h1>My profile</h1>
+
+                {control profileForm}
+            </div>
+        </div>
+
+    </section>
+{/block}

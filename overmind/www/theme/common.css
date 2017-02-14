@@ -27,7 +27,7 @@
 }
 
 body {
-    background: url(background.big.jpg) no-repeat center center fixed;
+    background: url(background.jpg) no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -134,14 +134,6 @@ section {
     padding: 1em;
 }
 
-.left-column .box {
-    margin-right: 1em;
-}
-
-.right-column .box {
-    margin-left: 1em;
-}
-
 .row {
     clear: both;
     padding-bottom: 0.75em;
@@ -166,13 +158,21 @@ section {
 }
 
 .left-column {
-    width: 500px;
+    width: 600px;
     float: left;
 }
 
 .right-column {
-    width: 500px;
+    width: 400px;
     float: right;
+}
+
+.right-column > div {
+    margin-left: 1em;
+}
+
+.left-column > div:nth-child(n+2), .right-column > div:nth-child(n+2) {
+    margin-top: 1em;
 }
 
 .new-row {

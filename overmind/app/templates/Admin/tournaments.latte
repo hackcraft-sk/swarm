@@ -20,7 +20,8 @@
                     <td>{date("Y-m-d H:i:s", $t->getTestStartTime())}</td>
                     <td>{date("Y-m-d H:i:s", $t->getCompetitionStartTime())}</td>
                     <td>{if $t->isArchived()}Yes{else}No{/if}</td>
-                    <td><a n:href="goToTournament, $tId">Manage</a></td>
+                    <td><a n:href="moveUp, $tId">Up</a> <a n:href="moveDown, $tId">Down</a></td>
+                    <td><a n:href="tournament, $tId">Manage</a></td>
                     <td><a n:href="deleteTournament, $t->getId()" onclick="return confirm('Are you sure?');">Delete tournament</a></td>
                 </tr>
             </table>

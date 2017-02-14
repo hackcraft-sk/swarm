@@ -1,5 +1,6 @@
 <?php
 
+
 class SignPresenter extends BaseTournamentPresenter
 {
 	/**
@@ -51,6 +52,10 @@ class SignPresenter extends BaseTournamentPresenter
 		$form->addText('username', 'username')
 			->setRequired('you_have_to_enter_username');
 
+        $form->addText('email', 'Email')
+            ->addRule(BaseForm::EMAIL, "Please provide valid email")
+            ->setRequired('You have to provide email for verification');
+
 		$form->addPassword('password', 'password')
 			->setRequired('you_have_to_enter_password');
 		
@@ -67,27 +72,38 @@ class SignPresenter extends BaseTournamentPresenter
 		return $form;
 	}
 
-	public function signOnFormSucceeded($form)
-	{
-		$values = $form->getValues();
+	public function signOnFormSucceeded($form) {
+        $recaptcha = $this->context->captcha->getRecaptcha();
+        $response = $recaptcha->verify($_POST['g-recaptcha-response'], $_SERVER['REMOTE_ADDR']);
+        if (!$response->isSuccess()) {
+            $form->addError('We couldnt verify, if you are a robot. Please tell us by checking the checkbox.');
+        } else {
+            $values = $form->getValues();
 
-		if ($values->remember) {
-			$this->getUser()->setExpiration('+ 14 days', FALSE);
-		} else {
-			$this->getUser()->setExpiration('+ 20 minutes', TRUE);
-		}
+            if ($values->remember) {
+                $this->getUser()->setExpiration('+ 14 days', FALSE);
+            } else {
+                $this->getUser()->setExpiration('+ 20 minutes', TRUE);
+            }
 
-		try {
-			$this->context->authenticator->createAccount($values->username, $values->password);
-			
-			$this->getUser()->login($values->username, $values->password);
-		} catch (Exception $e) {
-			$form->addError($e->getMessage());
-			return;
-		}
+            try {
+                $this->context->authenticator->createAccount($values->username, $values->email, $values->password);
 
-		$this->flashMessage("Welcome {$values->username}!");
-		$this->redirect('Tournament:');
+                $token = $this->context->emailVerification->createToken($values->email);
+                $link = URL_BASE.$this->link("receiveVerificationEmail", array("token" => $token));
+                $this->context->emailVerification->sendLink($values->email, $link);
+
+                $this->flashMessage("Verification email was sent, please check your inbox");
+
+                $this->getUser()->login($values->username, $values->password);
+            } catch (Exception $e) {
+                $form->addError($e->getMessage());
+                return;
+            }
+
+            $this->flashMessage("Welcome {$values->username}!");
+            $this->redirect('Tournament:');
+        }
 	}
 
 	public function actionOut()
@@ -97,4 +113,78 @@ class SignPresenter extends BaseTournamentPresenter
 		$this->redirect('in');
 	}
 
+	public function renderSendVerificationEmail() {
+	    $email = $this->getUser()->getIdentity()->email;
+
+	    $token = $this->context->emailVerification->createToken($email);
+        $link = URL_BASE.$this->link("receiveVerificationEmail", array("token" => $token));
+        $this->context->emailVerification->sendLink($email, $link);
+
+        $this->flashMessage("Verification email was sent, please check your inbox");
+        $this->redirect("profile");
+    }
+
+    public function renderReceiveVerificationEmail($token) {
+        $email = $this->context->emailVerification->decodeEmail($token);
+
+        $this->context->authenticator->verifyEmail($email);
+        if ($this->getUser()->getIdentity()->email == $email) {
+            $this->getUser()->getIdentity()->isVerified = true;
+        }
+        $this->flashMessage("Account is now verified. Enjoy!");
+
+        $this->redirect("profile");
+    }
+
+    public function createComponentProfileForm() {
+        $form = new BaseForm;
+        $form->addText('username', 'Username')
+            ->setRequired('You have to enter username');
+
+        $form->addText('email', 'Email')
+            ->setRequired('You have to enter email')
+            ->addRule(BaseForm::EMAIL, "You have to enter valid email");
+
+        $form->addPassword('password', 'Password (if changing)');
+
+        $form->addPassword("password_repeat", "Password again")
+            ->addRule($form::EQUAL, "Passwords are not equal", $form['password']);
+
+        $form->addSubmit('save', 'Save');
+
+        $form->onSuccess[] = $this->onProfileFormSuccess;
+        return $form;
+    }
+
+    public function onProfileFormSuccess($form) {
+        $values = $form->getValues();
+
+        $this->context->authenticator->updateAccount(
+            $this->getUser()->getIdentity()->id,
+            $values->username,
+            $values->email
+        );
+
+        $this->getUser()->getIdentity()->username = $values->username;
+        $this->getUser()->getIdentity()->email = $values->email;
+
+        $this->flashMessage("Your profile was saved");
+
+        if ($values->password) {
+            $this->context->authenticator->updatePassword(
+                $this->getUser()->getIdentity()->id,
+                $values->password
+            );
+            $this->flashMessage("Your password was changed");
+        }
+    }
+
+    public function renderProfile() {
+        if (!$this->requireLogin()) return;
+
+        $this['profileForm']->setValues(array(
+            'username' => $this->getUser()->getIdentity()->username,
+            'email' => $this->getUser()->getIdentity()->email
+        ));
+    }
 }

@@ -21,7 +21,10 @@ common:
 	services:
 		authenticator: Authenticator
 		model: Model
+		pages: Pages
 		link: Link
+		captcha: Captcha(%captcha_secret%)
+		emailVerification: EmailVerification(%email_token_secret%)
 		routerFactory: RouterFactory
 		router: @routerFactory::createRouter
 		translator: WordMapTranslator("langs", "en")

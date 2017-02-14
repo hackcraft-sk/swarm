@@ -43,6 +43,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 		$this->template->registerHelper("printf", "sprintf");
 		
 		$this->template->username = $this->getUser()->isLoggedIn() ? $this->getUser()->getIdentity()->username : "anonymous";
+        $this->template->identity = $this->getUser()->getIdentity();
 
 		$this->template->parsedown = new Parsedown();
 	}

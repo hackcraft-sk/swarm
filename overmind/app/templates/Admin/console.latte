@@ -1,8 +1,12 @@
 {block head}
 <style type="text/css">
-.row > * > a {
+.row  > a {
     color: white;
     text-decoration: none !important;
+}
+
+.row > a > .box {
+    padding: 1em;
 }
 </style>
 {/block}
@@ -10,7 +14,6 @@
 {block content}
 <section>
     <div class="row">
-        <div class="left-column">
             <a n:href="tournaments">
                 <div class="box">
                     <h2>Tournaments</h2>
@@ -18,19 +21,17 @@
                     <p>Overview and managment of all tournaments. Possibility to archive.</p>
                 </div>
             </a>
+        <div class="row">
         </div>
-        <div class="right-column">
-            <a n:href="tournament">
+            <a n:href="tournament, $tournament->getId()">
                 <div class="box">
                     <h2>Current tournament</h2>
 
                     <p>Managment of currently selected tournament.</p>
                 </div>
             </a>
+        <div class="row">
         </div>
-    </div>
-    <div class="row">
-        <div class="left-column">
             <a n:href="matches">
                 <div class="box">
                     <h2>Matches</h2>
@@ -38,8 +39,8 @@
                     <p>Scheduling new matches, removal of matches. Everything inside of currently selected tournament.</p>
                 </div>
             </a>
+        <div class="row">
         </div>
-        <div class="right-column">
             <a n:href="links">
                 <div class="box">
                     <h2>Links</h2>
@@ -48,6 +49,14 @@
 
                 </div>
             </a>
+        <div class="row">
         </div>
+            <a n:href="page:adminList">
+                <div class="box">
+                    <h2>Pages</h2>
+
+                    <p>Management of static markdown web pages.</p>
+                </div>
+            </a>
     </div>
 </section>

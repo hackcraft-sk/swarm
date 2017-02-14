@@ -21,6 +21,10 @@ class BotPresenter extends BaseTournamentPresenter {
 		if(!$this->requireLogin())
 			return;
 
+		if (!$this->getUser()->getIdentity()->isVerified) {
+			return;
+		}
+
 		if (!$this->getSelectedTournament()->isRunning()) {
 			$this->flashMessage("You can't upload bots in tournament, which is not running.");
 			return false;

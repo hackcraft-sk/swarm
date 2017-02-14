@@ -18,6 +18,7 @@ class Model {
 
 	public function __construct(Nette\Database\Connection $database) {
 		$this->database = $database;
+        $this->getTournaments();
 	}
 	
 	/**
@@ -87,7 +88,56 @@ class Model {
 		
 		$data['id'] = $this->database->lastInsertId();
 	}
-	
+
+	public function moveTournament($tournamentId, $offset = -1) {
+	    if (!in_array($offset, [-1, 1])) throw new Exception("Offset cannot be other than -1 or 1");
+
+        try {
+            $this->database->beginTransaction();
+
+            $stmt = $this->database->prepare("SELECT `id`, `priority` FROM `tournaments` WHERE 1 ORDER BY `priority` ASC");
+            if(!$stmt->execute()) {
+                throw new Exception("DB error");
+            }
+
+            $newPositions = [];
+            $currentPosition = 0;
+            $lastPosition = 0;
+            for ($position=1; $row = $stmt->fetch(); $position++) {
+                $newPositions[$position] = $row['id'];
+                if ($row['id'] == $tournamentId) {
+                    $currentPosition = $position;
+                }
+                $lastPosition = $position;
+            }
+            if ($currentPosition > 0) {
+                $newPosition = $currentPosition + $offset;
+                if ($newPosition > 0 && $newPosition <= $lastPosition) {
+                    $tmp = $newPositions[$newPosition];
+                    $newPositions[$newPosition] = $tournamentId;
+                    $newPositions[$currentPosition] = $tmp;
+                }
+            }
+
+            $id = 0;
+            $position = 0;
+            $stmt2 = $this->database->prepare("UPDATE `tournaments` SET `priority`=? WHERE `id`=?");
+            $stmt2->bindParam(1, $position);
+            $stmt2->bindParam(2, $id);
+            foreach ($newPositions as $position => $tId) {
+                $id = $tId;
+                if (!$stmt2->execute()) {
+                    throw new Exception("DB error");
+                }
+            }
+            $this->database->commit();
+        } catch(Exception $e) {
+            $this->database->rollBack();
+            throw $e;
+        }
+
+    }
+
 	public function getTournaments() {
 		$stmt = $this->database->prepare("SELECT * FROM `tournaments` WHERE 1 ORDER BY `priority` ASC");
 		if(!$stmt->execute()) {
